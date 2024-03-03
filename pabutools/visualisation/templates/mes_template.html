@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> {{ election_name}}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script nonce="undefined" src="https://cdn.zingchart.com/zingchart.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        /* Custom CSS to color the borders black */
+        
+        .border-black {
+            border: 1px solid black;
+        }
+        
+        .nested {
+            padding: 1rem;
+        }
+        
+        .wrapper {
+            padding: 0rem;
+        }
+        
+        .spacer {
+            padding: 1rem;
+        }
+        
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            font-size: 24px;
+            /* Adjust the size as needed */
+            color: black;
+            /* Adjust the color as needed */
+        }
+        
+        .carousel-inner {
+            padding: 1rem;
+            padding-left: 7rem;
+            padding-right: 7rem;
+        }
+        
+        .carousel-inner-pie {
+            padding-top: 0.5rem;
+            height: 400px;
+        }
+        
+        .hidden-section {
+            display: none;
+        }
+        
+        .chord-wrapper {
+            height: 100%;
+        }
+        
+        #myChordChart {
+            height: 100%;
+            width: 100%;
+        }
+        
+        #myBarChart1,
+        #myStackedBarChart1 {
+            height: 100%;
+            width: 100%;
+        }
+        /* zing-grid[loading] {
+            height: 800px;
+            width: 100%;
+        } */
+        
+        h1,
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-4">
+        <!-- General Explanations -->
+        <div class="row mb-3">
+            <div class="col-12  justify-content-center">
+                <h1>
+                    {{ election_name }}
+                </h1>
+            </div>
+        </div>
+
+        <!-- Carousel for general graphs -->
+        <div id="carouselExampleControls" class="carousel slide mb-3 border-black" data-ride="carousel" data-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="d-block w-100 border-black justify-content-center" style="height:200px;">
+                        <!-- Fix issue where extra comma appears on final item in list. -->
+                        <p>
+                            Summary statistics for the election - how many total votes, projects elected, and budget spent.<br>
+                            {% for project in projects %}
+                                {{ project.name}}: {{project.totalvotes}} votes,
+                            {% endfor %}
+                            <br>
+
+                            {{ number_of_elected_projects }} projects elected, {{ number_of_unelected_projects }} projects not elected.<br>
+
+                            ${{ spent }} out of ${{ budget }} budget spent.<br>
+
+                            {% for project in projects %}
+                                {{ project.name}}: {{project.description}}
+                            {% endfor %}
+                            <br>
+
+                        </p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-block w-100 border-black" style="height:200px;">DIV 2</div>
+                </div>
+                <div class="carousel-item">
+                    <div class="d-block w-100 border-black" style="height:200px;">DIV 3</div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                <span class="carousel-control-next-icon" aria-hidden="true">&lt;
+            </span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true">&gt;
+            </span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+
+        <!-- Round specific visualisations -->
+         {% for round in rounds %}
+            <section id="{{round.id}}" class="{% if loop.index != 1 %}hidden-section{% endif %}">
+                  <!-- Effective Vote Count -->
+                  <div class="row mb-3 ">
+                     <div class="col-3"></div>
+
+                     <div class="col-6" style="height: 300px;">
+                        <div id="{{ round.id }}BarChart" style="height: 100%; width: 100%;">
+
+                        </div>
+
+                     </div>
+                     <div class="col-3"></div>
+
+                  </div>
+
+                  <!-- Sankey and Chord side by side -->
+                  <div class="row" style="display: grid;">
+                     <h5 style="text-align: center; font-weight: bold;">{{ round.name }} Voter Flows</h5>
+                  </div>
+                  <div class="row">
+                     <div class="col-5" style="display: grid;">
+                        <div class="d-flex align-items-center justify-content-center">
+                              <div id="{{ round.id }}SankeyChart"></div>
+                        </div>
+                     </div>
+
+                     <div class="col-2"></div>
+                     <div class="col-5 chord-wrapper">
+                        <div id='{{ round.id }}ChordChart'></div>
+
+                     </div>
+                  </div>
+                  <div class="spacer"></div>
+
+                  <!-- Pie Charts Carousels -->
+                  <div id="secondCarousel" style="height: 500px;" class="carousel slide mb-3 border-black" data-ride="carousel" data-interval="false">
+                     <div class="carousel-inner carousel-inner-pie" style="height: 500px;">
+
+                        {% for triplet in round.pie_chart_items%}
+                            {% set carouselNum = loop.index %}
+                            {% set carouselClass = "carousel-item" %}
+
+                            {% if loop.first %}
+                                {% set carouselClass = "carousel-item active" %}
+                            {% endif %}
+
+                            <div class="{{ carouselClass }}">
+                                <div class="wrapper" style="height:300px">
+                                    <div class="d-block w-100">
+                                        <div class="row">
+
+                                            <!-- Single Pie Chart Carousel -->
+                                            {% for data in triplet%}
+                                                <!-- Individual Pie Chart -->
+                                                <div class="col-md-4 nested">
+                                                    <div>
+                                                        <div id='{{ round.id }}PieChart{{ carouselNum }}-{{ loop.index }}'></div>
+                                                    </div>
+                                                    <div class="spacer"></div>
+                                                    <div class="border-black ">
+                                                        This resulted in a ${{ data.reduction }} reduction in the average funds available to the B voter
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <!-- (OLD) dummy data for pie charts -->
+                        {# <div class="carousel-item active">
+                              <div class="wrapper" style="height:300px">
+                                 <div class="d-block w-100">
+                                    <div class="row">
+                                          <!-- First Pie Chart -->
+                                          <div class="col-md-4 nested">
+                                             <div>
+                                                <div id='myPieChart1A'></div>
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                This resulted in a $12.32 reduction in the average funds available to the B voter
+                                             </div>
+
+                                          </div>
+                                          <!-- Second Pie Chart -->
+                                          <div class="col-md-4 nested">
+                                             <div>
+                                                <div id='myPieChart1B'></div>
+
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                This resulted in a $9.11 reduction in the average funds available to the C voter
+                                             </div>
+                                          </div>
+                                          <!-- Third Pie Chart -->
+                                          <div class="col-md-4 nested">
+                                             <div>
+                                                <div id='myPieChart1C'></div>
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                This resulted in a $9.11 reduction in the average funds available to the C voter
+                                             </div>
+                                          </div>
+                                    </div>
+                                 </div>
+                              </div>
+                        </div>
+
+                        <div class="carousel-item">
+                              <div class="wrapper">
+                                 <div class="d-block w-100" style="height:200px;">
+                                    <div class="row">
+                                          <div class="col-md-4 nested">
+                                             <div class="border-black ">
+                                                Pie Chart (A)
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                Pie Chart (A)
+                                             </div>
+                                          </div>
+                                          <div class="col-md-4 nested">
+                                             <div class="border-black ">
+                                                Pie Chart (A)
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                Text (A)
+                                             </div>
+                                          </div>
+                                          <div class="col-md-4 nested">
+                                             <div class="border-black ">
+                                                Text (A)
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                Text (A)
+                                             </div>
+                                          </div>
+                                    </div>
+                                 </div>
+                              </div>
+                        </div>
+
+                        <div class="carousel-item">
+                              <div class="wrapper">
+                                 <div class="d-block w-100" style="height:200px;">
+                                    <div class="row">
+                                          <div class="col-md-4 nested">
+                                             <div class="border-black ">
+                                                Pie Chart (A)
+
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                Pie Chart (A)
+
+
+                                             </div>
+                                          </div>
+                                          <div class="col-md-4 nested">
+                                             <div class="border-black ">
+                                                Pie Chart (A)
+
+
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                Text (A)
+                                             </div>
+                                          </div>
+                                          <div class="col-md-4 nested">
+                                             <div class="border-black ">
+                                                Text (A)
+                                             </div>
+                                             <div class="spacer"></div>
+                                             <div class="border-black ">
+                                                Text (A)
+                                             </div>
+                                          </div>
+                                    </div>
+                                 </div>
+                              </div>
+                        </div> #}
+                     </div>
+
+                     <a class="carousel-control-prev" href="#secondCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-next-icon" aria-hidden="true">&lt;
+                     </span>
+                        <span class="sr-only">Previous</span>
+                     </a>
+                     <a class="carousel-control-next" href="#secondCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true">&gt;
+                     </span>
+                        <span class="sr-only">Next</span>
+                     </a>
+                  </div>
+
+                  <!-- Reduced Effective Vote Count Graph (Centred Div) -->
+                  <div class="row">
+                     <div class="col-2">
+                     </div>
+                     <div class="col-8 container" style="height: 300px;">
+                        <div id="{{ round.id }}AfterRoundBarChart" style="height: 100%; width: 100%;"></div>
+                     </div>
+                     <div class="col-2">
+                     </div>
+                  </div>
+            </section>
+         {% endfor %}
+        
+        <!-- Dropdown UI -->
+        <div class="row my-4 justify-content-center">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="projectDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {{ rounds[0].name }}
+               </button>
+                <div class="dropdown-menu" aria-labelledby="projectDropdown">
+                  {% for round in rounds %}
+                     <a class="dropdown-item {% if loop.index == 1 %}active{% endif %}" item="{{ round.id }}" onclick="onClickDropdown(this)">{{ round.name }}</a>
+                  {% endfor %}
+   
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Dropdown functionality -->
+    <script>
+        function onClickDropdown(element) {
+            var dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('projectDropdown').innerText = element.innerText;
+
+            // Show the corresponding section and hide others
+            var sections = document.querySelectorAll('section');
+            sections.forEach(section => section.style.display = 'none');
+            document.getElementById(element.getAttribute("item")).style.display = 'block';
+        }
+    </script>
+    {% for round in rounds %}
+        <!-- Chord chart -->
+        <script>
+            //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+            zingchart.render({
+                  id: '{{round.id}}ChordChart',
+                  data: {
+                     "type": "chord",
+                     // "title": {
+                     //     "text": "Project Relationships",
+                     //     "offset-y": -10
+                     //     // "adjust-layout": true,
+                     // },
+                     "options": {
+                        "radius": "80%"
+                     },
+                     "plotarea": {
+                        "margin": "dynamic"
+                     },
+                     "series": [
+                     {% for projFrom in round.voter_flow %}
+                        {"values":[
+                        {% for projTo in round.voter_flow[projFrom] %}
+                            {{ round.voter_flow[projFrom][projTo] }},
+                        {% endfor %}
+                        ],
+                        "text": "{{ projFrom }}"
+                        },
+                     {% endfor %}
+                      ]
+                  },
+                  height: "60%",
+                  width: "100%",
+               });
+        </script>
+        <!-- Effective vote count bar chart -->
+        <script>
+                //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+               zingchart.render({
+                  id: '{{ round.id }}BarChart',
+                  data: {
+                  "type": "hbar",
+                  "title": {
+                     "text": "Effective Vote Count (Winner: {{ round.name }})"
+                  },
+                  "scale-x": {
+                    
+                     "labels": {{ round.effective_vote_count.keys() | list }}, // Label that identifies each project in the round
+                     "title": {
+                        "text": "Project"
+                     },
+                     "item": { // Explicitly control the appearance of the scale labels
+                        "font-size": 14, // Adjust font size as needed
+                        "offset-x": 0, // Adjust to move the label left or right if needed
+                        "offset-y": 0 // Adjust to move the label up or down if needed
+                     }
+                  },
+                  "scale-y": {
+                     "title": {
+                        "text": "Number of Votes"
+                     }
+                  },
+                  "series": [{
+                     "values": {{ round.effective_vote_count.values() | list }}, // Current votes values
+                  }, ],
+                  "plot": {
+                     "animation": {
+                        "effect": "ANIMATION_SLIDE_BOTTOM",
+                        "sequence": "ANIMATION_BY_PLOT_AND_NODE",
+                        "speed": 800
+                     }
+                  }
+            },
+                  height: '100%',
+                  width: '100%'
+            });
+        </script>
+        <!-- Effective vote count reduction bar chart -->
+        <script>
+            // ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+            zingchart.render({
+            id: '{{round.id}}AfterRoundBarChart',
+            data: {
+            "type": "hbar",
+            "stacked": true,
+            "title": {
+                "text": "Reduced Effective Vote Count {% if loop.index in range(rounds|length) %} (Next Winner: {{ rounds[loop.index].name }}) {% endif %}",
+                "adjust-layout": true,
+            },
+            "legend": {
+                "layout": "x4",
+                "background-color": "none",
+                "shadow": 0,
+                "align": "center",
+                "adjust-layout": true,
+                "item": {
+                    "font-color": "#333"
+                },
+                "marker": {
+                    "type": "square",
+                    "border-width": 0,
+                    "size": 5
+                },
+                "toggle-action": "remove",
+                "adjust-layout": true,
+            },
+            "plot": {
+                "tooltip": {
+                    "text": "%v votes"
+                },
+                "animation": {
+                    "effect": "ANIMATION_SLIDE_BOTTOM",
+                    "sequence": 1,
+                    "speed": 1200
+                }
+            },
+            "scale-x": {
+                "labels": {{ round.effective_vote_count_reduction.keys() | list }}, // Label that identifies each project in the round
+                "title": {
+                    "text": "Projects"
+                }
+            },
+            "scale-y": {
+                "title": {
+                    "text": "Votes"
+                }
+            },
+            "series": [{
+                "values":[ 
+                    {% for key in round.effective_vote_count_reduction.keys() %}
+                        {{ round.effective_vote_count[key]}},
+                    {% endfor %}
+                ], // Effective votes for next round
+                "background-color": "#0070C0",
+                "text": "Current Votes"
+            }, {
+                "values": {{ round.effective_vote_count_reduction.values() | list }}, // Effective votes lost this round
+                "background-color": "#FF0000",
+                "text": "Previous Votes"
+            }]
+        },
+            height: '100%',
+            width: '100%'
+        });
+        </script>
+
+        <!-- Sankey diagram -->
+        <script>
+            // Render Sankey Diagrams
+            google.charts.load('current', {
+            'packages': ['sankey']
+        });
+            google.charts.setOnLoadCallback(() => {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'From');
+                    data.addColumn('string', 'To');
+                    data.addColumn('number', 'Weight');
+                    
+                    // Adding data from render.py
+
+                    data.addRows([
+                        {% for key in round.voter_flow[round.id].keys() %}
+                            {% if key != round.id%}
+                                ['{{ round.id }}', '{{ key }}', {{ round.voter_flow[round.id][key]}}],
+                            {% endif %}
+                        {% endfor %}    
+                    ])
+
+                    // Sets chart options.
+                    var options = {
+                        title: 'Project Vote Sankey Diagram',
+                        width: 445,
+                        height: 280,
+                        sankey: {}
+                    };
+
+                    // Instantiates and draws our chart, passing in some options.
+                    var chart = new google.visualization.Sankey(document.getElementById('{{round.id}}SankeyChart'));
+                    chart.draw(data, options);
+            });
+        </script>
+        <!-- List of Pie Chart Carousels -->
+        {% for dataList in round.pie_chart_items%}
+            {% set carouselNum = loop.index %}
+
+            <!-- Pie Chart Carousel -->
+            {% for data in dataList%}
+                <!-- Pie Chart -->
+                <script>
+                    //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+                    var myConfig = {
+                        "type": "pie",
+                        "title": {
+                            "text": "{{ data.project}} Voters"
+                        },
+                        "legend": {
+                            "toggle-action": "remove",
+                            "toggle-action": "remove",
+                            "layout": "x2", // Arrange the legend items horizontally
+                            "align": "center", // Align the legend items in the center
+                            "vertical-align": "bottom",
+                        },
+                        "plot": {
+                            "valueBox": {
+                                "visible": true, // Make value labels visible
+                                "type": 'all', // Show all value text including percentages and absolute values
+                                "placement": 'in', // Position the valueBox outside of the slice
+                                "text": "%v", // Display the absolute value
+                                "fontSize": 10 // Adjust font size as needed
+                            },
+                            "animation": {
+                                "effect": "ANIMATION_EXPAND_VERTICAL",
+                                "sequence": "ANIMATION_BY_PLOT",
+                                "speed": 500
+                            }
+                        },
+                        "series": [{
+                            "values": [{{ data.roundVoters }}],
+                            "text": "{{ round.name }} Voters",
+                        }, {
+                            "values": [{{ data.nonRoundVoters }}],
+                            "text": "Non {{ round.name }} Voters",
+                        }]
+                    };
+
+                    zingchart.render({
+                        id: '{{ round.id }}PieChart{{ carouselNum }}-{{ loop.index }}',
+                        data: myConfig,
+                        height: 300,
+                        width: "100%"
+                    });
+                </script>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+
+    {# <!-- Pie Chart (Carousels) (OLD) -->
+    <script>
+        //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var myConfig = {
+            "type": "pie",
+            "title": {
+                "text": "Project B Voters"
+            },
+            "legend": {
+                "toggle-action": "remove",
+                "toggle-action": "remove",
+                "layout": "x2", // Arrange the legend items horizontally
+                "align": "center", // Align the legend items in the center
+                "vertical-align": "bottom",
+            },
+            "plot": {
+                "valueBox": {
+                    "visible": true, // Make value labels visible
+                    "type": 'all', // Show all value text including percentages and absolute values
+                    "placement": 'in', // Position the valueBox outside of the slice
+                    "text": "%v", // Display the absolute value
+                    "fontSize": 10 // Adjust font size as needed
+                },
+                "animation": {
+                    "effect": "ANIMATION_EXPAND_VERTICAL",
+                    "sequence": "ANIMATION_BY_PLOT",
+                    "speed": 500
+                }
+            },
+            "series": [{
+                "values": [65],
+                "text": "A Voters",
+            }, {
+                "values": [30],
+                "text": "Non A-Voters",
+            }]
+        };
+
+        zingchart.render({
+            id: 'myPieChart1A',
+            data: myConfig,
+            height: 300,
+            width: "100%"
+        });
+    </script>
+    <script>
+        //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var myConfig = {
+            "type": "pie",
+            "title": {
+                "text": "Project C Voters"
+            },
+            "legend": {
+                "toggle-action": "remove",
+                "toggle-action": "remove",
+                "layout": "x2", // Arrange the legend items horizontally
+                "align": "center", // Align the legend items in the center
+                "vertical-align": "bottom",
+            },
+            "plot": {
+                "valueBox": {
+                    "visible": true, // Make value labels visible
+                    "type": 'all', // Show all value text including percentages and absolute values
+                    "placement": 'in', // Position the valueBox outside of the slice
+                    "text": "%v", // Display the absolute value
+                    "fontSize": 10 // Adjust font size as needed
+                },
+                "animation": {
+                    "effect": "ANIMATION_EXPAND_VERTICAL",
+                    "sequence": "ANIMATION_BY_PLOT",
+                    "speed": 500
+                }
+            },
+            "series": [{
+                "values": [60],
+                "text": "A Voters",
+            }, {
+                "values": [40],
+                "text": "Non-A Voters",
+            }]
+        };
+
+        zingchart.render({
+            id: 'myPieChart1B',
+            data: myConfig,
+            height: 300,
+            width: "100%"
+        });
+    </script>
+    <script>
+        // ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var myConfig = {
+            "type": "pie",
+            "title": {
+                "text": "Project D Voters"
+            },
+            "plot": {
+                "valueBox": {
+                    "visible": true, // Make value labels visible
+                    "type": 'all', // Show all value text including percentages and absolute values
+                    "placement": 'in', // Position the valueBox outside of the slice
+                    "text": "%v", // Display the absolute value
+                    "fontSize": 10 // Adjust font size as needed
+                },
+                "animation": {
+                    "effect": "ANIMATION_EXPAND_VERTICAL",
+                    "sequence": "ANIMATION_BY_PLOT",
+                    "speed": 500
+                }
+            },
+            "legend": {
+                "toggle-action": "remove",
+                "layout": "x2", // Arrange the legend items horizontally
+                "align": "center", // Align the legend items in the center
+                "vertical-align": "bottom",
+            },
+            "series": [{
+                "values": [30],
+                "text": "A Voters",
+            }, {
+                "values": [70],
+                "text": "Non-A Voters",
+            }]
+        };
+
+        zingchart.render({
+            id: 'myPieChart1C',
+            data: myConfig,
+            height: 300,
+            width: "100%"
+        });
+    </script> #}
+
+
+    {# <!-- Pie Chart (Carousels) (OLD) -->
+    <script>
+        //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var myConfig = {
+            "type": "pie",
+            "title": {
+                "text": "Project A vs Project B"
+            },
+            "legend": {
+                "toggle-action": "remove",
+                "toggle-action": "remove",
+                "layout": "x2", // Arrange the legend items horizontally
+                "align": "center", // Align the legend items in the center
+                "vertical-align": "bottom",
+            },
+            "plot": {
+                "valueBox": {
+                    "visible": true, // Make value labels visible
+                    "type": 'all', // Show all value text including percentages and absolute values
+                    "placement": 'in', // Position the valueBox outside of the slice
+                    "text": "%v", // Display the absolute value
+                    "fontSize": 10 // Adjust font size as needed
+                },
+                "animation": {
+                    "effect": "ANIMATION_EXPAND_VERTICAL",
+                    "sequence": "ANIMATION_BY_PLOT",
+                    "speed": 500
+                }
+            },
+            "series": [{
+                "values": [60],
+                "text": "Project A",
+            }, {
+                "values": [40],
+                "text": "Project B",
+            }]
+        };
+
+        zingchart.render({
+            id: 'myPieChart2A',
+            data: myConfig,
+            height: 300,
+            width: "100%"
+        });
+    </script>
+    <script>
+        //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var myConfig = {
+            "type": "pie",
+            "title": {
+                "text": "Project A vs Project D"
+            },
+            "legend": {
+                "toggle-action": "remove",
+                "toggle-action": "remove",
+                "layout": "x2", // Arrange the legend items horizontally
+                "align": "center", // Align the legend items in the center
+                "vertical-align": "bottom",
+            },
+            "plot": {
+                "valueBox": {
+                    "visible": true, // Make value labels visible
+                    "type": 'all', // Show all value text including percentages and absolute values
+                    "placement": 'in', // Position the valueBox outside of the slice
+                    "text": "%v", // Display the absolute value
+                    "fontSize": 10 // Adjust font size as needed
+                },
+                "animation": {
+                    "effect": "ANIMATION_EXPAND_VERTICAL",
+                    "sequence": "ANIMATION_BY_PLOT",
+                    "speed": 500
+                }
+            },
+            "series": [{
+                "values": [65],
+                "text": "Project A",
+            }, {
+                "values": [35],
+                "text": "Project D",
+            }]
+        };
+
+        zingchart.render({
+            id: 'myPieChart2B',
+            data: myConfig,
+            height: 300,
+            width: "100%"
+        });
+    </script>
+    <script>
+        //   ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var myConfig = {
+            "type": "pie",
+            "title": {
+                "text": "Project A vs Project C"
+            },
+            "plot": {
+                "valueBox": {
+                    "visible": true, // Make value labels visible
+                    "type": 'all', // Show all value text including percentages and absolute values
+                    "placement": 'in', // Position the valueBox outside of the slice
+                    "text": "%v", // Display the absolute value
+                    "fontSize": 10 // Adjust font size as needed
+                },
+                "animation": {
+                    "effect": "ANIMATION_EXPAND_VERTICAL",
+                    "sequence": "ANIMATION_BY_PLOT",
+                    "speed": 500
+                }
+            },
+            "legend": {
+                "toggle-action": "remove",
+                "layout": "x2", // Arrange the legend items horizontally
+                "align": "center", // Align the legend items in the center
+                "vertical-align": "bottom",
+            },
+            "series": [{
+                "values": [80],
+                "text": "Project D",
+            }, {
+                "values": [20],
+                "text": "Project E",
+            }]
+        };
+
+        zingchart.render({
+            id: 'myPieChart2C',
+            data: myConfig,
+            height: 300,
+            width: "100%"
+        });
+    </script> #}
+</body>
+</html>

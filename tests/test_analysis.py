@@ -23,6 +23,7 @@ from pabutools.election.satisfaction.additivesatisfaction import (
 from pabutools.fractions import frac
 from pabutools.rules.budgetallocation import BudgetAllocation
 from pabutools.rules.mes import MESAllocationDetails, MESIteration
+from pabutools.rules.mes.mes_details import MESProjectDetails
 
 
 class TestAnalysis(TestCase):
@@ -244,6 +245,10 @@ class TestAnalysis(TestCase):
         assert avg_approval_score(instance, app_multi_profile) == frac(7, 3)
         assert median_approval_score(instance, app_profile) == 2
         assert median_approval_score(instance, app_multi_profile) == 2
+        assert votes_count_by_project(app_profile) == {projects[0]: 2, projects[1]: 4, projects[2]: 1}
+        assert votes_count_by_project(app_multi_profile) == {projects[0]: 2, projects[1]: 2, projects[2]: 1}
+        assert voter_flow_matrix(instance, app_profile) == {projects[2]: {projects[2]: 0, projects[1]: 0, projects[0]: 1}, projects[1]: {projects[2]: 0, projects[1]: 3, projects[0]: 1}, projects[0]: {projects[2]: 1, projects[1]: 1, projects[0]: 0}}
+        assert voter_flow_matrix(instance, app_multi_profile) == {projects[2]: {projects[2]: 0, projects[1]: 0, projects[0]: 1}, projects[1]: {projects[2]: 0, projects[1]: 1, projects[0]: 1}, projects[0]: {projects[2]: 1, projects[1]: 1, projects[0]: 0}}
 
         card_ball_1 = CardinalBallot({projects[0]: 2, projects[1]: 5})
         card_ball_2 = CardinalBallot({projects[0]: 1, projects[2]: 1})
@@ -263,37 +268,36 @@ class TestAnalysis(TestCase):
     def test_project_loss(self):
         projects = [Project(chr(ord("a") + idx), 4) for idx in range(6)]
         supporters = [[0, 1, 2, 4], [2, 3, 4], [0, 2], [0, 1], [4], [5]]
-        was_picked = [True, True, False, False, False, False]
-        voters_budget = [
-            [frac(1, 2), frac(1, 2), frac(1, 2), frac(1, 1), frac(1, 2), frac(1, 1)],
-            [frac(1, 2), frac(1, 2), frac(0, 1), frac(0, 1), frac(0, 1), frac(1, 1)],
-            [frac(1, 2), frac(1, 2), frac(0, 1), frac(0, 1), frac(0, 1), frac(1, 1)],
-            [frac(1, 2), frac(1, 2), frac(0, 1), frac(0, 1), frac(0, 1), frac(1, 1)],
-            [frac(1, 2), frac(1, 2), frac(0, 1), frac(0, 1), frac(0, 1), frac(1, 1)],
-            [frac(1, 2), frac(1, 2), frac(0, 1), frac(0, 1), frac(0, 1), frac(1, 1)],
-        ]
-        initial_budget_per_voter = frac(1, 1)
-
+        for idx in range(6):
+            projects[idx].supporter_indices = supporters[idx]
         iterations = [
-            MESIteration(
-                projects[idx], supporters[idx], was_picked[idx], voters_budget[idx]
-            )
-            for idx in range(len(projects))
+            MESIteration([frac(1, 2), frac(1, 2), frac(1, 2), frac(1, 1), frac(1, 2), frac(1, 1)], projects[0]),
+            MESIteration([frac(1, 2), frac(1, 2), frac(0, 1), frac(0, 1), frac(0, 1), frac(1, 1)], projects[1]),
         ]
-        allocation_details = MESAllocationDetails(
-            initial_budget_per_voter,
-            [2 for _ in range(len(voters_budget[0]))],
+        iterations[0].extend(
+            [MESProjectDetails(projects[0], iterations[0], False)]
         )
+        iterations[1].extend(
+            [MESProjectDetails(projects[1], iterations[1], False), MESProjectDetails(projects[2], iterations[1], True), MESProjectDetails(projects[3], iterations[1], True), MESProjectDetails(projects[4], iterations[1], True), MESProjectDetails(projects[5], iterations[1], True)]
+        )
+        allocation_details = MESAllocationDetails([2 for _ in range(len(iterations[0].voters_budget))])
         allocation_details.iterations = iterations
 
         project_losses = calculate_project_loss(allocation_details)
-        expected_budgets = [8, 4, 1, 2, 0, 2]
+        expected_budgets = [
+            frac(2, 1),
+            frac(2, 1),
+            frac(1, 2),
+            frac(1, 1),
+            frac(0, 1),
+            frac(1, 1),
+        ]
         expected_losses = [
             {},
-            {projects[0]: 2},
-            {projects[0]: 2, projects[1]: 1},
-            {projects[0]: 2},
-            {projects[0]: 1, projects[1]: 1},
+            {projects[0]: 0.0},
+            {projects[0]: 0.0, projects[1]: 1.0},
+            {projects[0]: 0.0},
+            {projects[0]: 0.0, projects[1]: 1.0},
             {},
         ]
 
@@ -303,5 +307,5 @@ class TestAnalysis(TestCase):
             assert project_loss.budget_lost == expected_losses[idx]
 
         # No iterations
-        project_losses = calculate_project_loss(MESAllocationDetails(1, [1]))
+        project_losses = calculate_project_loss(MESAllocationDetails([1]))
         assert project_losses == []

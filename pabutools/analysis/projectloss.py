@@ -80,10 +80,7 @@ def calculate_project_loss(
             List of :py:class:`~pabutools.analysis.projectloss.ProjectLoss` objects.
 
     """
-    if not all(
-        hasattr(allocation_details, attr)
-        for attr in ["iterations", "initial_budget_per_voter", "voter_multiplicity"]
-    ):
+    if not hasattr(allocation_details, "iterations"):
         raise ValueError(
             "Provided budget allocation details do not support calculating project loss. The allocation_details "
             "should have an 'iterations', 'initial_budget_per_voter' and 'voter_multiplicity' attributes."
@@ -99,19 +96,19 @@ def calculate_project_loss(
     voter_spendings: dict[int, list[Tuple[Project, Numeric]]] = {}
     for idx in range(voter_count):
         voter_spendings[idx] = []
-
     current_voters_budget = [
-        allocation_details.initial_budget_per_voter for _ in range(voter_count)
+        allocation_details.iterations[0].voters_budget[0] for _ in range(voter_count)
     ]
-
-    for iteration in allocation_details.iterations:
+    all_project_details = [
+        (project_detail, iteration.voters_budget, project_detail.project == iteration.selected_project) for iteration in allocation_details.iterations for project_detail in iteration
+    ]
+    for iteration, voters_budget, was_picked in all_project_details:
         if verbose:
             print(
-                f"Considering: {iteration.project.name}, status: {iteration.was_picked}"
+                f"Considering: {iteration.project.name}, status: {was_picked}"
             )
         budget_lost = {}
-        for idx in iteration.supporter_indices:
-            spending = voter_spendings[idx]
+        for spending in [voter_spendings[i] for i in iteration.project.supporter_indices]:
             for project, spent in spending:
                 if project not in budget_lost.keys():
                     budget_lost[project] = 0
@@ -121,22 +118,18 @@ def calculate_project_loss(
         project_losses.append(
             ProjectLoss(
                 iteration.project,
-                sum(
-                    current_voters_budget[i] * voter_multiplicity[i]
-                    for i in iteration.supporter_indices
-                ),
+                sum(current_voters_budget[i] for i in iteration.project.supporter_indices),
                 budget_lost,
             )
         )
-        if iteration.was_picked:
-            for supporter_idx in iteration.supporter_indices:
+        if was_picked:
+            for supporter_idx in iteration.project.supporter_indices:
                 voter_spendings[supporter_idx].append(
                     (
                         iteration.project,
                         current_voters_budget[supporter_idx]
-                        - iteration.voters_budget[supporter_idx],
+                        - voters_budget[supporter_idx],
                     )
                 )
-            current_voters_budget = iteration.voters_budget
-
+            current_voters_budget = voters_budget
     return project_losses

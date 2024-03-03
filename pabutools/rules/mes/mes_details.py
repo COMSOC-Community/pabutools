@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 from pabutools.election.instance import Project
 from pabutools.rules.budgetallocation import AllocationDetails
 from pabutools.utils import Numeric
@@ -6,28 +9,33 @@ from pabutools.utils import Numeric
 class MESAllocationDetails(AllocationDetails):
     """Class representing the details of MES rule.
     This class represents the MES details using an iteration approach: at each iteration of the MES rule some
-    crucial information is saved which allow for reconstruction of the whole run. Iteration happens whenever
-    a project got picked or discarded during a run.
-
-    Parameters
-    ----------
-        initial_budget_per_voter: :py:class:`~pabutools.utils.Numeric`
-            Describes the starting budget of each voter.
-
+    crucial information is saved which allow for reconstruction of the whole run. An iteration corrosponds to one
+    call to `mes_inner_algo`, and each iteration corrosponds to one project being picked.
 
     Attributes
     ----------
-        initial_budget_per_voter: :py:class:`~pabutools.utils.Numeric`
-            Describes the starting budget of each voter.
         iterations: Iterable[:py:class:`~pabutools.rules.mes.MESIteration`]
             A list of all iterations of a MES rule run. It is progressively populated during a MES rule run.
     """
 
-    def __init__(self, initial_budget_per_voter: Numeric, voter_multiplicity: list[int]):
+    def __init__(self, voter_multiplicity: list[int]):
         super().__init__()
-        self.initial_budget_per_voter: Numeric = initial_budget_per_voter
         self.voter_multiplicity: list[int] = voter_multiplicity
         self.iterations: list[MESIteration] = []
+
+    def get_all_project_details(self) -> list["MESProjectDetails"]:
+        """
+        Returns a list of all projects that were considered by MES.
+        """
+        res = []
+        for iteration in self.iterations:
+            for proj_detail in iteration:
+                if proj_detail not in res:
+                    res.append(proj_detail)
+        return res
+    
+    def get_all_selected_projects(self) -> list[Project]:
+        return [iteration.selected_project for iteration in self.iterations]
 
     def __str__(self):
         return f"MESAllocationDetails[{self.iterations}]"
@@ -36,7 +44,7 @@ class MESAllocationDetails(AllocationDetails):
         return f"MESAllocationDetails[{self.iterations}]"
 
 
-class MESIteration:
+class MESProjectDetails:
     """Class representing a single iteration of a MES rule run, solely used in
     :py:class:`~pabutools.rules.mes.MESAllocationDetails`. Each iteration consist of information
     necessary for reconstructing a MES rule run. This includes the project the iteration is about, its supporters,
@@ -44,48 +52,102 @@ class MESIteration:
 
     Parameters
     ----------
-        project: :py:class:`~pabutools.election.instance.Project`
+        project: :py:class:`~pabutools.electin.instance.Project`
             The project that was considered by a MES iteration.
-        supporter_indices: list[int]
-            Stores all indices of voters which supported the aforementioned project.
-            Those indices match with indices of voters_budget attribute.
-        was_picked: bool
-            Indicates whether the aforementioned project was picked or discarded by MES.
-        voters_budget: list[int], optional
-            Describes the budget of each voter at the current iteration. If a project was picked, then the voters budgets
-            describe the state after the purchase. If the project wasn't picked, it stays the same (compared to previous iteration).
-            Defaults to `[]`.
-
+        iteration: :py:class:`~pabutools.rules.mes.MESIteration`
+            The iteration this project belongs to.
+        discarded: bool, optional
+            Indicates whether the aforementioned project was discarded by MES. Defaults to `None`.
+        effective_vote_count_reduced: bool, optional
+            Indicates whether the effective vote count was reduced by the project. Defaults to `None`.
 
     Attributes
     ----------
-        project: :py:class:`~pabutools.election.instance.Project`
+        project: :py:class:`~pabutools.electin.instance.Project`
             The project that was considered by a MES iteration.
-        supporter_indices: list[int]
-            Stores all indices of voters which supported the aforementioned project.
-            Those indices match with indices of voters_budget attribute.
-        was_picked: bool
-            Indicates whether the aforementioned project was picked or discarded by MES.
-        voters_budget: list[int], optional
-            Describes the budget of each voter at the current iteration. If a project was picked, then the voters budgets
-            describe the state after the purchase. If the project wasn't picked, it stays the same (compared to previous iteration).
-            Defaults to `[]`.
+        iteration: :py:class:`~pabutools.rules.mes.MESIteration`
+            The iteration this project belongs to.
+        discarded: bool, optional
+            Indicates whether the aforementioned project was discarded by MES. Defaults to `None`. This
+            is set within `MESIteration.update_project_details_as_discarded`
+        effective_vote_count_reduced: bool, optional
+            Indicates whether the effective vote count was reduced by the project. Defaults to `None`. This
+            is set within `MESIteration.update_project_details_as_effective_vote_count_reduced`
     """
 
     def __init__(
         self,
         project: Project,
-        supporter_indices: list[int],
-        was_picked: bool,
-        voters_budget: list[int] = [],
+        iteration: "MESIteration",
+        discarded: bool = None,
+        effective_vote_count_reduced: bool = None
     ):
         self.project: Project = project
-        self.supporter_indices: list[int] = supporter_indices
-        self.was_picked: bool = was_picked
-        self.voters_budget: list[int] = voters_budget
+        self.iteration: "MESIteration" = iteration
+        self.discarded: bool = discarded
+        self.effective_vote_count_reduced: bool = effective_vote_count_reduced
+
+    def was_picked(self):
+        """Returns whether the project was picked by MES during *this* iteration (Note: it could have been
+        selected in a later iteration; use `MESAllocationDetails.get_all_selected_projects` instead to see
+        if it was selected in any iteration). If no project has been picked yet, returns `None`."""
+        if self.iteration.selected_project != None:
+            return self.project == self.iteration.selected_project
+        return None # No project has been selected yet
+
+    def __eq__(self, other):
+        return self.project == other.project
 
     def __str__(self):
-        return f"MESIteration[Project: {self.project.name} {'was picked' if self.was_picked else 'was not picked'}]"
+        return f"MESProjectDetails[Project: {self.project.name}]"
 
     def __repr__(self):
-        return f"MESIteration[Project: {self.project.name} {'was picked' if self.was_picked else 'was not picked'}]"
+        return f"MESProjectDetails[Project: {self.project.name}]"
+
+class MESIteration(list[MESProjectDetails]):
+    """Class representing a single iteration of a MES rule run, solely used in
+    :py:class:`~pabutools.rules.mes.MESAllocationDetails`. Each iteration consist of information
+    necessary for reconstructing a MES rule run. This includes the list of projects that were considered 
+    in this iteration, the budget of all the voters and the project that was selected at the end of the iteration.
+
+    Parameters
+    ----------
+        voters_budget: list[int], optional
+            The budget of all voters at the start of the iteration. Defaults to `None`.
+        selected_project: :py:class:`~pabutools.electin.instance.Project`, optional
+            The project that was selected at the end of the iteration. Defaults to `None`.
+
+    Attributes
+    ----------
+        voters_budget: list[int], optional
+            The budget of all voters at the start of the iteration. Defaults to `None`.
+        selected_project: :py:class:`~pabutools.electin.instance.Project`, optional
+            The project that was selected at the end of the iteration. Defaults to `None`.
+
+
+    """
+
+    def __init__(self, voters_budget = None, selected_project = None):
+        self.voters_budget: list[int] = voters_budget
+        self.selected_project: Project = selected_project
+        super().__init__()
+
+    def update_project_details_as_discarded(self, project: Project):
+        """Updates the project details of the given project as discarded during this iteration."""
+        project_details = self[self.index(project)]
+        project_details.discarded = True
+
+    def update_project_details_as_effective_vote_count_reduced(self, project: Project):
+        """Updates the project details of the given project as having it's effective vote count reduced during this iteration."""
+        project_details = self.index(project)
+        project_details.effective_vote_count_reduced = True
+
+    def get_all_projects(self):
+        return [project_details.project for project_details in self]
+
+    def __str__(self):
+        return f"MESIteration[{[project for project in self]}]"
+    
+    def __repr__(self):
+        return f"MESIteration[{[project for project in self]}]"
+    

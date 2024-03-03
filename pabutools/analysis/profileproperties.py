@@ -1,3 +1,4 @@
+from typing import Dict
 import numpy as np
 
 from pabutools.utils import Numeric
@@ -201,3 +202,69 @@ def median_total_score(instance: Instance, profile: AbstractCardinalProfile) -> 
     return float(
         np.median([frac(profile.total_score(project)) for project in instance])
     )
+
+
+def votes_count_by_project(profile: AbstractCardinalProfile) -> Dict[str, int]:
+    """
+    Returns the number of votes for each project.
+
+    Parameters
+    ----------
+        profile : :py:class:`~pabutools.election.profile.cardinalprofile.AbstractCardinalProfile`
+            The profile.
+
+    Returns
+    -------
+        Dict[str, int]
+            The number of votes for each project.
+
+    """
+    project_votes = {}
+
+    # Function to update the project_votes dictionary
+    def update_votes(project_list):
+        for project_id in project_list:
+            if project_id in project_votes:
+                project_votes[project_id] += 1
+            else:
+                project_votes[project_id] = 1
+
+    for prof in profile:
+        update_votes(list(prof))
+
+    return project_votes
+
+def voter_flow_matrix(instance: Instance, profile: AbstractCardinalProfile) -> Dict[str, Dict[str, int]]:
+    """
+    Returns the voter flow matrix. The voter flow matrix is a 2D dictionary where voter_flow[a][b] is the number of
+    voters for 'a' who voted for 'b'
+
+    Parameters
+    ----------
+        instance : :py:class:`~pabutools.election.instance.Instance`
+            The instance.
+
+    Returns
+    -------
+        Dict[str, Dict[str, int]]
+            The voter flow matrix.
+
+    """
+    voter_flow = {}
+    for project in instance:
+        voter_flow[str(project)] = {}
+        for other_project in instance:
+            voter_flow[str(project)][str(other_project)] = 0
+
+    def update_voter_flow(vote_list):
+        for i in range(len(vote_list)):
+            for j in range(i + 1, len(vote_list)):
+                voter_flow[str(vote_list[i])][str(vote_list[j])] += 1
+                voter_flow[str(vote_list[j])][str(vote_list[i])] += 1
+        if len(vote_list) == 1:
+            voter_flow[str(vote_list[0])][str(vote_list[0])] += 1
+
+    for vote in profile:
+        update_voter_flow(list(vote))
+
+    return voter_flow
