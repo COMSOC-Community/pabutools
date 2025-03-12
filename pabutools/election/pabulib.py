@@ -93,7 +93,7 @@ def parse_pabulib_from_string(file_content: str) -> tuple[Instance, Profile]:
                 if row[i].strip().lower() != "none":
                     ballot_meta[header[i].strip()] = row[i].strip()
             vote_type = instance.meta["vote_type"]
-            if vote_type == "approval":
+            if vote_type in ["approval", "choose-1"]:
                 ballot = ApprovalBallot()
                 for project_name in ballot_meta["vote"].split(","):
                     if project_name:
@@ -169,7 +169,7 @@ def parse_pabulib_from_string(file_content: str) -> tuple[Instance, Profile]:
             legal_max_score = None
 
     profile = None
-    if instance.meta["vote_type"] == "approval":
+    if instance.meta["vote_type"] in ["approval", "choose-1"]:
         profile = ApprovalProfile(
             deepcopy(ballots),
             legal_min_length=legal_min_length,
