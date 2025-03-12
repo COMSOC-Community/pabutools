@@ -1,8 +1,12 @@
 """
+
+
+
 An implementation of the algorithms in:
 "Participatory Budgeting with Cumulative Votes", by Piotr Skowron, Arkadii Slinko, Stanisaw Szufa,
 Nimrod Talmon (2020), https://arxiv.org/pdf/2009.02690
 Programmer: Achiya Ben Natan
+Changes: Kacper Harasimowicz
 Date: 2024/05/16.
 """
 
@@ -15,7 +19,8 @@ from collections.abc import Callable, Iterable
 from enum import Enum
 
 from pabutools.election.instance import Instance, Project
-from pabutools.election.profile.cumulativeprofile import AbstractCumulativeProfile
+from pabutools.election.ballot import CumulativeBallot
+from pabutools.election.profile.cumulativeprofile import ( CumulativeProfile, AbstractCumulativeProfile )
 from pabutools.fractions import frac
 from pabutools.rules.budgetallocation import BudgetAllocation
 from pabutools.tiebreaking import TieBreakingRule, lexico_tie_breaking
@@ -56,6 +61,17 @@ class CSTV_Combination(Enum):
     minimal transfer used if no eligible projects; and acceptance of under-supported projects as post-processing method.
     """
 
+    EWTS = 5
+    """
+    Project selection via greedy-by-support; eligible projects selected via greedy-by-support;
+    elimination with transfer used if no eligible projects; and reverse elimination as post-processing method.
+    """
+
+    MTS = 6
+    """
+    Project selection via greedy-by-support; eligible projects selected via greedy-by-support;
+    minimal transfer used if no eligible projects; and acceptance of under-supported projects as post-processing method.
+    """
 
 def cstv(
     instance: Instance,
@@ -127,14 +143,24 @@ def cstv(
             eligible_projects_func = is_eligible_gsc
             no_eligible_project_func = elimination_with_transfers
             exhaustiveness_postprocess_func = reverse_eliminations
-        elif CSTV_Combination.MT:
+        elif combination == CSTV_Combination.MT:
             select_project_to_fund_func = select_project_ge
             eligible_projects_func = is_eligible_ge
             no_eligible_project_func = minimal_transfer
             exhaustiveness_postprocess_func = acceptance_of_under_supported_projects
-        elif CSTV_Combination.MTC:
+        elif combination == CSTV_Combination.MTC:
             select_project_to_fund_func = select_project_gsc
             eligible_projects_func = is_eligible_gsc
+            no_eligible_project_func = minimal_transfer
+            exhaustiveness_postprocess_func = acceptance_of_under_supported_projects
+        elif combination == CSTV_Combination.EWTS:
+            select_project_to_fund_func = select_project_gs
+            eligible_projects_func = is_eligible_gs
+            no_eligible_project_func = elimination_with_transfers
+            exhaustiveness_postprocess_func = reverse_eliminations
+        elif combination == CSTV_Combination.MTS:
+            select_project_to_fund_func = select_project_gs
+            eligible_projects_func = is_eligible_gs
             no_eligible_project_func = minimal_transfer
             exhaustiveness_postprocess_func = acceptance_of_under_supported_projects
         else:
@@ -191,10 +217,10 @@ def cstv(
     ]
 
     current_projects = set(instance)
+    budget = sum(sum(donor.values()) for donor in donations)
     # Loop until a halting condition is met
     while True:
         # Calculate the total budget
-        budget = sum(sum(donor.values()) for donor in donations)
         if verbose:
             print(f"Budget is: {budget}")
 
@@ -266,23 +292,23 @@ def cstv(
 
         # If the project has enough or excess support
         if excess_support >= 0:
-            if excess_support > 0.01:
-                # Perform the excess redistribution procedure
-                gama = frac(p.cost, excess_support + p.cost)
-                excess_redistribution_procedure(donations, p, gama)
-            else:
-                # Reset donations for the eliminated project
-                if verbose:
-                    print(f"Resetting donations for eliminated project: {p}")
-                for donor in donations:
-                    donor[p] = 0
-
             # Add the project to the selected set and remove it from further consideration
             selected_projects.append(p)
             current_projects.remove(p)
             if verbose:
                 print(f"Updated selected projects: {selected_projects}")
             budget -= p.cost
+
+            if excess_support > 0.01:
+                # Perform the excess redistribution procedure
+                gama = frac(p.cost, excess_support + p.cost)
+                excess_redistribution_procedure(current_projects, donations, p, gama)
+            else:
+                # Reset donations for the eliminated project
+                if verbose:
+                    print(f"Resetting donations for eliminated project: {p}")
+                for donor in donations:
+                    donor[p] = 0
             continue
 
 
@@ -294,6 +320,7 @@ def cstv(
 
 
 def excess_redistribution_procedure(
+    current_projects: set[Project],
     donors: list[dict[Project, Numeric]],
     selected_project: Project,
     gama: Numeric,
@@ -320,13 +347,39 @@ def excess_redistribution_procedure(
         donor[selected_project] = to_distribute
         donor_copy[selected_project] = 0
         total = sum(donor_copy.values())
-        for key, donation in donor_copy.items():
-            if donation != selected_project:
-                if total != 0:
+        if total != 0:
+            for key, donation in donor_copy.items():
+                if donation != selected_project:
                     part = frac(donation, total)
                     donor[key] = donation + to_distribute * part
-                donor[selected_project] = 0
+            donor[selected_project] = 0
 
+
+
+
+def is_eligible_gs(
+    projects: Iterable[Project], donors: list[dict[Project, Numeric]]
+) -> list[Project]:
+    """
+    Determines the eligible projects based on the Greedy-by-Support (GS) rule.
+
+    Parameters
+    ----------
+        projects : Iterable[Project]
+            The list of projects.
+        donors : list[dict[Project, Numeric]]
+            The list of donor ballots.
+
+    Returns
+    -------
+        list[Project]
+            The list of eligible projects.
+    """
+    return [
+        project
+        for project in projects
+        if (sum(donor.get(project, 0) for donor in donors)) >= project.cost
+    ]
 
 def is_eligible_ge(
     projects: Iterable[Project], donors: list[dict[Project, Numeric]]
@@ -377,6 +430,36 @@ def is_eligible_gsc(
         if frac(sum(donor.get(project, 0) for donor in donors), project.cost) >= 1
     ]
 
+def select_project_gs(
+    projects: Iterable[Project],
+    donors: list[dict[Project, Numeric]],
+) -> list[Project]:
+    """
+    Selects the project with the maximum support using the Greedy-by-Support (GS) rule.
+
+    Parameters
+    ----------
+        projects : Iterable[Project]
+            The list of projects.
+        donors : list[dict[Project, Numeric]]
+            The list of donor ballots.
+
+    Returns
+    -------
+        list[Project]
+            The tied selected projects.
+    """
+    support = {
+        project: sum(donor.get(project, 0) for donor in donors)
+        for project in projects
+    }
+    max_support_value = max(support.values())
+    max_support_projects = [
+        project
+        for project, supp in support.items()
+        if supp == max_support_value
+    ]
+    return max_support_projects
 
 def select_project_ge(
     projects: Iterable[Project],
@@ -547,6 +630,8 @@ def minimal_transfer(
             sum_of_don += sum(d)
         if sum_of_don >= project.cost:
             projects_with_chance.append(project)
+        else:
+            eliminated_projects.add(project)
     if not projects_with_chance:
         return False
     chosen_project = project_to_fund_selection_procedure(projects_with_chance, donors)[
@@ -667,11 +752,12 @@ def acceptance_of_under_supported_projects(
         None
     """
     while len(eliminated_projects) != 0:
-        selected_project = project_to_fund_selection_procedure(
-            eliminated_projects, donors, tie_breaking, True
-        )[
-            0
-        ]  # TODO: tie-breaking here
+        selected_project = tie_breaking.untie(
+            eliminated_projects,
+            CumulativeProfile([CumulativeBallot(donor) for donor in donors]),
+            project_to_fund_selection_procedure(
+            eliminated_projects, donors
+        ))
         if selected_project.cost <= budget:
             selected_projects.append(selected_project)
             eliminated_projects.remove(selected_project)

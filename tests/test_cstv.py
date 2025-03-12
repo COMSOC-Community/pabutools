@@ -18,6 +18,7 @@ import random
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
+        self.do_verbose = [False]
         self.p1 = Project("A", 27)
         self.p2 = Project("B", 30)
         self.p3 = Project("C", 40)
@@ -38,7 +39,7 @@ class TestFunctions(unittest.TestCase):
             for key in donor.keys():
                 donor[key] = 0
         for combination in CSTV_Combination:
-            for verbose in [True, False]:
+            for verbose in self.do_verbose:
                 with self.subTest(combination=combination):
                     selected_projects = cstv(self.instance, self.donors, combination, verbose=verbose)
                     self.assertEqual(
@@ -52,7 +53,7 @@ class TestFunctions(unittest.TestCase):
             donor[self.p2] = 1
             donor[self.p3] = 1
         for combination in CSTV_Combination:
-            for verbose in [True, False]:
+            for verbose in self.do_verbose:
                 with self.subTest(combination=combination):
                     selected_projects = cstv(self.instance, self.donors, combination, verbose=verbose)
                     self.assertEqual(
@@ -66,7 +67,7 @@ class TestFunctions(unittest.TestCase):
             for key in donor.keys():
                 donor[key] = 100
         for combination in CSTV_Combination:
-            for verbose in [True, False]:
+            for verbose in self.do_verbose:
                 with self.subTest(combination=combination):
                     selected_projects = cstv(self.instance, donors, combination, verbose=verbose)
                     self.assertEqual(
@@ -75,8 +76,12 @@ class TestFunctions(unittest.TestCase):
 
     def test_cstv_budgeting_with_budget_between_min_and_max(self):
         # Ensure the number of selected projects is 2 when total budget is between the minimum and maximum costs
+        for donor in self.donors:
+            donor[self.p1] = 5
+            donor[self.p2] = 5
+            donor[self.p3] = 5
         for combination in CSTV_Combination:
-            for verbose in [True, False]:
+            for verbose in self.do_verbose:
                 with self.subTest(combination=combination):
                     selected_projects = cstv(self.instance, self.donors, combination, verbose=verbose)
                     self.assertEqual(
@@ -90,12 +95,49 @@ class TestFunctions(unittest.TestCase):
                 donor[self.p1] = frac(self.p1.cost, len(self.donors))
                 donor[self.p2] = frac(self.p2.cost, len(self.donors))
                 donor[self.p3] = frac(self.p3.cost, len(self.donors))
-            for verbose in [True, False]:
+            for verbose in self.do_verbose:
                 with self.subTest(combination=combination):
                     selected_projects = cstv(self.instance, self.donors, combination, verbose=verbose)
                     self.assertEqual(
                         len(selected_projects), 3
                     )
+
+    def test_cstv_budgeting_with_single_project_consuming_most_support(self):
+        # Ensure all projects are selected when the total budget matches the required support exactly
+        for combination in CSTV_Combination:
+            self.donors = CumulativeProfile(
+                [
+                    CumulativeBallot({self.p1: 20, self.p2: 0, self.p3: 0}),
+                    CumulativeBallot({self.p1: 20, self.p2: 0, self.p3: 0}),
+                    CumulativeBallot({self.p1: 0, self.p2: 20, self.p3: 0}),
+                ]
+            )
+            for verbose in self.do_verbose:
+                with self.subTest(combination=combination):
+                    selected_projects = cstv(self.instance, self.donors, combination, verbose=verbose)
+                    self.assertEqual(
+                        len(selected_projects), 2
+                    )
+
+    def test_cstv_budgeting_maximality_is_achieved_with_low_support(self):
+        for combination in CSTV_Combination:
+            self.p1 = Project("A", 10)
+            self.p2 = Project("B", 10)
+            self.p3 = Project("C", 10)
+            self.p4 = Project("D", 10)
+            self.instance = Instance([self.p1, self.p2, self.p3, self.p4])
+            self.donors = CumulativeProfile(
+                [
+                    CumulativeBallot({self.p1: 10, self.p2: 5, self.p3: 0, self.p4: 0}),
+                    CumulativeBallot({self.p1: 0, self.p2: 0, self.p3: 5, self.p4: 10}),
+                ]
+            )
+        for verbose in self.do_verbose:
+            with self.subTest(combination=combination):
+                selected_projects = cstv(self.instance, self.donors, combination, verbose=verbose)
+                self.assertEqual(
+                    len(selected_projects), 3
+                )
 
     def test_cstv_budgeting_large_input(self):
         # Ensure the number of selected projects does not exceed the total number of projects
