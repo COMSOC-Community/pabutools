@@ -140,6 +140,12 @@ class ApprovalBallot(set[Project], Ballot, AbstractApprovalBallot):
         """
         return FrozenApprovalBallot(self, name=self.name, meta=self.meta)
 
+    def supports(self, c):
+        return self.utility(c) > 0
+
+    def utility(self, c):
+        return 1 if c in self else 0
+
     # Ensures that methods returning copies of sets cast back into ApprovalBallot
     @classmethod
     def _wrap_methods(cls, methods):

@@ -40,6 +40,12 @@ class AbstractBallot(ABC, Collection[Project]):
         self.meta = meta
         self.name = name
 
+    def supports(self, c):
+        raise NotImplementedError("This ballot does not support the notion of 'supporting' projects.")
+
+    def utility(self, c):
+        raise NotImplementedError("This ballot does not support the notion of 'utility' for projects.")
+
 
 class FrozenBallot(AbstractBallot, ABC):
     """

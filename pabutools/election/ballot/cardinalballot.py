@@ -156,6 +156,12 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
         """
         return FrozenCardinalBallot(self)
 
+    def supports(self, c):
+        return self.utility(c) > 0
+
+    def utility(self, c):
+        return self[c] if c in self else 0
+
     # This allows dict method returning copies of a dict to work
     @classmethod
     def _wrap_methods(cls, names):

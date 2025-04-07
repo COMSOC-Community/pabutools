@@ -7,7 +7,11 @@ Module testing priceability / stable-priceability property.
 from unittest import TestCase
 
 from pabutools.analysis.priceability import priceable, validate_price_system
-from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot
+from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot, CardinalBallot, CardinalProfile
+
+
+def approval_ballot_to_cardinal_ballot(ballot: ApprovalBallot) -> CardinalBallot:
+    return CardinalBallot({c : 1 for c in ballot})
 
 
 class TestPriceability(TestCase):
@@ -179,3 +183,54 @@ class TestPriceability(TestCase):
         self.assertTrue(priceable(instance, profile, res.allocation, stable=True).validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True))
+
+    def test_priceable_cardinal_reduces_to_approval_like_test_3(self):
+        # If cardinal profile contains only binary utilities, the implementation should give the same exact solutions.
+        # The election example is the same as in test_priceable_approval_3
+        p = [Project(str(i), cost=1) for i in range(13)]
+        instance = Instance(p[1:], budget_limit=9)
+
+        v1 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[4], p[5], p[6]}))
+        print(v1)
+        v2 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[4], p[5], p[6]}))
+        v3 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[4], p[5], p[6]}))
+
+        v4 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[7], p[8], p[9]}))
+        v5 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[7], p[8], p[9]}))
+        v6 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[7], p[8], p[9]}))
+
+        v7 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[10], p[11], p[12]}))
+        v8 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[10], p[11], p[12]}))
+        v9 = approval_ballot_to_cardinal_ballot(ApprovalBallot({p[1], p[2], p[3], p[10], p[11], p[12]}))
+        profile = CardinalProfile(init=[v1, v2, v3, v4, v5, v6, v7, v8, v9])
+
+        allocation = p[1:10]
+        self.assertTrue(priceable(instance, profile, allocation).validate())
+
+        allocation = p[1:6] + p[7:9] + p[10:12]
+        self.assertTrue(priceable(instance, profile, allocation).validate())
+
+        allocation = p[1:6] + p[7:9] + p[11:12]
+        self.assertFalse(priceable(instance, profile, allocation).validate())
+
+        res = priceable(instance, profile)
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
+        self.assertTrue(priceable(instance, profile, res.allocation).validate())
+
+        self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
+
+    # todo - implement the rest of the tests
+    def test_priceable_cardinal_reduces_to_approval_random(self):
+        pass
+
+    def test_stable_priceable_cardinal_reduces_to_approval_like_test_3(self):
+        pass
+
+    def test_stable_priceable_cardinal_reduces_to_approval_random(self):
+        pass
+
+    def test_stable_priceable_cardinal_1(self):
+        pass
+
+    def test_stable_priceable_cardinal_2(self):
+        pass
