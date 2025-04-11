@@ -55,6 +55,23 @@ def is_in_core(
                         return False
     return True
 
+def is_in_core_up_to_one(
+        instance: Instance,
+        profile: AbstractProfile,
+        sat_class: type[SatisfactionMeasure],
+        budget_allocation: Collection[Project],
+) -> bool:
+    """
+    Test if a given budget allocation is in the core up-to-one of the instance.
+    """
+    return is_in_core(
+        instance,
+        profile,
+        sat_class,
+        budget_allocation,
+        up_to_func=lambda x: max(x, default=0)
+    )
+
 
 def is_strong_EJR_approval(
     instance: Instance,
