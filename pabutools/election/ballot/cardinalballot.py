@@ -12,6 +12,8 @@ from pabutools.election.instance import Project
 
 from pabutools.utils import Numeric
 
+import random
+
 
 class AbstractCardinalBallot(AbstractBallot, ABC, Mapping[Project, Numeric]):
     """
@@ -156,6 +158,12 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
         """
         return FrozenCardinalBallot(self)
 
+    def supports(self, c):
+        return self.utility(c) > 0
+
+    def utility(self, c):
+        return self[c] if c in self else 0
+
     # This allows dict method returning copies of a dict to work
     @classmethod
     def _wrap_methods(cls, names):
@@ -174,3 +182,15 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
 
 
 CardinalBallot._wrap_methods(["copy", "__ior__", "__or__", "__ror__"])
+
+
+def get_random_cost_utility_cardinal_ballot(
+    projects: Collection[Project],
+    name: str = "RandomAppBallot",
+    approval_probability: float = 0.5
+) -> CardinalBallot:
+    ballot = CardinalBallot(name=name)
+    for p in projects:
+        if random.random() > approval_probability:
+            ballot[p] = p.cost
+    return ballot

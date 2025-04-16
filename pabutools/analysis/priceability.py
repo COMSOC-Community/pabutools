@@ -15,16 +15,17 @@ from pabutools.election import (
     AbstractApprovalProfile,
     Project,
     total_cost,
+    AbstractProfile,
+    AbstractCardinalProfile
 )
 from pabutools.utils import Numeric, round_cmp
 
 CHECK_ROUND_PRECISION = 2
 ROUND_PRECISION = 6
 
-
 def validate_price_system(
     instance: Instance,
-    profile: AbstractApprovalProfile,
+    profile: AbstractProfile,
     budget_allocation: Collection[Project],
     voter_budget: Numeric,
     payment_functions: list[dict[Project, Numeric]],
@@ -229,7 +230,7 @@ class PriceableResult:
 
 def priceable(
     instance: Instance,
-    profile: AbstractApprovalProfile,
+    profile: AbstractProfile,
     budget_allocation: Collection[Project] | None = None,
     voter_budget: Numeric | None = None,
     payment_functions: list[dict[Project, Numeric]] | None = None,
@@ -241,10 +242,11 @@ def priceable(
     verbose: bool = False,
 ) -> PriceableResult:
     """
-    Finds a priceable / stable-priceable budget allocation for approval profile
+    Finds a priceable / stable-priceable budget allocation for approval or cardinal profiles
     using Linear Programming via `mip` Python package.
 
     Reference paper: https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf
+    todo - add master's thesis as reference paper for Stable-Priceability for Cardinal Utilities
 
     Parameters
     ----------
@@ -286,6 +288,10 @@ def priceable(
             Dataclass containing priceable result details.
 
     """
+    if not isinstance(profile, AbstractApprovalProfile) and not isinstance(profile, AbstractCardinalProfile):
+        raise NotImplementedError(
+            f"Priceability and Stable-Priceability are not supported for {type(profile)}. "
+        )
     C = instance
     N = profile
     INF = instance.budget_limit * 10
@@ -336,7 +342,7 @@ def priceable(
     # (C1) voter can pay only for projects they approve of
     for idx, i in enumerate(N):
         for c in C:
-            if c not in i:
+            if not i.supports(c):
                 mip_model += p_vars[idx][c] == 0
 
     # (C2) voter will not spend more than their initial budget
@@ -367,22 +373,32 @@ def priceable(
         # (C5) supporters of not selected project have no more money than its cost
         for c in C:
             mip_model += (
-                xsum(r_vars[idx] for idx, i in enumerate(N) if c in i)
-                <= c.cost + x_vars[c] * INF
+                    xsum(r_vars[idx] for idx, i in enumerate(N) if i.supports(c))
+                    <= c.cost + x_vars[c] * INF
             )
     else:
-        m_vars = [mip_model.add_var(name=f"m_{idx}") for idx, i in enumerate(N)]
-        for idx, _ in enumerate(N):
-            for c in C:
-                mip_model += m_vars[idx] >= p_vars[idx][c]
-            mip_model += m_vars[idx] >= b - xsum(p_vars[idx][c] for c in C)
+        m_vars = [
+            {c: mip_model.add_var(name=f"m_{idx}_{c.name}") for c in C}
+            for idx, i in enumerate(N)
+        ]
+        for idx, i in enumerate(N):
+            for c1 in C:
+                if not i.supports(c1):
+                    mip_model += m_vars[idx][c1] == 0
+                    continue
 
+                for c2 in C:
+                    if not i.supports(c2):
+                        continue
+                    mip_model += (m_vars[idx][c1] / i.utility(c1)) >= (p_vars[idx][c2] / i.utility(c2))
+
+                mip_model += m_vars[idx][c1] >= b - xsum(p_vars[idx][c2] for c2 in C)
         # (S5) stability constraint
         if relaxation is None:
             for c in C:
                 mip_model += (
-                    xsum(m_vars[idx] for idx, i in enumerate(N) if c in i)
-                    <= c.cost + x_vars[c] * INF
+                        xsum(m_vars[idx][c] for idx, _ in enumerate(N))
+                        <= c.cost + x_vars[c] * INF
                 )
         else:
             relaxation.add_stability_constraint(mip_model)
