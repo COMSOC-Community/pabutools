@@ -282,8 +282,7 @@ def calculate_group_weight(voters: List[Tuple[float, List[str]]], group: Set[str
 
 def calculate_periphery(voters: List[Tuple[float, List[str]]], group: Set[str], all_projects: List[str]) -> Set[str]:
     """
-    Compute the periphery of a given project group based on supporting voters' preferences.
-
+    Get all the top ranked projects (according to each voter) that are as good or better than the worst project in the group.
     Parameters
     ----------
     voters : list of tuples
@@ -296,7 +295,7 @@ def calculate_periphery(voters: List[Tuple[float, List[str]]], group: Set[str], 
     Returns
     -------
     set of str
-        Projects that appear in the prefix of any voter's preferences up to the worst-ranked project in `group`.
+        Projects that appear in the prefix of any voter's preferences up to the worst-ranked project in group.
 
     Examples
     --------
@@ -325,8 +324,8 @@ def assert_IPSC_satisfied(
     max_group_size: int = 10,
 ):
     """
-    Asserts that the output result satisfies the IPSC (Inclusion Proportional Solid Coalition) axiom
-    from the PB-EAR paper, using group sizes up to `max_group_size`.
+    Asserts that the output result satisfies the IPSC axiom
+    from the PB-EAR paper, using group sizes up to max_group_size.
 
     Raises AssertionError if a violating group is found.
 
