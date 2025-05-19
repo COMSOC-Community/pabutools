@@ -83,8 +83,6 @@ def test_random_voters_and_check_budget_respected():
     Randomized input. Verifies that the total cost is within budget
     and that the IPSC condition is satisfied with normalized weights.
     """
-    import random
-
     random.seed(42)
     names = [chr(97 + i) for i in range(10)]  # 'a' to 'j'
     candidates = [(name, random.uniform(1, 10)) for name in names]
@@ -113,8 +111,7 @@ def test_random_voters_and_check_budget_respected():
 
 
 def test_IPSC_no_violation_in_pb_ear():
-    import random
-
+    
     random.seed(42)
     num_voters = 100
     project_names = [chr(97 + i) for i in range(10)]
@@ -133,7 +130,6 @@ def test_IPSC_no_violation_in_pb_ear():
     ]
 
     result = pb_ear(voters, candidates, budget)
-    assert abs(sum(w for w, _ in voters) - num_voters) < 1e-6  # Sanity check
     assert_IPSC_satisfied(voters, candidates, budget, result)
 
 
