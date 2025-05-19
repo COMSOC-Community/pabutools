@@ -2,6 +2,13 @@ import pytest
 import random
 from pabutools.pb_ear import pb_ear ,assert_IPSC_satisfied
 
+"""
+"Proportionally Representative Participatory Budgeting with Ordinal Preferences",
+Haris Aziz and Barton E. Lee (2020),
+https://arxiv.org/abs/1911.00864v2
+
+Programmer: Vivian Umansky
+"""
 def test_empty_voters():
     voters = []
     candidates = [("a", 1.0), ("b", 2.0)]
