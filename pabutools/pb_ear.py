@@ -150,16 +150,16 @@ def pb_ear(voters: list[tuple[float, list[str]]], candidates: list[tuple[str, fl
     all_projects = set(project_cost)
 
 
-    logger.info("=" * 30 + f" NEW RUN: PB-EAR at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} " + "=" * 30)
-    logger.debug("n=%d budget=%.2f", initial_n, budget)
+    logger.info("=" * 30 + f" NEW RUN: PB-EAR on {datetime.now().strftime('%Y-%m-%d')} " + "=" * 30)
+    logger.debug("Number of voters = %d budget=%.2f", initial_n, budget)
 
     while True:
         # Step 2: Determine available projects that fit within the remaining budget
         available_projects = [p for p in all_projects - selected_projects if project_cost[p] <= remaining_budget]
-        logger.debug("j=%d avail=%s rem=%.2f", j, available_projects, remaining_budget)
+        logger.debug("Step j=%d — available_projects=%s, remaining_budget=%.2f", j, available_projects, remaining_budget)
 
         if not available_projects:
-            logger.warning("No more projects can be added without exceeding the budget.")
+            logger.debug("No more projects can be added without exceeding the budget.")
             break
 
         # Step 3–4: Construct A_i^(j) for each voter – top j preferences
@@ -191,7 +191,7 @@ def pb_ear(voters: list[tuple[float, list[str]]], candidates: list[tuple[str, fl
             if round(candidate_support[c], 6) >= round((initial_n * project_cost[c]) / budget, 6)
         }
 
-        logger.debug("C*=%s", C_star)
+        logger.debug("Step j=%d — selected_candidates_meeting_threshold (C*) = %s", j, sorted(C_star))
 
         # Step 7–8: If no candidate qualifies, expand j and retry
         if not C_star:
@@ -206,7 +206,7 @@ def pb_ear(voters: list[tuple[float, list[str]]], candidates: list[tuple[str, fl
         c_star = next(iter(C_star))
         selected_projects.add(c_star)
         remaining_budget -= project_cost[c_star]
-        logger.info("selected=%s cost=%.2f rem=%.2f", c_star, project_cost[c_star], remaining_budget)
+        logger.info("Selected candidate: %s | cost=%.2f | remaining_budget=%.2f", c_star, project_cost[c_star], remaining_budget)
 
         # Step 11–12: Reduce total weight from voters approving c_star by exactly (n * cost / budget)
         N_prime = [i for i in range(len(voters)) if c_star in approvals[i]]
@@ -217,10 +217,10 @@ def pb_ear(voters: list[tuple[float, list[str]]], candidates: list[tuple[str, fl
             weight_fraction = total_weight_to_reduce / sum_supporters if sum_supporters > 0 else 0
             for i in N_prime:
                 old_weight = voter_weights[i]
-                voter_weights[i] = max(0.0, voter_weights[i] * (1 - weight_fraction))
-                logger.debug("reduce i=%d old=%.4f new=%.4f", i, old_weight, voter_weights[i])
+                voter_weights[i] = voter_weights[i] * (1 - weight_fraction)
+                logger.debug("Reducing weight for voter index=%d — old_weight=%.4f new_weight=%.4f", i, old_weight, voter_weights[i])
 
-    logger.info("final=%s", sorted(selected_projects))
+    logger.info("Final selected projects: %s (total=%d)", sorted(selected_projects), len(selected_projects))
     return list(selected_projects)
 
 def is_solidly_supported(prefs: List[str], group: Set[str]) -> bool:
