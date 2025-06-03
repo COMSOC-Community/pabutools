@@ -169,3 +169,5 @@ cython_debug/
 analysis/Pabulib
 
 .vscode/
+.python-version
+.DS_Store
