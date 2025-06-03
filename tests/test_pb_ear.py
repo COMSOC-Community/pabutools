@@ -1,6 +1,6 @@
 import pytest
 import random
-from pabutools.pb_ear import pb_ear ,assert_IPSC_satisfied
+from pabutools.rules.pb_ear import pb_ear ,assert_IPSC_satisfied
 
 """
 "Proportionally Representative Participatory Budgeting with Ordinal Preferences",
