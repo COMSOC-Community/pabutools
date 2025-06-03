@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from tabulate import tabulate
+from pabutools.utils_formatting import format_table
 from datetime import datetime
 import os
 from pabutools.logging_config import logger
@@ -183,7 +183,7 @@ def pb_ear(voters: list[tuple[float, list[str]]], candidates: list[tuple[str, fl
         table = [(p, f"{candidate_support[p]:.2f}", f"{project_cost[p]:.2f}", f"{(initial_n * project_cost[p]) / budget:.2f}")
                  for p in available_projects]
         headers = ["Project", "Support", "Cost", "Threshold"]
-        logger.debug("\n%s", tabulate(table, headers, tablefmt="grid"))
+        logger.debug("\n%s", format_table(headers, table))
 
         # Step 6: Identify candidates that meet the threshold
         C_star = {
