@@ -6,10 +6,10 @@ from __future__ import annotations
 
 from collections.abc import Collection, Iterable
 
-import mip
-from mip import Model, xsum, maximize, BINARY
 
 import math
+
+from pulp import LpProblem, LpMaximize, LpVariable, LpBinary, lpSum, PULP_CBC_CMD, value, LpStatusOptimal
 
 from pabutools.election import (
     Instance,
@@ -71,51 +71,57 @@ def max_additive_utilitarian_welfare_ilp_scheme(
     """
     score = {p: sat_profile.total_satisfaction_project(p) for p in instance}
 
-    mip_model = Model("MaxWelfare")
-    mip_model.verbose = 0
+    mip_model = LpProblem("MaxWelfare", LpMaximize)
     p_vars = {
-        p: mip_model.add_var(var_type=BINARY, name="x_{}".format(p))
+        p: LpVariable("x_{}".format(p), cat=LpBinary)
         for p in instance
         if p not in initial_budget_allocation
     }
 
-    mip_model.objective = maximize(xsum(p_vars[p] * score[p] for p in p_vars))
+    mip_model += lpSum(p_vars[p] * score[p] for p in p_vars)
 
     available_budget = instance.budget_limit - total_cost(initial_budget_allocation)
-    mip_model += xsum(p_vars[p] * p.cost for p in p_vars) <= available_budget
+    mip_model += lpSum(p_vars[p] * p.cost for p in p_vars) <= available_budget
 
-    mip_model.optimize()
-    opt_value = mip_model.objective_value
+    mip_model.solve(PULP_CBC_CMD(msg=False))
+    opt_value = value(mip_model.objective)
 
+    # First allocation
     if resoluteness:
         return BudgetAllocation(
-            [p for p in p_vars if p_vars[p].x >= 0.99] + list(initial_budget_allocation)
+            [p for p in p_vars if p_vars[p].varValue is not None and p_vars[p].varValue >= 0.99] + list(initial_budget_allocation)
         )
 
-    previous_partial_alloc = [p for p in p_vars if p_vars[p].x >= 0.99]
+    if mip_model.status != LpStatusOptimal:
+        raise ValueError("Solver did not find an optimal solution.")
+
+    previous_partial_alloc = [p for p in p_vars if p_vars[p].varValue is not None and p_vars[p].varValue >= 0.99]
     all_partial_allocs = [previous_partial_alloc]
 
-    mip_model += xsum(p_vars[p] * score[p] for p in p_vars) == opt_value
+    # Add constraint to enforce same objective value
+    mip_model += lpSum(score[p] * p_vars[p] for p in p_vars) == opt_value
+
     while True:
         # See http://yetanothermathprogrammingconsultant.blogspot.com/2011/10/integer-cuts.html
         mip_model += (
-            xsum(1 - p_vars[p] for p in previous_partial_alloc)
-            + xsum(p_vars[p] for p in p_vars if p not in previous_partial_alloc)
-            >= 1
-        )
-        mip_model += (
-            xsum(p_vars[p] for p in previous_partial_alloc)
-            - xsum(p_vars[p] for p in p_vars if p not in previous_partial_alloc)
-            <= len(previous_partial_alloc) - 1
-        )
+                        lpSum((1 - p_vars[p]) for p in previous_partial_alloc) +
+                        lpSum(p_vars[p] for p in p_vars if p not in previous_partial_alloc)
+                ) >= 1
 
-        opt_status = mip_model.optimize()
-        if opt_status != mip.OptimizationStatus.OPTIMAL:
+        mip_model += (
+                        lpSum(p_vars[p] for p in previous_partial_alloc) -
+                        lpSum(p_vars[p] for p in p_vars if p not in previous_partial_alloc)
+                ) <= len(previous_partial_alloc) - 1
+
+        mip_model.solve(PULP_CBC_CMD(msg=False))
+
+        if mip_model.status != LpStatusOptimal:
             break
 
-        previous_partial_alloc = [p for p in p_vars if p_vars[p].x >= 0.99]
+        previous_partial_alloc = [p for p in p_vars if p_vars[p].varValue is not None and p_vars[p].varValue >= 0.99]
         if previous_partial_alloc not in all_partial_allocs:
             all_partial_allocs.append(previous_partial_alloc)
+
     return [
         BudgetAllocation(partial_alloc + list(initial_budget_allocation))
         for partial_alloc in all_partial_allocs

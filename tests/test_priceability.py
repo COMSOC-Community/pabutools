@@ -6,8 +6,9 @@ Module testing priceability / stable-priceability property.
 
 from unittest import TestCase
 
-from pabutools.analysis.priceability import priceable, validate_price_system
 from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot
+
+
 
 
 class TestPriceability(TestCase):
@@ -24,6 +25,11 @@ class TestPriceability(TestCase):
         # |      c1      | c7 | c10 | c13 |
         # +===============================+
         # | v1 | v2 | v3 | v4 | v5  | v6  |
+
+        try:
+            from pabutools.analysis.priceability import priceable, validate_price_system
+        except ImportError:
+            return
 
         p = [Project(str(i), cost=1) for i in range(16)]
         instance = Instance(p[1:], budget_limit=12)
@@ -65,6 +71,11 @@ class TestPriceability(TestCase):
         # | c1 | c2 | c3 | c4 | c5 |
         # +========================+
         # | v1 | v2 | v3 | v4 | v5 |
+
+        try:
+            from pabutools.analysis.priceability import priceable, validate_price_system
+        except ImportError:
+            return
 
         p = [Project(str(i), cost=1) for i in range(11)]
         instance = Instance(p[1:], budget_limit=5)
@@ -109,6 +120,11 @@ class TestPriceability(TestCase):
         # +============================================+
         # | v1 | v2 | v3 | v4 | v5 | v6 | v7 | v8 | v9 |
 
+        try:
+            from pabutools.analysis.priceability import priceable, validate_price_system
+        except ImportError:
+            return
+
         p = [Project(str(i), cost=1) for i in range(13)]
         instance = Instance(p[1:], budget_limit=9)
 
@@ -142,6 +158,11 @@ class TestPriceability(TestCase):
 
     def test_priceable_approval_4(self):
         # Example from https://equalshares.net/explanation#example
+
+        try:
+            from pabutools.analysis.priceability import priceable, validate_price_system
+        except ImportError:
+            return
 
         p = [
             Project("bike path", cost=700),

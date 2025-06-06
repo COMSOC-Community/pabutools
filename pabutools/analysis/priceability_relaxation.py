@@ -8,13 +8,20 @@ import collections
 from abc import ABC, abstractmethod
 from numbers import Real
 
-from mip import Model, xsum, minimize
-
 from pabutools.election import (
     Instance,
     Profile,
     Project,
 )
+
+try:
+    from mip import Model, xsum, minimize
+except ImportError:
+    raise ImportError(
+        "The priceability functions need the python-mip package. This is no longer listed as a requirement as we are "
+        "slowly moving to PuLP for Python 3.13 compatibility. If you are using Python < 3.13, install manually the "
+        "python-mip package. If you are using Python 3.13, please help us translate this file to PuLP."
+    )
 
 
 class Relaxation(ABC):

@@ -7,8 +7,6 @@ from __future__ import annotations
 import collections
 from collections.abc import Collection
 
-from mip import Model, xsum, BINARY, OptimizationStatus
-
 from pabutools.analysis.priceability_relaxation import Relaxation
 from pabutools.election import (
     Instance,
@@ -17,6 +15,16 @@ from pabutools.election import (
     total_cost,
 )
 from pabutools.utils import Numeric, round_cmp
+
+
+try:
+    from mip import Model, xsum, minimize, OptimizationStatus, BINARY
+except ImportError:
+    raise ImportError(
+        "The priceability functions need the python-mip package. This is no longer listed as a requirement as we are "
+        "slowly moving to PuLP for Python 3.13 compatibility. If you are using Python < 3.13, install manually the "
+        "python-mip package. If you are using Python 3.13, please help us translate this file to PuLP."
+    )
 
 CHECK_ROUND_PRECISION = 2
 ROUND_PRECISION = 6
