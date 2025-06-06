@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "pabutools"
-version = "1.1.12"
+version = "1.1.13"
 description = "Implementation of all the tools necessary to explore and analyse participatory budgeting elections"
 authors = [
   { name = "Simon Rey", email = "reysimon@orange.fr" },
@@ -28,7 +28,7 @@ requires-python = ">=3.9"
 dependencies = [
     "numpy",
     "gmpy2>=2.1.5",
-    "preflibtools",
+    "preflibtools>=2.0.33",
     "natsort",
     "pulp"
 ]
