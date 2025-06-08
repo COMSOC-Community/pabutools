@@ -2,6 +2,13 @@
 
 
 """
+Logging configuration for PB-EAR algorithm development and debugging.
+
+Sets up a named logger with both file and console handlers:
+- Logs all DEBUG and higher messages to logs/pb_ear.log.
+- Logs INFO+ messages to console (or WARNING+ during pytest runs).
+
+Based on:
 "Proportionally Representative Participatory Budgeting with Ordinal Preferences",
 Haris Aziz and Barton E. Lee (2020),
 https://arxiv.org/abs/1911.00864v2

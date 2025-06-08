@@ -3,6 +3,14 @@ import random
 from pabutools.rules.pb_ear import pb_ear ,assert_IPSC_satisfied
 
 """
+Pytest test suite for validating the PB-EAR algorithm implementation.
+
+This test file verifies:
+- Edge cases like empty input or zero budget
+- Correctness under randomized and large-scale scenarios
+- Compliance with the IPSC axiom
+
+Based on:
 "Proportionally Representative Participatory Budgeting with Ordinal Preferences",
 Haris Aziz and Barton E. Lee (2020),
 https://arxiv.org/abs/1911.00864v2
