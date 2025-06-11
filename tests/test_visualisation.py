@@ -33,4 +33,4 @@ class TestUtils(TestCase):
                 assert "<!DOCTYPE html>" in summary_file.read()
             with open(round_analysis_file_path, "r") as round_analysis_file:
                 assert "<!DOCTYPE html>" in round_analysis_file.read()
-        assert len(vis.rounds) >= 1
+        assert len(vis.rounds) == 4 == len(outcome.details.iterations) - 1
