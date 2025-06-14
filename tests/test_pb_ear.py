@@ -1,6 +1,6 @@
 from pabutools.election.ballot.ordinalballot import OrdinalBallot
 from pabutools.election.profile.ordinalprofile import OrdinalMultiProfile
-import unittest2 as unittest
+import unittest
 from pabutools.rules.pb_ear import pb_ear
 from pabutools.election.instance import Instance, Project
 from pabutools.election.profile import OrdinalProfile
@@ -9,7 +9,7 @@ from pabutools.election.ballot.ordinalballot import FrozenOrdinalBallot
 
 
 """
-Pytest test suite for validating the PB-EAR algorithm implementation.
+Unit test suite for validating the PB-EAR algorithm implementation.
 
 This test file verifies:
 - Edge cases like empty input or zero budget

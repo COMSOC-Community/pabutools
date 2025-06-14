@@ -46,11 +46,3 @@ dev = [
 [project.urls]
 "Homepage" = "https://github.com/comsoc-community/pabutools"
 "Bug Tracker" = "https://github.com/comsoc-community/pabutools/issues"
-
-[tool.pytest.ini_options]
-addopts = "--doctest-modules --doctest-glob=*.py --tb=short -v"
-testpaths = [
-    "pabutools/tests",
-    "pabutools/pabutools"
-]
-

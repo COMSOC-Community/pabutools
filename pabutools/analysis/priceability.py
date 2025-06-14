@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import collections
 from collections.abc import Collection
-
+import logging
 from mip import Model, xsum, BINARY, OptimizationStatus
 
 from pabutools.analysis.priceability_relaxation import Relaxation
@@ -21,6 +21,7 @@ from pabutools.utils import Numeric, round_cmp
 CHECK_ROUND_PRECISION = 2
 ROUND_PRECISION = 6
 
+logger = logging.getLogger(__name__)
 
 def validate_price_system(
     instance: Instance,
@@ -154,7 +155,7 @@ def validate_price_system(
 
     if verbose:
         for condition, error in errors.items():
-            print(f"({condition}) {error}")
+            logger.info(f"({condition}) {error}")
 
     return not errors
 
