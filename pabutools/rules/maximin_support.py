@@ -8,7 +8,7 @@ import logging
 
 from collections.abc import Collection
 
-from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatusOptimal, value
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatusOptimal, value, PULP_CBC_CMD
 
 from pabutools.election import (
     Instance,
@@ -61,6 +61,8 @@ def maximin_support(
 
     logging.info("Starting the maximin support rule")
 
+    if tie_breaking is None:
+        tie_breaking = lexico_tie_breaking
     if initial_budget_allocation is None:
         budget_allocation = BudgetAllocation()
     else:
@@ -107,7 +109,7 @@ def maximin_support(
 
 def _compute_optimal_load(projects, profile):
     """
-    Solves the LP relaxation from Algorithm 1 (GPseq) to minimize the max load.
+    Solves the LP relaxation to minimize the max load.
 
     Parameters
     ----------
@@ -148,7 +150,7 @@ def _compute_optimal_load(projects, profile):
 
     prob += z  # Objective: minimize max load
 
-    status = prob.solve()
+    status = prob.solve(PULP_CBC_CMD(msg=False))
     if status != LpStatusOptimal:
         raise RuntimeError("LP did not converge")
 

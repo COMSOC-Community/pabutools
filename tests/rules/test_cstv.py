@@ -161,3 +161,5 @@ class TestFunctions(unittest.TestCase):
                 self.assertGreaterEqual(len(selected_projects), positive_excess)
                 # Ensure the total initial support from donors is at least the total cost of the selected projects
                 self.assertGreaterEqual(support, total_cost)
+
+        pabutools.fractions.FRACTION = "gmpy2"
