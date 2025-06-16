@@ -2,7 +2,7 @@
 Implementation of the GPseq algorithm from:
 
 "Proportionally Representative Participatory Budgeting: Axioms and Algorithms"
-by Haris Aziz, Bettina Klaus, Jérôme Lang, and Markus Brill (2017)
+by Haris Aziz, Barton Lee, Nimrod Talmon.
 https://arxiv.org/abs/1711.08226
 
 Programmer: <Shlomi Asraf>
@@ -12,6 +12,7 @@ Date: 2025-05-13
 from __future__ import annotations
 import logging
 import numpy as np
+import cvxpy as cp
 from pabutools.fractions import frac
 from pabutools.election.instance import Instance, Project
 from pabutools.election.profile import AbstractApprovalProfile
@@ -24,7 +25,8 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 def gpseq(
     instance: Instance,
     profile: AbstractApprovalProfile,
-    tie_breaking: TieBreakingRule = lexico_tie_breaking
+    tie_breaking: TieBreakingRule = lexico_tie_breaking,
+    mode: str = "uniform"  # or "optimal"
 ) -> BudgetAllocation:
     """
     Algorithm 6: GPseq - Greedy Phragmen Sequence algorithm.
@@ -124,19 +126,13 @@ def gpseq(
     if hasattr(profile, "is_multiprofile") and profile.is_multiprofile():
         raise ValueError("GPseq currently does not support MultiProfile")
 
-    logging.info("Starting GPseq algorithm")
     for project in instance:
         if project.cost < 0:
-            raise ValueError(f"Project {project.name} has negative cost: {project.cost}")
-
-    logging.info(f"Initial budget: {instance.budget_limit}")
-    logging.info(f"Projects: {[f'{p.name} (cost={p.cost})' for p in instance]}")
-    logging.info(f"Profile: {[[p.name for p in ballot] for ballot in profile]}")
+            raise ValueError(f"Project {project.name} has negative cost")
 
     budget = instance.budget_limit
     remaining_budget = budget
     selected_projects: list[Project] = []
-    current_loads = np.zeros(profile.num_ballots())
     available_projects = set(instance)
 
     while True:
@@ -146,74 +142,99 @@ def gpseq(
             if p.cost <= remaining_budget and any(p in ballot for ballot in profile)
         }
 
-        logging.debug(f"Feasible projects this round: {[p.name for p in approvers_map]}")
         if not approvers_map:
-            logging.info("No more feasible approved projects. Exiting main loop.")
             break
 
-        project_to_load = {
-            p: compute_load(p, approvers_map[p], current_loads)
-            for p in approvers_map
-        }
+        if mode == "uniform":
+            project_to_load = {
+                p: compute_uniform_load(p, approvers_map[p], len(profile))
+                for p in approvers_map
+            }
+        elif mode == "optimal":
+            project_to_load = {
+                p: compute_optimal_load(selected_projects + [p], profile)
+                for p in approvers_map
+            }
+        else:
+            raise ValueError(f"Unknown mode '{mode}', must be 'uniform' or 'optimal'")
 
         min_load = min(project_to_load.values())
         candidates = [p for p in project_to_load if project_to_load[p] == min_load]
-        logging.debug(f"Minimum load: {min_load}, Candidates: {[p.name for p in candidates]}")
-
         chosen = tie_breaking.untie(instance, profile, candidates)
-        logging.info(f"Chosen project: {chosen.name} with cost {chosen.cost} and {min_load} max load")
 
         selected_projects.append(chosen)
         remaining_budget -= chosen.cost
-        approvers = approvers_map[chosen]
-        cost_per_voter = frac(chosen.cost, len(approvers))
-        for voter in approvers:
-            current_loads[voter] += float(cost_per_voter)
-
-        logging.debug(f"Updated voter loads: {current_loads}")
-        logging.debug(f"Remaining budget: {remaining_budget}")
         available_projects.remove(chosen)
 
-    logging.info("Starting post-processing step")
     for p in sorted(available_projects, key=lambda x: x.name):
         if p.cost <= remaining_budget:
             selected_projects.append(p)
             remaining_budget -= p.cost
-            logging.info(f"Post-processed addition: {p.name}, remaining budget: {remaining_budget}")
 
-    logging.info(f"Final selected projects: {[p.name for p in selected_projects]}")
     return BudgetAllocation(selected_projects)
 
-def compute_load(project: Project, approvers: list[int], current_loads: np.ndarray) -> float:
+def compute_optimal_load(projects, profile):
     """
-    Computes the new maximal load if we add the given project,
-    distributing its cost evenly among its supporters.
-
+    Solves the LP relaxation from Algorithm 1 (GPseq) to minimize the max load.
+    
     Parameters
     ----------
-    project : Project
-        The project being considered.
-    approvers : List[int]
-        The list of voter indices who approve this project.
-    current_loads : np.ndarray
-        The current load vector of all voters.
+    projects : list of Project
+        The projects considered so far (W ∪ {c'}).
+    profile : AbstractApprovalProfile
+        The approval profile of the voters.
 
     Returns
     -------
     float
-        The maximal load after distributing the project cost among its approvers.
+        The minimum max load (z) over voters given optimal distribution of costs.
+    """
+    num_voters = profile.num_ballots()
+    voter_ids = range(num_voters)
 
-    Examples
-    --------
-    >>> project = Project("c1", cost=2)
-    >>> compute_load(project, [0, 1], np.array([0.0, 0.0]))
-    1.0
+    # Variables: x[c][i] = load that voter i takes for project c
+    x = {
+        (p, i): cp.Variable(nonneg=True)
+        for p in projects for i in voter_ids
+    }
+
+    constraints = []
+
+    # Constraint: x[p][i] = 0 if i doesn't approve p
+    for p in projects:
+        for i in voter_ids:
+            if p not in profile[i]:
+                constraints.append(x[p, i] == 0)
+
+    # Constraint: total load assigned per project equals cost
+    for p in projects:
+        constraints.append(cp.sum([x[p, i] for i in voter_ids]) == p.cost)
+
+    # Voter total load
+    voter_load = [cp.sum([x[p, i] for p in projects]) for i in voter_ids]
+
+    # Minimize max voter load
+    z = cp.Variable()
+    for i in voter_ids:
+        constraints.append(voter_load[i] <= z)
+
+    prob = cp.Problem(cp.Minimize(z), constraints)
+    prob.solve(solver=cp.ECOS)  # You can also try SCS or OSQP
+
+    if prob.status != cp.OPTIMAL:
+        raise RuntimeError("LP did not converge")
+
+    return z.value
+    
+def compute_uniform_load(project: Project, approvers: list[int], num_voters: int) -> float:
+    """
+    Computes max load assuming uniform cost distribution among approvers.
     """
     if not approvers:
-        return float('inf')
-    cost_per_voter = float(frac(project.cost, len(approvers)))
-    new_loads = current_loads.copy()
-    for voter in approvers:
-        new_loads[voter] += cost_per_voter
-    logging.info(f"project: {project.name} with cost {project.cost} and {float(max(new_loads))} max load")
-    return float(max(new_loads))
+        return float("inf")
+    per_voter = project.cost / len(approvers)
+    loads = [0.0] * num_voters
+    for i in approvers:
+        loads[i] += per_voter
+    return max(loads)
+
