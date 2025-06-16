@@ -350,7 +350,7 @@ def election_as_pabulib_string(instance: Instance, profile: AbstractProfile) -> 
     project_keys = ["project_id", "cost"]
     for project in instance:
         project_meta = {"project_id": project.name, "cost": project.cost}
-        if "name" in instance.project_meta[project]:
+        if "name" in instance.project_meta.get(project, {}):
             project_meta["name"] = instance.project_meta[project]["name"]
             if "name" not in project_keys:
                 project_keys.append("name")
@@ -362,7 +362,7 @@ def election_as_pabulib_string(instance: Instance, profile: AbstractProfile) -> 
             project_meta["target"] = ",".join(project.targets)
             if "target" not in project_keys:
                 project_keys.append("target")
-        for key, value in instance.project_meta[project].items():
+        for key, value in instance.project_meta.get(project, {}).items():
             if key not in project_meta and key not in ["categories", "targets"]:
                 project_meta[key] = value
                 if key not in project_keys:
