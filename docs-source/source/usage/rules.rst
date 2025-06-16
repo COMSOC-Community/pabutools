@@ -168,7 +168,7 @@ previous two as it does not rely on a satisfaction measure.
 
 .. code-block:: python
 
-    from pabutools.election import Instance, Project, ApprovalProfile, ApprovalBallot, Cost_Sat
+    from pabutools.election import Instance, Project, ApprovalProfile, ApprovalBallot
     from pabutools.rules import sequential_phragmen
     from pabutools.tiebreaking import app_score_tie_breaking
 
@@ -180,7 +180,7 @@ previous two as it does not rely on a satisfaction measure.
         ApprovalBallot({p[0], p[8]})
     ])
 
-    # By passing a sat_class, the profile is automatically converted to a satisfaction profile
+    # The rule does not require a sat_class argument
     outcome = sequential_phragmen(
         instance,
         profile
@@ -193,7 +193,7 @@ previous two as it does not rely on a satisfaction measure.
         initial_budget_allocation=[p[1], p[2]]
     )
 
-    # The tie-breaking rule can be decided
+    # The tie-breaking rule can be indicated
     outcome = sequential_phragmen(
         instance,
         profile,
@@ -205,6 +205,48 @@ previous two as it does not rely on a satisfaction measure.
         instance,
         profile,
         resoluteness=False
+    )
+
+Maximin Support Rule
+--------------------
+
+:py:func:`~pabutools.rules.maximin_support.maximin_support`
+
+We also provide the Maximin Support rule. For the latter, we use the PuLP solver to compute the optimal load
+distribution at each round.
+
+.. code-block:: python
+
+    from pabutools.election import Instance, Project, ApprovalProfile, ApprovalBallot, Cost_Sat
+    from pabutools.rules import maximin_support
+    from pabutools.tiebreaking import app_score_tie_breaking
+
+    p = [Project("p" + str(i), 1) for i in range(10)]
+    instance = Instance(p, budget_limit=5)
+    profile = ApprovalProfile([
+        ApprovalBallot(p),
+        ApprovalBallot(p[:4]),
+        ApprovalBallot({p[0], p[8]})
+    ])
+
+    # The rule does not require a sat_class argument
+    outcome = maximin_support(
+        instance,
+        profile
+    )
+
+    # An initial budget allocation can be given
+    outcome = maximin_support(
+        instance,
+        profile,
+        initial_budget_allocation=[p[1], p[2]]
+    )
+
+    # The tie-breaking rule can be indicated
+    outcome = maximin_support(
+        instance,
+        profile,
+        tie_breaking=app_score_tie_breaking
     )
 
 Method of Equal Shares (MES)
