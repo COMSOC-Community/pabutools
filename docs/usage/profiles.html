@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=e2360a19"></script>
+    <script src="../_static/documentation_options.js?v=dbab8ab3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,6 +50,7 @@
     <link rel="prev" title="Instances" href="instances.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.14" />
   </head>
   
   
@@ -62,19 +66,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -82,7 +75,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -90,8 +82,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,7 +99,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -137,15 +130,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
@@ -303,24 +292,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -375,7 +356,7 @@ ballot formats.</p>
 <p>A profile is associated with an instance, which is passed as a parameter and then stored in
 an attribute. It also implements validation of the ballots to ensure the consistency
 of the ballots in a profile.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Profile</span><span class="p">,</span> <span class="n">Ballot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Profile</span><span class="p">,</span> <span class="n">Ballot</span>
 
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">()</span>
 <span class="n">profile</span> <span class="o">=</span> <span class="n">Profile</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span>
@@ -395,7 +376,7 @@ from both <cite>set</cite> and <a class="reference internal" href="../reference/
 <a class="reference internal" href="../reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile" title="pabutools.election.profile.approvalprofile.ApprovalProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApprovalProfile</span></code></a>. It inherits from
 <a class="reference internal" href="../reference/election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Profile</span></code></a>. By default, it sets the type for the ballot
 validator to <a class="reference internal" href="../reference/election/ballot.html#pabutools.election.ballot.approvalballot.ApprovalBallot" title="pabutools.election.ballot.approvalballot.ApprovalBallot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApprovalBallot</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">ApprovalProfile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">ApprovalProfile</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">b1</span> <span class="o">=</span> <span class="n">ApprovalBallot</span><span class="p">(</span><span class="n">p</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>   <span class="c1"># Approval ballot containing the first 3 projects</span>
@@ -424,7 +405,7 @@ It directly inherits from the Python <cite>dict</cite> class and our
 <a class="reference internal" href="../reference/election/profile.html#pabutools.election.profile.cardinalprofile.CardinalProfile" title="pabutools.election.profile.cardinalprofile.CardinalProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">CardinalProfile</span></code></a> class.
 It inherits from the <a class="reference internal" href="../reference/election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Profile</span></code></a> class and validates ballot types using
 <a class="reference internal" href="../reference/election/ballot.html#pabutools.election.ballot.cardinalballot.CardinalBallot" title="pabutools.election.ballot.cardinalballot.CardinalBallot"><code class="xref py py-class docutils literal notranslate"><span class="pre">CardinalBallot</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">CardinalBallot</span><span class="p">,</span> <span class="n">CardinalProfile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">CardinalBallot</span><span class="p">,</span> <span class="n">CardinalProfile</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">b1</span> <span class="o">=</span> <span class="n">CardinalBallot</span><span class="p">({</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="mi">0</span><span class="p">})</span>   <span class="c1"># Cardinal ballot scoring 5 for p1 and 0 for p2</span>
@@ -456,7 +437,7 @@ represents such ballots. It inherits from the Python class <cite>list</cite> (ac
 and our class <a class="reference internal" href="../reference/election/ballot.html#pabutools.election.ballot.ballot.Ballot" title="pabutools.election.ballot.ballot.Ballot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ballot</span></code></a>.</p>
 <p>Ordinal profiles are handled by the class
 <a class="reference internal" href="../reference/election/profile.html#pabutools.election.profile.ordinalprofile.OrdinalProfile" title="pabutools.election.profile.ordinalprofile.OrdinalProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrdinalProfile</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">OrdinalBallot</span><span class="p">,</span> <span class="n">OrdinalProfile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">OrdinalBallot</span><span class="p">,</span> <span class="n">OrdinalProfile</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">b1</span> <span class="o">=</span> <span class="n">OrdinalBallot</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>   <span class="c1"># Ordinal ballot ranking p0 &gt; p4 &gt; p2</span>
@@ -490,7 +471,7 @@ have their frozen counterparts:
 <a class="reference internal" href="../reference/election/ballot.html#pabutools.election.ballot.cumulativeballot.FrozenCumulativeBallot" title="pabutools.election.ballot.cumulativeballot.FrozenCumulativeBallot"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrozenCumulativeBallot</span></code></a>,
 and <a class="reference internal" href="../reference/election/ballot.html#pabutools.election.ballot.ordinalballot.FrozenOrdinalBallot" title="pabutools.election.ballot.ordinalballot.FrozenOrdinalBallot"><code class="xref py py-class docutils literal notranslate"><span class="pre">FrozenOrdinalBallot</span></code></a>.</p>
 <p>Ballots can easily be frozen:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">FrozenApprovalBallot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">FrozenApprovalBallot</span>
 
 <span class="n">app_ballot</span> <span class="o">=</span> <span class="n">ApprovalBallot</span><span class="p">({</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)})</span>
 <span class="c1"># Freezing a ballot using the frozen method of a ballot</span>
@@ -501,8 +482,8 @@ and <a class="reference internal" href="../reference/election/ballot.html#pabuto
 </pre></div>
 </div>
 <p>Similarly profiles can easily be turned into multiprofiles:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">FrozenApprovalBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalMultiProfile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">FrozenApprovalBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalMultiProfile</span>
 
 <span class="n">b1</span> <span class="o">=</span> <span class="n">ApprovalBallot</span><span class="p">({</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)})</span>
 <span class="n">b2</span> <span class="o">=</span> <span class="n">ApprovalBallot</span><span class="p">({</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p3&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)})</span>
@@ -568,7 +549,8 @@ runtime and plotted the following measure:</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -630,8 +612,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

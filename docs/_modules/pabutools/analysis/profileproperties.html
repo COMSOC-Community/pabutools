@@ -15,27 +15,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../_static/documentation_options.js?v=e2360a19"></script>
+    <script src="../../../_static/documentation_options.js?v=dbab8ab3"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -44,6 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.14" />
   </head>
   
   
@@ -59,19 +63,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -79,7 +72,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -87,8 +79,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -106,7 +98,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -136,15 +129,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
@@ -254,24 +243,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -298,24 +279,24 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for pabutools.analysis.profileproperties</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span>
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AbstractApprovalProfile</span><span class="p">,</span>
     <span class="n">AbstractCardinalProfile</span><span class="p">,</span>
     <span class="n">AbstractProfile</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">total_cost</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">total_cost</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">frac</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean_generator</span>
+<span class="kn">from</span> <span class="nn">pabutools.fractions</span> <span class="kn">import</span> <span class="n">frac</span>
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">mean_generator</span>
 
 
 <div class="viewcode-block" id="avg_ballot_length">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.avg_ballot_length">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">avg_ballot_length</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">avg_ballot_length</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the average length of the ballots in the profile.</span>
 
@@ -340,7 +321,7 @@ document.write(`
 
 <div class="viewcode-block" id="median_ballot_length">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.median_ballot_length">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">median_ballot_length</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">median_ballot_length</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the median length of the ballots in the profile.</span>
 
@@ -371,7 +352,7 @@ document.write(`
 
 <div class="viewcode-block" id="avg_ballot_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.avg_ballot_cost">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">avg_ballot_cost</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">avg_ballot_cost</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the average cost of the ballots in the profile.</span>
 
@@ -396,7 +377,7 @@ document.write(`
 
 <div class="viewcode-block" id="median_ballot_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.median_ballot_cost">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">median_ballot_cost</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">median_ballot_cost</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the median cost of the ballots in the profile.</span>
 
@@ -427,7 +408,7 @@ document.write(`
 
 <div class="viewcode-block" id="avg_approval_score">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.avg_approval_score">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">avg_approval_score</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractApprovalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">avg_approval_score</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractApprovalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the average approval score of projects.</span>
 
@@ -450,7 +431,7 @@ document.write(`
 
 <div class="viewcode-block" id="median_approval_score">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.median_approval_score">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">median_approval_score</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">median_approval_score</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractApprovalProfile</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -479,7 +460,7 @@ document.write(`
 
 <div class="viewcode-block" id="avg_total_score">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.avg_total_score">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">avg_total_score</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">avg_total_score</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the average score assigned to a project by the voters.</span>
 
@@ -502,7 +483,7 @@ document.write(`
 
 <div class="viewcode-block" id="median_total_score">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.median_total_score">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">median_total_score</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">median_total_score</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the median score assigned to a project by the voters.</span>
 
@@ -529,7 +510,7 @@ document.write(`
 
 <div class="viewcode-block" id="votes_count_by_project">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.votes_count_by_project">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">votes_count_by_project</span><span class="p">(</span><span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">votes_count_by_project</span><span class="p">(</span><span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the number of votes for each project.</span>
 
@@ -547,7 +528,7 @@ document.write(`
     <span class="n">project_votes</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Function to update the project_votes dictionary</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_votes</span><span class="p">(</span><span class="n">project_list</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_votes</span><span class="p">(</span><span class="n">project_list</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">project_id</span> <span class="ow">in</span> <span class="n">project_list</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">project_id</span> <span class="ow">in</span> <span class="n">project_votes</span><span class="p">:</span>
                 <span class="n">project_votes</span><span class="p">[</span><span class="n">project_id</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -563,7 +544,7 @@ document.write(`
 
 <div class="viewcode-block" id="voter_flow_matrix">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.profileproperties.voter_flow_matrix">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">voter_flow_matrix</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">voter_flow_matrix</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractCardinalProfile</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -587,7 +568,7 @@ document.write(`
         <span class="k">for</span> <span class="n">other_project</span> <span class="ow">in</span> <span class="n">instance</span><span class="p">:</span>
             <span class="n">voter_flow</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">project</span><span class="p">)][</span><span class="nb">str</span><span class="p">(</span><span class="n">other_project</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_voter_flow</span><span class="p">(</span><span class="n">vote_list</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_voter_flow</span><span class="p">(</span><span class="n">vote_list</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vote_list</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vote_list</span><span class="p">)):</span>
                 <span class="n">voter_flow</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">vote_list</span><span class="p">[</span><span class="n">i</span><span class="p">])][</span><span class="nb">str</span><span class="p">(</span><span class="n">vote_list</span><span class="p">[</span><span class="n">j</span><span class="p">])]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -662,8 +643,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

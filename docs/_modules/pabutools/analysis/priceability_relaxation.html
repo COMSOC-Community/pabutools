@@ -15,27 +15,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../_static/documentation_options.js?v=e2360a19"></script>
+    <script src="../../../_static/documentation_options.js?v=dbab8ab3"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -44,6 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.14" />
   </head>
   
   
@@ -59,19 +63,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -79,7 +72,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -87,8 +79,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -106,7 +98,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -136,15 +129,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
@@ -254,24 +243,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -302,24 +283,31 @@ document.write(`
 <span class="sd">Module for relaxation of the stable-priceability constraint.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">mip</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">xsum</span><span class="p">,</span> <span class="n">minimize</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Instance</span><span class="p">,</span>
     <span class="n">Profile</span><span class="p">,</span>
     <span class="n">Project</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mip</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">xsum</span><span class="p">,</span> <span class="n">minimize</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+        <span class="s2">&quot;The priceability functions need the python-mip package. This is no longer listed as a requirement as we are &quot;</span>
+        <span class="s2">&quot;slowly moving to PuLP for Python 3.13 compatibility. If you are using Python &lt; 3.13, install manually the &quot;</span>
+        <span class="s2">&quot;python-mip package. If you are using Python 3.13, please help us translate this file to PuLP.&quot;</span>
+    <span class="p">)</span>
+
 
 <div class="viewcode-block" id="Relaxation">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Relaxation</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Relaxation</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for stable-priceability condition relaxation methods.</span>
 
@@ -339,7 +327,7 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">Profile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">Profile</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">profile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">INF</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">*</span> <span class="mi">10</span>
@@ -348,7 +336,7 @@ document.write(`
 <div class="viewcode-block" id="Relaxation.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_beta">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add beta variable to the model.</span>
 
@@ -362,7 +350,7 @@ document.write(`
 <div class="viewcode-block" id="Relaxation.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_objective">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add objective function to the model.</span>
 
@@ -376,7 +364,7 @@ document.write(`
 <div class="viewcode-block" id="Relaxation.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add relaxed stability constraint to the model.</span>
 
@@ -390,7 +378,7 @@ document.write(`
 <div class="viewcode-block" id="Relaxation.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.get_beta">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the value of beta from the model.</span>
 <span class="sd">        This method implicitly saves internally the value of beta variable from `mip_model`.</span>
@@ -411,7 +399,7 @@ document.write(`
 <div class="viewcode-block" id="Relaxation.get_relaxed_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.get_relaxed_cost">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get relaxed cost of a project.</span>
 
@@ -432,7 +420,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinMul">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MinMul</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MinMul</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The right-hand side of the condition is multiplied by a beta in [0, inf).</span>
 <span class="sd">    The objective function minimizes beta.</span>
@@ -440,20 +428,20 @@ document.write(`
 
 <div class="viewcode-block" id="MinMul.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinMul.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_objective">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
         <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinMul.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
@@ -468,7 +456,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinMul.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.get_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">x</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
@@ -476,7 +464,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinMul.get_relaxed_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.get_relaxed_cost">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">project</span><span class="o">.</span><span class="n">cost</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
 </div>
 
@@ -484,7 +472,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAdd">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MinAdd</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MinAdd</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A beta in (-inf, inf) is added to the right-hand side of the condition.</span>
 <span class="sd">    The objective function minimizes beta.</span>
@@ -492,20 +480,20 @@ document.write(`
 
 <div class="viewcode-block" id="MinAdd.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinAdd.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_objective">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
         <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinAdd.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
@@ -520,7 +508,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAdd.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.get_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">x</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
@@ -528,7 +516,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAdd.get_relaxed_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.get_relaxed_cost">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">project</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
 </div>
 
@@ -536,7 +524,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVector">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MinAddVector</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MinAddVector</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A separate beta[c] in (-inf, inf) for each project c is added to the right-hand side of the condition.</span>
 <span class="sd">    The objective function minimizes the sum of beta[c] for each project c.</span>
@@ -544,7 +532,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVector.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span>
         <span class="p">}</span>
@@ -557,14 +545,14 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVector.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_objective">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">xsum</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="MinAddVector.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
@@ -579,7 +567,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVector.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.get_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">return_beta</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
@@ -591,7 +579,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVector.get_relaxed_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.get_relaxed_cost">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">project</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">][</span><span class="n">project</span><span class="p">]</span></div>
 </div>
 
@@ -599,7 +587,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVectorPositive">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVectorPositive">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MinAddVectorPositive</span><span class="p">(</span><span class="n">MinAddVector</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MinAddVectorPositive</span><span class="p">(</span><span class="n">MinAddVector</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A separate beta[c] in [0, inf) for each project c is added to the right-hand side of the condition.</span>
 <span class="sd">    The objective function minimizes the sum of beta[c] for each project c.</span>
@@ -607,7 +595,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddVectorPositive.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span></div>
 </div>
 
@@ -615,7 +603,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddOffset">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MinAddOffset</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MinAddOffset</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A mixture of `MinAdd` and `MinAddVector` relaxation methods.</span>
 <span class="sd">    A separate beta[c] in [0, inf) for each project c is added to the right-hand side of the condition.</span>
@@ -628,7 +616,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddOffset.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">)</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
@@ -639,14 +627,14 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddOffset.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
         <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">beta_global</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinAddOffset.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
@@ -662,7 +650,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddOffset.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">return_beta</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -679,7 +667,7 @@ document.write(`
 
 <div class="viewcode-block" id="MinAddOffset.get_relaxed_cost">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.get_relaxed_cost">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_relaxed_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">project</span><span class="o">.</span><span class="n">cost</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span><span class="p">[</span><span class="s2">&quot;beta_global&quot;</span><span class="p">]</span>
@@ -749,8 +737,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>
