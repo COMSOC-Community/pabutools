@@ -395,7 +395,7 @@ def election_as_pabulib_string(instance: Instance, profile: AbstractProfile) -> 
             vote_meta["voting_method"] = ballot.meta["voting_method"]
             if "voting_method" not in vote_keys:
                 vote_keys.append("voting_method")
-        vote_meta["vote"] = ",".join([p.name for p in ballot])
+        vote_meta["vote"] = ",".join([str(p.name) for p in ballot])
         if "vote" not in vote_keys:
             vote_keys.append("vote")
         if isinstance(ballot, AbstractCardinalBallot):
