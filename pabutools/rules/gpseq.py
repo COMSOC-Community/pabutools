@@ -11,9 +11,7 @@ Date: 2025-05-13
 
 from __future__ import annotations
 import logging
-import numpy as np
-import cvxpy as cp
-from pabutools.fractions import frac
+from pulp import LpProblem, LpVariable, lpSum, LpMinimize, LpStatusOptimal, value
 from pabutools.election.instance import Instance, Project
 from pabutools.election.profile import AbstractApprovalProfile
 from pabutools.rules.budgetallocation import BudgetAllocation
@@ -192,39 +190,35 @@ def compute_optimal_load(projects, profile):
     num_voters = profile.num_ballots()
     voter_ids = range(num_voters)
 
-    # Variables: x[c][i] = load that voter i takes for project c
+    prob = LpProblem("MinMaxLoad", LpMinimize)
+
+    # Decision variables: load each voter i takes for project p
     x = {
-        (p, i): cp.Variable(nonneg=True)
+        (p, i): LpVariable(f"x_{p.name}_{i}", lowBound=0)
         for p in projects for i in voter_ids
     }
 
-    constraints = []
+    z = LpVariable("max_load", lowBound=0)
 
-    # Constraint: x[p][i] = 0 if i doesn't approve p
+    # Constraints
     for p in projects:
         for i in voter_ids:
             if p not in profile[i]:
-                constraints.append(x[p, i] == 0)
+                prob += x[p, i] == 0
 
-    # Constraint: total load assigned per project equals cost
     for p in projects:
-        constraints.append(cp.sum([x[p, i] for i in voter_ids]) == p.cost)
+        prob += lpSum(x[p, i] for i in voter_ids) == p.cost
 
-    # Voter total load
-    voter_load = [cp.sum([x[p, i] for p in projects]) for i in voter_ids]
-
-    # Minimize max voter load
-    z = cp.Variable()
     for i in voter_ids:
-        constraints.append(voter_load[i] <= z)
+        prob += lpSum(x[p, i] for p in projects) <= z
 
-    prob = cp.Problem(cp.Minimize(z), constraints)
-    prob.solve(solver=cp.ECOS)  # You can also try SCS or OSQP
+    prob += z  # Objective: minimize max load
 
-    if prob.status != cp.OPTIMAL:
+    status = prob.solve()
+    if status != LpStatusOptimal:
         raise RuntimeError("LP did not converge")
 
-    return z.value
+    return value(z)
     
 def compute_uniform_load(project: Project, approvers: list[int], num_voters: int) -> float:
     """
