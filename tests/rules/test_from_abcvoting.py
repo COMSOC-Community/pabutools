@@ -116,7 +116,7 @@ def irresolute_res_representation(budget_allocations, instance, profile):
             res.append(alloc_repr)
     return sorted(res)
 
-class TestRulesonABCVoting(TestCase):
+class TestRulesOnABCVoting(TestCase):
     def test_rules_on_abcvoting(self):
         current_file_path = os.path.dirname(os.path.realpath(__file__))
         yaml_dir_path = os.path.join(current_file_path, "abcvoting_test_instances")

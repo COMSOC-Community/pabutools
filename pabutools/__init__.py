@@ -1,6 +1,6 @@
 __author__ = "Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron"
 __email__ = "simon.j.rey@proton.me"
-__version__ = "1.1.17"
+__version__ = "1.2.0"
 
 
 import logging

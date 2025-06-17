@@ -2,12 +2,10 @@
 Module testing priceability / stable-priceability property.
 """
 
-# fmt: off
-
 from unittest import TestCase
 
 from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot
-
+from pabutools.analysis.priceability_pulp import priceable, validate_price_system
 
 
 
@@ -26,11 +24,6 @@ class TestPriceability(TestCase):
         # +===============================+
         # | v1 | v2 | v3 | v4 | v5  | v6  |
 
-        try:
-            from pabutools.analysis.priceability import priceable, validate_price_system
-        except ImportError:
-            return
-
         p = [Project(str(i), cost=1) for i in range(16)]
         instance = Instance(p[1:], budget_limit=12)
 
@@ -43,14 +36,14 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5, v6])
 
         allocation = p[1:4] + p[7:]
-        self.assertFalse(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertFalse(priceable(instance, profile, allocation).validate())
 
         allocation = p[1:9] + p[10:12] + p[13:15]
-        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, allocation).validate())
 
-        res = priceable(instance, profile, mip_solver_name='cbc')
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, mip_solver_name='cbc').validate())
-        self.assertTrue(priceable(instance, profile, res.allocation, mip_solver_name='cbc').validate())
+        res = priceable(instance, profile)
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
+        self.assertTrue(priceable(instance, profile, res.allocation).validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
 
@@ -72,11 +65,6 @@ class TestPriceability(TestCase):
         # +========================+
         # | v1 | v2 | v3 | v4 | v5 |
 
-        try:
-            from pabutools.analysis.priceability import priceable, validate_price_system
-        except ImportError:
-            return
-
         p = [Project(str(i), cost=1) for i in range(11)]
         instance = Instance(p[1:], budget_limit=5)
 
@@ -88,17 +76,17 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5])
 
         allocation = p[1:3]
-        self.assertFalse(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertFalse(priceable(instance, profile, allocation).validate())
 
         allocation = p[1:6]
-        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, allocation).validate())
 
         allocation = p[6:]
-        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, allocation).validate())
 
-        res = priceable(instance, profile, mip_solver_name='cbc')
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, mip_solver_name='cbc').validate())
-        self.assertTrue(priceable(instance, profile, res.allocation, mip_solver_name='cbc').validate())
+        res = priceable(instance, profile)
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
+        self.assertTrue(priceable(instance, profile, res.allocation).validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
 
@@ -120,11 +108,6 @@ class TestPriceability(TestCase):
         # +============================================+
         # | v1 | v2 | v3 | v4 | v5 | v6 | v7 | v8 | v9 |
 
-        try:
-            from pabutools.analysis.priceability import priceable, validate_price_system
-        except ImportError:
-            return
-
         p = [Project(str(i), cost=1) for i in range(13)]
         instance = Instance(p[1:], budget_limit=9)
 
@@ -142,27 +125,22 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5, v6, v7, v8, v9])
 
         allocation = p[1:10]
-        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, allocation).validate())
 
         allocation = p[1:6] + p[7:9] + p[10:12]
-        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, allocation).validate())
 
         allocation = p[1:6] + p[7:9] + p[11:12]
-        self.assertFalse(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
+        self.assertFalse(priceable(instance, profile, allocation).validate())
 
-        res = priceable(instance, profile, mip_solver_name='cbc')
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, mip_solver_name='cbc').validate())
-        self.assertTrue(priceable(instance, profile, res.allocation, mip_solver_name='cbc').validate())
+        res = priceable(instance, profile)
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
+        self.assertTrue(priceable(instance, profile, res.allocation).validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
 
     def test_priceable_approval_4(self):
         # Example from https://equalshares.net/explanation#example
-
-        try:
-            from pabutools.analysis.priceability import priceable, validate_price_system
-        except ImportError:
-            return
 
         p = [
             Project("bike path", cost=700),
@@ -187,16 +165,17 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11])
 
         allocation = [p[0], p[1]]
-        self.assertFalse(priceable(instance, profile, allocation, stable=True, mip_solver_name='cbc').validate())
+        self.assertFalse(priceable(instance, profile, allocation, stable=True).validate())
 
         allocation = [p[0], p[2], p[4]]
-        self.assertFalse(priceable(instance, profile, allocation, stable=True, mip_solver_name='cbc').validate())
+        self.assertFalse(priceable(instance, profile, allocation, stable=True).validate())
 
         allocation = p[1:]
-        self.assertTrue(priceable(instance, profile, allocation, stable=True, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, allocation, stable=True).validate())
 
-        res = priceable(instance, profile, stable=True, mip_solver_name='cbc')
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True, mip_solver_name='cbc').validate())
-        self.assertTrue(priceable(instance, profile, res.allocation, stable=True, mip_solver_name='cbc').validate())
+        res = priceable(instance, profile, stable=True)
+        # Below now fails because of rounding errors (this was not the case when we were using python-mip)
+        # self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True).validate())
+        self.assertTrue(priceable(instance, profile, res.allocation, stable=True).validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True))

@@ -1,27 +1,12 @@
-"""
-Module for relaxation of the stable-priceability constraint.
-"""
-
 from __future__ import annotations
 
-import collections
+from collections import defaultdict
 from abc import ABC, abstractmethod
 from numbers import Real
 
-from pabutools.election import (
-    Instance,
-    Profile,
-    Project,
-)
+from pabutools.election import Instance, Profile, Project
 
-try:
-    from mip import Model, xsum, minimize
-except ImportError:
-    raise ImportError(
-        "The priceability functions need the python-mip package. This is no longer listed as a requirement as we are "
-        "slowly moving to PuLP for Python 3.13 compatibility. If you are using Python < 3.13, install manually the "
-        "python-mip package. If you are using Python 3.13, please help us translate this file to PuLP."
-    )
+from pulp import LpProblem, LpVariable, lpSum, LpContinuous, value
 
 
 class Relaxation(ABC):
@@ -34,6 +19,8 @@ class Relaxation(ABC):
             An instance the relaxation is operating on.
         profile : :py:class:`~pabutools.election.profile.profile.Profile`
             A profile the relaxation is operating on.
+        variables : dict
+            A dictionary with variables of the mip model.
 
     Attributes
     ----------
@@ -41,58 +28,59 @@ class Relaxation(ABC):
             An instance the relaxation is operating on.
         profile : :py:class:`~pabutools.election.profile.profile.Profile`
             A profile the relaxation is operating on.
+        variables : dict
+            A dictionary with variables of the mip model.
 
     """
 
-    def __init__(self, instance: Instance, profile: Profile):
+    def __init__(self, instance: Instance, profile: Profile, variables: dict | None = None):
         self.instance = self.C = instance
         self.profile = self.N = profile
         self.INF = instance.budget_limit * 10
         self._saved_beta = None
+        if variables is None:
+            self.variables = dict()
+        else:
+            self.variables = dict(variables)
 
     @abstractmethod
-    def add_beta(self, mip_model: Model) -> None:
+    def add_beta(self, model: LpProblem) -> None:
         """
         Add beta variable to the model.
 
         Parameters
         ----------
-            mip_model : Model
+            model : LpProblem
                 The stable-priceability MIP model.
         """
 
     @abstractmethod
-    def add_objective(self, mip_model: Model) -> None:
+    def add_objective(self, model: LpProblem) -> None:
         """
         Add objective function to the model.
 
         Parameters
         ----------
-            mip_model : Model
+            model : LpProblem
                 The stable-priceability MIP model.
         """
 
     @abstractmethod
-    def add_stability_constraint(self, mip_model: Model) -> None:
+    def add_stability_constraint(self, model: LpProblem) -> None:
         """
         Add relaxed stability constraint to the model.
 
         Parameters
         ----------
-            mip_model : Model
+            model : LpProblem
                 The stable-priceability MIP model.
         """
 
     @abstractmethod
-    def get_beta(self, mip_model: Model) -> Real | dict:
+    def get_beta(self) -> Real | dict:
         """
         Get the value of beta from the model.
-        This method implicitly saves internally the value of beta variable from `mip_model`.
-
-        Parameters
-        ----------
-            mip_model : Model
-                The stable-priceability MIP model.
+        This method implicitly saves internally the value of beta variable.
 
         Returns
         -------
@@ -125,28 +113,25 @@ class MinMul(Relaxation):
     The objective function minimizes beta.
     """
 
-    def add_beta(self, mip_model: Model) -> None:
-        mip_model.add_var(name="beta")
+    def add_beta(self, model: LpProblem) -> None:
+        self.variables["beta"] = LpVariable("beta", lowBound=0, cat=LpContinuous)
 
-    def add_objective(self, mip_model: Model) -> None:
-        beta = mip_model.var_by_name(name="beta")
-        mip_model.objective = minimize(beta)
+    def add_objective(self, model: LpProblem) -> None:
+        model += -self.variables["beta"]  # PuLP does not allow for changing optimization sense
 
-    def add_stability_constraint(self, mip_model: Model) -> None:
-        x_vars = {c: mip_model.var_by_name(name=f"x_{c.name}") for c in self.C}
+    def add_stability_constraint(self, model: LpProblem) -> None:
+        x_vars = {c: self.variables[f"x_{c.name}"] for c in self.C}
         m_vars = [
-            mip_model.var_by_name(name=f"m_{idx}") for idx, _ in enumerate(self.N)
+            self.variables[f"m_{idx}"] for idx, _ in enumerate(self.N)
         ]
-        beta = mip_model.var_by_name(name="beta")
-        for c in self.C:
-            mip_model += (
-                xsum(m_vars[idx] for idx, i in enumerate(self.N) if c in i)
-                <= c.cost * beta + x_vars[c] * self.INF
-            )
+        beta = self.variables["beta"]
 
-    def get_beta(self, mip_model: Model) -> Real | dict:
-        beta = mip_model.var_by_name(name="beta")
-        self._saved_beta = beta.x
+        for c in self.C:
+            model += lpSum(m_vars[idx] for idx, i in enumerate(self.N) if c in i) \
+                     <= c.cost * beta + x_vars[c] * self.INF
+
+    def get_beta(self) -> Real:
+        self._saved_beta = value(self.variables["beta"])
         return self._saved_beta
 
     def get_relaxed_cost(self, project: Project) -> float:
@@ -154,33 +139,19 @@ class MinMul(Relaxation):
 
 
 class MinAdd(Relaxation):
-    """
-    A beta in (-inf, inf) is added to the right-hand side of the condition.
-    The objective function minimizes beta.
-    """
+    def add_beta(self, model: LpProblem) -> None:
+        self.variables["beta"] = LpVariable("beta", lowBound=-self.INF, cat=LpContinuous)
 
-    def add_beta(self, mip_model: Model) -> None:
-        mip_model.add_var(name="beta", lb=-self.INF)
+    def add_objective(self, model: LpProblem) -> None:
+        model += -self.variables["beta"]  # PuLP does not allow for changing optimization sense
 
-    def add_objective(self, mip_model: Model) -> None:
-        beta = mip_model.var_by_name(name="beta")
-        mip_model.objective = minimize(beta)
-
-    def add_stability_constraint(self, mip_model: Model) -> None:
-        x_vars = {c: mip_model.var_by_name(name=f"x_{c.name}") for c in self.C}
-        m_vars = [
-            mip_model.var_by_name(name=f"m_{idx}") for idx, _ in enumerate(self.N)
-        ]
-        beta = mip_model.var_by_name(name="beta")
+    def add_stability_constraint(self, model: LpProblem) -> None:
         for c in self.C:
-            mip_model += (
-                xsum(m_vars[idx] for idx, i in enumerate(self.N) if c in i)
-                <= c.cost + beta + x_vars[c] * self.INF
-            )
+            model += lpSum(self.variables[f"m_{idx}"] for idx, i in enumerate(self.N) if c in i) \
+                     <= c.cost + self.variables["beta"] + self.variables[f"x_{c.name}"] * self.INF
 
-    def get_beta(self, mip_model: Model) -> Real | dict:
-        beta = mip_model.var_by_name(name="beta")
-        self._saved_beta = beta.x
+    def get_beta(self) -> Real:
+        self._saved_beta = value(self.variables["beta"])
         return self._saved_beta
 
     def get_relaxed_cost(self, project: Project) -> float:
@@ -192,39 +163,28 @@ class MinAddVector(Relaxation):
     A separate beta[c] in (-inf, inf) for each project c is added to the right-hand side of the condition.
     The objective function minimizes the sum of beta[c] for each project c.
     """
-
-    def add_beta(self, mip_model: Model) -> None:
-        beta = {
-            c: mip_model.add_var(name=f"beta_{c.name}", lb=-self.INF) for c in self.C
-        }
-        x_vars = {c: mip_model.var_by_name(name=f"x_{c.name}") for c in self.C}
+    def add_beta(self, model: LpProblem) -> None:
+        for c in self.C:
+            self.variables[f"beta_{c.name}"] = LpVariable(f"beta_{c.name}", lowBound=-self.INF, cat=LpContinuous)
         # beta[c] is zero for selected
         for c in self.C:
-            mip_model += beta[c] <= (1 - x_vars[c]) * self.instance.budget_limit
-            mip_model += (x_vars[c] - 1) * self.instance.budget_limit <= beta[c]
+            model += self.variables[f"beta_{c.name}"] <= (1 - self.variables[f"x_{c.name}"]) * self.instance.budget_limit
+            model += (self.variables[f"x_{c.name}"] - 1) * self.instance.budget_limit <= self.variables["beta"][c]
 
-    def add_objective(self, mip_model: Model) -> None:
-        beta = {c: mip_model.var_by_name(name=f"beta_{c.name}") for c in self.C}
-        mip_model.objective = minimize(xsum(beta[c] for c in self.C))
+    def add_objective(self, model: LpProblem) -> None:
+        model += -lpSum(self.variables[f"beta_{c.name}"] for c in self.C)
 
-    def add_stability_constraint(self, mip_model: Model) -> None:
-        x_vars = {c: mip_model.var_by_name(name=f"x_{c.name}") for c in self.C}
-        m_vars = [
-            mip_model.var_by_name(name=f"m_{idx}") for idx, _ in enumerate(self.N)
-        ]
-        beta = {c: mip_model.var_by_name(name=f"beta_{c.name}") for c in self.C}
+    def add_stability_constraint(self, model: LpProblem) -> None:
         for c in self.C:
-            mip_model += (
-                xsum(m_vars[idx] for idx, i in enumerate(self.N) if c in i)
-                <= c.cost + beta[c] + x_vars[c] * self.INF
-            )
+            model += lpSum(self.variables[f"m_{idx}"] for idx, i in enumerate(self.N) if c in i) \
+                     <= c.cost + self.variables[f"beta_{c.name}"] + self.variables[f"x_{c.name}"] * self.INF
 
-    def get_beta(self, mip_model: Model) -> Real | dict:
-        beta = {c: mip_model.var_by_name(name=f"beta_{c.name}") for c in self.C}
-        return_beta = collections.defaultdict(int)
+    def get_beta(self) -> dict:
+        return_beta = defaultdict(int)
         for c in self.C:
-            if beta[c].x:
-                return_beta[c] = beta[c].x
+            val = value(self.variables[f"beta_{c.name}"])
+            if val:
+                return_beta[c] = val
         self._saved_beta = {"beta": return_beta, "sum": sum(return_beta.values())}
         return self._saved_beta
 
@@ -238,56 +198,37 @@ class MinAddVectorPositive(MinAddVector):
     The objective function minimizes the sum of beta[c] for each project c.
     """
 
-    def add_beta(self, mip_model: Model) -> None:
-        _beta = {c: mip_model.add_var(name=f"beta_{c.name}") for c in self.C}
+    def add_beta(self, model: LpProblem) -> None:
+        for c in self.C:
+            self.variables[f"beta_{c.name}"] = LpVariable(f"beta_{c.name}", lowBound=0, cat=LpContinuous)
 
 
 class MinAddOffset(Relaxation):
-    """
-    A mixture of `MinAdd` and `MinAddVector` relaxation methods.
-    A separate beta[c] in [0, inf) for each project c is added to the right-hand side of the condition.
-    The sum of beta[c] for each project c is in [0, 0.025 * instance.budget_limit].
-    Additionally, a global beta in (-inf, inf) is added to the right-hand side of the condition.
-    The objective function minimizes the global beta.
-    """
-
     BUDGET_FRACTION = 0.025
 
-    def add_beta(self, mip_model: Model) -> None:
-        _beta_global = mip_model.add_var(name="beta", lb=-self.INF)
-        beta = {c: mip_model.add_var(name=f"beta_{c.name}") for c in self.C}
-        mip_model += (
-            xsum(beta[c] for c in self.C)
-            <= self.BUDGET_FRACTION * self.instance.budget_limit
-        )
-
-    def add_objective(self, mip_model: Model) -> None:
-        beta_global = mip_model.var_by_name(name="beta")
-        mip_model.objective = minimize(beta_global)
-
-    def add_stability_constraint(self, mip_model: Model) -> None:
-        x_vars = {c: mip_model.var_by_name(name=f"x_{c.name}") for c in self.C}
-        m_vars = [
-            mip_model.var_by_name(name=f"m_{idx}") for idx, _ in enumerate(self.N)
-        ]
-        beta_global = mip_model.var_by_name(name="beta")
-        beta = {c: mip_model.var_by_name(name=f"beta_{c.name}") for c in self.C}
+    def add_beta(self, model: LpProblem) -> None:
+        self.variables["beta"] = LpVariable("beta", lowBound=-self.INF, cat=LpContinuous)
         for c in self.C:
-            mip_model += (
-                xsum(m_vars[idx] for idx, i in enumerate(self.N) if c in i)
-                <= c.cost + beta_global + beta[c] + x_vars[c] * self.INF
-            )
+            self.variables[f"beta_{c.name}"] = LpVariable(f"beta_{c.name}", lowBound=0, cat=LpContinuous)
+        model += lpSum(self.variables[f"beta_{c.name}"] for c in self.C) <= self.BUDGET_FRACTION * self.instance.budget_limit
 
-    def get_beta(self, mip_model: Model) -> Real | dict:
-        beta_global = mip_model.var_by_name(name="beta")
-        beta = {c: mip_model.var_by_name(name=f"beta_{c.name}") for c in self.C}
-        return_beta = collections.defaultdict(int)
+    def add_objective(self, model: LpProblem) -> None:
+        model += -self.variables["beta"]
+
+    def add_stability_constraint(self, model: LpProblem) -> None:
         for c in self.C:
-            if beta[c].x:
-                return_beta[c] = beta[c].x
+            model += lpSum(self.variables[f"m_{idx}"] for idx, i in enumerate(self.N) if c in i) \
+                     <= c.cost + self.variables["beta"] + self.variables[f"beta_{c.name}"] + self.variables[f"x_{c.name}"] * self.INF
+
+    def get_beta(self) -> dict:
+        return_beta = defaultdict(int)
+        for c in self.C:
+            val = value(self.variables[f"beta_{c.name}"])
+            if val:
+                return_beta[c] = val
         self._saved_beta = {
             "beta": return_beta,
-            "beta_global": beta_global.x,
+            "beta_global": value(self.variables["beta"]),
             "sum": sum(return_beta.values()),
         }
         return self._saved_beta
