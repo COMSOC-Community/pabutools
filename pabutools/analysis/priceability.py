@@ -7,7 +7,9 @@ from __future__ import annotations
 import collections
 from collections.abc import Collection
 import logging
-from mip import Model, xsum, BINARY, OptimizationStatus
+
+logger = logging.getLogger(__name__)
+
 
 from pabutools.analysis.priceability_relaxation import Relaxation
 from pabutools.election import (
@@ -18,10 +20,12 @@ from pabutools.election import (
 )
 from pabutools.utils import Numeric, round_cmp
 
+
+import pulp
+
 CHECK_ROUND_PRECISION = 2
 ROUND_PRECISION = 6
 
-logger = logging.getLogger(__name__)
 
 def validate_price_system(
     instance: Instance,
@@ -155,7 +159,7 @@ def validate_price_system(
 
     if verbose:
         for condition, error in errors.items():
-            logger.info(f"({condition}) {error}")
+            logger.info("(%s) %s", condition, error)
 
     return not errors
 
@@ -163,46 +167,50 @@ def validate_price_system(
 class PriceableResult:
     """
     Result of :py:func:`~pabutools.analysis.priceability.priceable`.
-    Contains information about the optimization status of ILP outcome.
-    If the status is valid (i.e. `OPTIMAL` / `FEASIBLE`), the class contains
+    Contains information about the optimization status of LP outcome.
+    If the status is valid (i.e. `Optimal` / `Feasible`), the class contains
     the budget allocation, as well as the price system (`voter_budget`, `payment_functions`)
     that satisfies the priceable / stable-priceable property.
 
     Parameters
     ----------
-        status : OptimizationStatus
-            Optimization status of the ILP outcome.
-        allocation : Collection[:py:class:`~pabutools.election.instance.Project`], optional
+        status : str
+            Optimization status from PuLP (e.g., 'Optimal', 'Infeasible', etc.).
+        allocation : list[:py:class:`~pabutools.election.instance.Project`], optional
             The selected collection of projects.
+            Defaults to `None`.
+        relaxation_beta : float or dict, optional
+            Relaxation parameter beta, if used.
             Defaults to `None`.
         voter_budget : float, optional
             Voter initial endowment.
             Defaults to `None`.
-        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]], optional
+        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, float]], optional
             List of payment functions for each voter.
             A payment function indicates the amounts paid for each project by a voter.
             Defaults to `None`.
 
     Attributes
     ----------
-        status : OptimizationStatus
-            Optimization status of the ILP outcome.
-        allocation : Collection[:py:class:`~pabutools.election.instance.Project`] or None
+        status : str
+            Optimization status from PuLP.
+        allocation : list[:py:class:`~pabutools.election.instance.Project`] or None
             The selected collection of projects.
-            `None` if the optimization status is not `OPTIMAL` / `FEASIBLE`.
-        voter_budget : bool or None
+            `None` if the optimization status is not `Optimal` / `Feasible`.
+        relaxation_beta : float or dict or None
+            Relaxation parameter beta, if applicable.
+        voter_budget : float or None
             Voter initial endowment.
-            `None` if the optimization status is not `OPTIMAL` / `FEASIBLE`.
-        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]] or None
+            `None` if the optimization status is not `Optimal` / `Feasible`.
+        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, float]] or None
             List of payment functions for each voter.
             A payment function indicates the amounts paid for each project by a voter.
-            `None` if the optimization status is not `OPTIMAL` / `FEASIBLE`.
-
+            `None` if the optimization status is not `Optimal` / `Feasible`.
     """
 
     def __init__(
         self,
-        status: OptimizationStatus,
+        status: str,
         allocation: list[Project] | None = None,
         relaxation_beta: float | dict = None,
         voter_budget: float | None = None,
@@ -216,17 +224,21 @@ class PriceableResult:
 
     def validate(self) -> bool | None:
         """
-        Checks if the optimization status is `OPTIMAL` / `FEASIBLE`.
+        Checks if the optimization status is 'Optimal' / 'Feasible'.
+
         Returns
         -------
-            bool
-                Validity of optimization status.
-
+            bool or None
+                `True` if optimization succeeded,
+                `False` if failed,
+                `None` if status is unknown.
         """
-        if self.status == OptimizationStatus.NO_SOLUTION_FOUND:
+        if self.status == pulp.LpStatusNotSolved:
             return None
-        return self.status in [OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE]
+        return self.status in [pulp.LpStatusOptimal]
 
+    def __repr__(self):
+        return f"PriceableResult[{self.status}]"
 
 def priceable(
     instance: Instance,
@@ -242,196 +254,175 @@ def priceable(
     verbose: bool = False,
 ) -> PriceableResult:
     """
-    Finds a priceable / stable-priceable budget allocation for approval profile
-    using Linear Programming via `mip` Python package.
+        Finds a priceable / stable-priceable budget allocation for approval profile
+        using Linear Programming via `mip` Python package.
 
-    Reference paper: https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf
+        Reference paper: https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf
 
-    Parameters
-    ----------
-        instance : :py:class:`~pabutools.election.instance.Instance`
-            The instance.
-        profile : :py:class:`~pabutools.election.profile.profile.AbstractProfile`
-            The profile.
-        budget_allocation : Collection[:py:class:`~pabutools.election.instance.Project`], optional
-            The selected collection of projects.
-            If specified, the allocation is hardcoded into the model.
-            Defaults to `None`.
-        voter_budget : Numeric
-            Voter initial endowment.
-            If specified, the voter budget is hardcoded into the model.
-            Defaults to `None`.
-        payment_functions : Collection[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]]
-            Collection of payment functions for each voter.
-            If specified, the payment functions are hardcoded into the model.
-            Defaults to `None`.
-        stable : bool, optional
-            Search stable-priceable allocation.
-            Defaults to `False`.
-        exhaustive : bool, optional
-            Search exhaustive allocation.
-            Defaults to `True`.
-        relaxation : :py:class:`~pabutools.analysis.priceability_relaxation.Relaxation`, optional
-            Relaxation method to the stable-priceability condition.
-            Defaults to `None`.
-        **max_seconds : int, optional
-            Model's maximum runtime in seconds.
-            Defaults to 600.
-        **verbose : bool, optional
-            Display additional information.
-            Defaults to `False`.
+        Parameters
+        ----------
+            instance : :py:class:`~pabutools.election.instance.Instance`
+                The instance.
+            profile : :py:class:`~pabutools.election.profile.profile.AbstractProfile`
+                The profile.
+            budget_allocation : Collection[:py:class:`~pabutools.election.instance.Project`], optional
+                The selected collection of projects.
+                If specified, the allocation is hardcoded into the model.
+                Defaults to `None`.
+            voter_budget : Numeric
+                Voter initial endowment.
+                If specified, the voter budget is hardcoded into the model.
+                Defaults to `None`.
+            payment_functions : Collection[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]]
+                Collection of payment functions for each voter.
+                If specified, the payment functions are hardcoded into the model.
+                Defaults to `None`.
+            stable : bool, optional
+                Search stable-priceable allocation.
+                Defaults to `False`.
+            exhaustive : bool, optional
+                Search exhaustive allocation.
+                Defaults to `True`.
+            relaxation : :py:class:`~pabutools.analysis.priceability_relaxation.Relaxation`, optional
+                Relaxation method to the stable-priceability condition.
+                Defaults to `None`.
+            **max_seconds : int, optional
+                Model's maximum runtime in seconds.
+                Defaults to 600.
+            **verbose : bool, optional
+                Display additional information.
+                Defaults to `False`.
 
-    Returns
-    -------
-        :py:class:`~pabutools.analysis.priceability.PriceableResult`
-            Dataclass containing priceable result details.
+        Returns
+        -------
+            :py:class:`~pabutools.analysis.priceability.PriceableResult`
+                Dataclass containing priceable result details.
 
     """
     C = instance
     N = profile
     INF = instance.budget_limit * 10
 
-    mip_model = Model("stable-priceability" if stable else "priceability")
-    mip_model.verbose = verbose
-    mip_model.integer_tol = 1e-8
+    model = pulp.LpProblem("stable-priceability" if stable else "priceability", pulp.LpMaximize)
 
     # voter budget
-    b = mip_model.add_var(name="voter_budget")
+    b = pulp.LpVariable("voter_budget", lowBound=0)
     if voter_budget is not None:
-        mip_model += b == voter_budget
+        model += b == voter_budget, "C_voter_budget"
 
     # prevent empty allocation as a result
-    mip_model += b * profile.num_ballots() >= instance.budget_limit
+    model += b * profile.num_ballots() >= instance.budget_limit, "C_no_empty"
 
     # payment functions
     p_vars = [
-        {c: mip_model.add_var(name=f"p_{idx}_{c.name}") for c in C}
+        {c: pulp.LpVariable(f"p_{idx}_{c.name}", lowBound=0) for c in C}
         for idx, i in enumerate(N)
     ]
     if payment_functions is not None:
         for idx, _ in enumerate(N):
             for c in C:
-                mip_model += p_vars[idx][c] == payment_functions[idx][c]
+                model += p_vars[idx][c] == payment_functions[idx][c], f"C_pf_{idx}_{c.name}"
 
     # winning allocation
-    x_vars = {c: mip_model.add_var(var_type=BINARY, name=f"x_{c.name}") for c in C}
+    x_vars = {c: pulp.LpVariable(f"x_{c.name}", cat="Binary") for c in C}
+    if relaxation is not None:
+        for c in C:
+            relaxation.variables[f"x_{c.name}"] = x_vars[c]
     if budget_allocation is not None:
         for c in C:
-            if c in budget_allocation:
-                mip_model += x_vars[c] == 1
-            else:
-                mip_model += x_vars[c] == 0
+            model += x_vars[c] == int(c in budget_allocation), f"C_init_alloc_{c.name}"
 
-    cost_total = xsum(x_vars[c] * c.cost for c in C)
+    cost_total = pulp.lpSum(x_vars[c] * c.cost for c in C)
 
     # (C0a) the winning allocation is feasible
-    mip_model += cost_total <= instance.budget_limit
+    model += cost_total <= instance.budget_limit, "C_alloc_feas"
 
     if exhaustive:
         # (C0b) the winning allocation is exhaustive
         for c in C:
-            mip_model += (
-                cost_total + c.cost + x_vars[c] * INF >= instance.budget_limit + 1
-            )
+            model += cost_total + c.cost + x_vars[c] * INF >= instance.budget_limit + 1, f"C_alloc_exh_{c.name}"
 
     # (C1) voter can pay only for projects they approve of
     for idx, i in enumerate(N):
         for c in C:
             if c not in i:
-                mip_model += p_vars[idx][c] == 0
+                model += p_vars[idx][c] == 0, f"C_app_{idx}_{c.name}"
 
     # (C2) voter will not spend more than their initial budget
     for idx, _ in enumerate(N):
-        mip_model += xsum(p_vars[idx][c] for c in C) <= b
+        model += pulp.lpSum(p_vars[idx][c] for c in C) <= b, f"C_no_overspend_{idx}"
 
     # (C3) the sum of the payments for selected project equals its cost
     for c in C:
-        payments_total = xsum(p_vars[idx][c] for idx, _ in enumerate(N))
-
-        mip_model += payments_total <= c.cost
-        mip_model += c.cost + (x_vars[c] - 1) * INF <= payments_total
+        payments_total = pulp.lpSum(p_vars[idx][c] for idx, _ in enumerate(N))
+        model += payments_total <= c.cost, f"C_pay_to_cost_{c.name}_nomore"
+        model += c.cost + (x_vars[c] - 1) * INF <= payments_total,  f"C_pay_to_cost_{c.name}_selected"
 
     # (C4) voters do not pay for not selected projects
     for idx, _ in enumerate(N):
         for c in C:
-            mip_model += 0 <= p_vars[idx][c]
-            mip_model += p_vars[idx][c] <= x_vars[c] * INF
+            model += 0 <= p_vars[idx][c], f"C_nonselected_{idx}_{c.name}_lb"
+            model += p_vars[idx][c] <= x_vars[c] * INF, f"C_nonselected_{idx}_{c.name}_ub"
 
     if relaxation is not None:
-        relaxation.add_beta(mip_model)
+        relaxation.add_beta(model)
 
     if not stable:
-        r_vars = [mip_model.add_var(name=f"r_{idx}") for idx, i in enumerate(N)]
+        r_vars = [pulp.LpVariable(f"r_{idx}") for idx, _ in enumerate(N)]
         for idx, _ in enumerate(N):
-            mip_model += r_vars[idx] == b - xsum(p_vars[idx][c] for c in C)
+            model += r_vars[idx] == b - pulp.lpSum(p_vars[idx][c] for c in C), f"C_rest_money_{idx}"
 
         # (C5) supporters of not selected project have no more money than its cost
         for c in C:
-            mip_model += (
-                xsum(r_vars[idx] for idx, i in enumerate(N) if c in i)
+            model += (
+                pulp.lpSum(r_vars[idx] for idx, i in enumerate(N) if c in i)
                 <= c.cost + x_vars[c] * INF
-            )
+            ), f"C_supp_notselected_noafford_{c.name}"
     else:
-        m_vars = [mip_model.add_var(name=f"m_{idx}") for idx, i in enumerate(N)]
+        m_vars = [pulp.LpVariable(f"m_{idx}") for idx, _ in enumerate(N)]
+        # Add the vars to the relaxation
+        if relaxation is not None:
+            for idx, _ in enumerate(N):
+                relaxation.variables[f"m_{idx}"] = m_vars[idx]
         for idx, _ in enumerate(N):
             for c in C:
-                mip_model += m_vars[idx] >= p_vars[idx][c]
-            mip_model += m_vars[idx] >= b - xsum(p_vars[idx][c] for c in C)
+                model += m_vars[idx] >= p_vars[idx][c]
+            model += m_vars[idx] >= b - pulp.lpSum(p_vars[idx][c] for c in C)
 
         # (S5) stability constraint
         if relaxation is None:
             for c in C:
-                mip_model += (
-                    xsum(m_vars[idx] for idx, i in enumerate(N) if c in i)
+                model += (
+                    pulp.lpSum(m_vars[idx] for idx, i in enumerate(N) if c in i)
                     <= c.cost + x_vars[c] * INF
                 )
         else:
-            relaxation.add_stability_constraint(mip_model)
+            relaxation.add_stability_constraint(model)
 
     if relaxation is not None:
-        relaxation.add_objective(mip_model)
-
-    if relaxation is None:
-        status = mip_model.optimize(max_seconds=max_seconds, max_solutions=1)
+        relaxation.add_objective(model)
     else:
-        status = mip_model.optimize(max_seconds=max_seconds)
+        model += 0  # No-op objective if none is specified
 
-    if (
-        hasattr(OptimizationStatus, "INF_OR_UNBD")
-        and status == OptimizationStatus.INF_OR_UNBD
-    ):
-        # https://support.gurobi.com/hc/en-us/articles/4402704428177-How-do-I-resolve-the-error-Model-is-infeasible-or-unbounded
-        # https://github.com/coin-or/python-mip/blob/1.15.0/mip/gurobi.py#L777
-        # https://github.com/coin-or/python-mip/blob/1.16-pre/mip/gurobi.py#L778
-        # This is not part of old python-mip version, hence the first test
-        #
-        mip_model.solver.set_int_param("DualReductions", 0)
-        mip_model.reset()
-        if relaxation is None:
-            mip_model.optimize(max_seconds=max_seconds, max_solutions=1)
-        else:
-            mip_model.optimize(max_seconds=max_seconds)
-        status = (
-            OptimizationStatus.INFEASIBLE
-            if mip_model.solver.get_int_attr("status") == 3
-            else OptimizationStatus.UNBOUNDED
-        )
+    solver = pulp.PULP_CBC_CMD(msg=verbose, timeLimit=max_seconds)
+    status = model.solve(solver)
 
-    if status not in [OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE]:
+    if status not in [pulp.LpStatusOptimal]:
         return PriceableResult(status=status)
 
     payment_functions = [collections.defaultdict(float) for _ in N]
     for idx, _ in enumerate(N):
         for c in C:
-            if p_vars[idx][c].x > 1e-8:
-                payment_functions[idx][c] = p_vars[idx][c].x
+            val = pulp.value(p_vars[idx][c])
+            if val is not None and val > 1e-8:
+                payment_functions[idx][c] = val
 
     return PriceableResult(
         status=status,
-        allocation=list(sorted([c for c in C if x_vars[c].x >= 0.99])),
-        voter_budget=b.x,
+        allocation=list(sorted([c for c in C if pulp.value(x_vars[c]) >= 0.99])),
+        voter_budget=pulp.value(b),
         relaxation_beta=(
-            relaxation.get_beta(mip_model) if relaxation is not None else None
+            relaxation.get_beta() if relaxation is not None else None
         ),
         payment_functions=payment_functions,
     )
