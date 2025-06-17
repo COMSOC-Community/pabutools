@@ -7,6 +7,10 @@ from pabutools.election.profile.ordinalprofile import AbstractOrdinalProfile
 from pabutools.rules.budgetallocation import BudgetAllocation
 import logging
 from pabutools.utils_formatting import format_table
+from pabutools.fractions import frac
+from pabutools.election.instance import Project
+
+
 """
 An implementation of the PB-EAR algorithm from:
 
@@ -23,146 +27,152 @@ logger = logging.getLogger(__name__)
 def pb_ear(
     instance: Instance,
     profile: AbstractProfile,
-    verbose: bool = False
+    verbose: bool = False,
+    rounding_precision: int = 6
 ) -> BudgetAllocation:
     """
     PB-EAR Algorithm — Proportional Representation via Inclusion-PSC (IPSC) under Ordinal Preferences.
 
-    This algorithm selects a subset of projects within a given budget, ensuring proportional representation
-    for solid coalitions based on voters' weighted ordinal preferences. It supports both `OrdinalProfile`
-    and `OrdinalMultiProfile` inputs.
+    This algorithm selects a subset of projects within a given budget while ensuring proportional representation
+    for solid coalitions based on voters' ordinal preferences. It supports both `OrdinalProfile` and `OrdinalMultiProfile`.
 
     Parameters
     ----------
     instance : Instance
-        The budgeting instance containing all candidate projects and the total budget limit.
-        Each project has a unique name and a positive cost.
+        The budgeting instance, including all candidate projects and a total budget limit.
 
     profile : AbstractOrdinalProfile
         A profile of voters' preferences. Each voter submits a strict ranking over a subset of projects,
         and is assigned a positive weight. Can be an `OrdinalProfile` or `OrdinalMultiProfile`.
 
     verbose : bool, optional
-        If True, enables detailed logging output for debugging or analysis (default is False).
+        If True, enables detailed debug logging (default is False).
+
+    rounding_precision : int, optional
+        The number of decimal places to round values for threshold comparisons and logging (default is 6).
 
     Returns
     -------
     BudgetAllocation
-        An allocation object containing the selected projects. These projects:
-        - Respect the overall budget constraint
-        - Satisfy the Inclusion Proportionality for Solid Coalitions (IPSC) axiom
+        An allocation containing the selected projects that respect the budget and satisfy the IPSC criterion.
 
     Raises
     ------
     ValueError
-        If the input profile is not an instance of `AbstractOrdinalProfile`.
-        """
-    # Ensure the profile is ordinal (either OrdinalProfile or OrdinalMultiProfile)
-    if not isinstance(profile, AbstractOrdinalProfile):
-        raise ValueError("PB-EAR only supports ordinal profiles (OrdinalProfile or OrdinalMultiProfile).")
+        If the profile is not an instance of `AbstractOrdinalProfile`.
+    """
 
-    # If there are no voters, return an empty allocation
+    if not isinstance(profile, AbstractOrdinalProfile):
+        raise ValueError("PB-EAR only supports ordinal profiles.")
+
     if len(profile) == 0:
         return BudgetAllocation()
 
-    # Extract basic input data
     budget = instance.budget_limit
     project_cost = {p.name: p.cost for p in instance}
+    project_by_name = {p.name: p for p in instance}
     all_projects = set(project_cost)
-    if verbose:
-        logger.info("=" * 30 + f" NEW RUN: PB-EAR" + "=" * 30)
 
-    # Convert the profile to a list of (weight, preference list) pairs
-    voters = [(profile[ballot], list(ballot)) for ballot in profile]
-    initial_n = sum(w for w, _ in voters)  # Total weight
-    voter_weights = {i: weight for i, (weight, _) in enumerate(voters)}  # Mutable copy for updates
     if verbose:
-        logger.debug("Number of voters = %d budget=%.2f", initial_n, budget)
+        logger.info("=" * 30 + " NEW RUN: PB-EAR " + "=" * 30)
 
-    j = 1  # Rank threshold level
-    selected_projects = set()
+    voters = [(ballot, profile.multiplicity(ballot)) for ballot in profile]
+    voter_weights = {ballot: weight for ballot, weight in voters}
+    initial_n = sum(voter_weights.values())
+
+    j = 1
+    selected_projects: set[Project] = set()
     remaining_budget = budget
 
     while True:
-        # Identify which projects are still affordable
         available_projects = [
-            p for p in all_projects - selected_projects if project_cost[p] <= remaining_budget
+            p for p in all_projects - {proj.name for proj in selected_projects}
+            if project_cost[p] <= remaining_budget
         ]
+
         if verbose:
             logger.debug("Step j=%d — available_projects=%s, remaining_budget=%.2f", j, available_projects, remaining_budget)
-        if not available_projects:
-            if verbose:
-                logger.debug("No more projects can be added without exceeding the budget.")
-            break  # No more projects can be selected
 
-        # Build approval sets: for each voter, include all projects up to their j-th most preferred one
+        if not available_projects:
+            break
+
         approvals = defaultdict(set)
-        for i, (_, prefs) in enumerate(voters):
+        for ballot, _ in voters:
+            prefs = list(ballot)
             if j <= len(prefs):
                 threshold = prefs[j - 1]
                 rank_threshold = prefs.index(threshold)
-                approvals[i] = set(prefs[:rank_threshold + 1])
+                approvals[ballot] = set(prefs[:rank_threshold + 1])
             else:
-                approvals[i] = set(prefs)  # If j exceeds length, approve everything
+                approvals[ballot] = set(prefs)
 
-        # Aggregate support for each candidate project
         candidate_support = defaultdict(float)
-        for i, approved_set in approvals.items():
-            for p in approved_set:
-                if p not in selected_projects:
-                    candidate_support[p] += voter_weights[i]
+        for ballot, approved in approvals.items():
+            for p in approved:
+                if p not in {proj.name for proj in selected_projects}:
+                    candidate_support[p] += voter_weights[ballot]
 
-                # Log support table (for transparency)
-        table = [(p, f"{candidate_support[p]:.2f}", f"{project_cost[p]:.2f}", f"{(initial_n * project_cost[p]) / budget:.2f}")
-                 for p in available_projects]
+        table = [
+            (
+                p,
+                f"{round(candidate_support[p], rounding_precision)}",
+                f"{round(project_cost[p], rounding_precision)}",
+                f"{round(frac((int(initial_n * project_cost[p])),(int(budget))), rounding_precision)}"
+            )
+            for p in available_projects
+        ]
         headers = ["Project", "Support", "Cost", "Threshold"]
         if verbose:
             logger.debug("\n%s", format_table(headers, table))
 
-        # Identify projects whose support justifies their cost (IPSC condition)
         C_star = {
             c for c in available_projects
-            if round(candidate_support[c], 6) >= round((initial_n * project_cost[c]) / budget, 6)
+            if round(candidate_support[c], rounding_precision) >= round(
+                frac((int(initial_n * project_cost[c])),(int(budget))), rounding_precision
+            )
         }
-        if verbose:
-            logger.debug("Step j=%d — selected_candidates_meeting_threshold (C*) = %s", j, sorted(C_star))
+
 
         if not C_star:
-            # If no justifiable projects and we haven't exhausted all ranks, increase threshold j
-            if j > max(len(prefs) for _, prefs in voters):
-                if verbose:
-                    logger.info("No candidates meet support threshold and no further preferences left j=%d", j)
-                break  # All ranks checked
-            logger.info("No candidates meet support threshold at j=%d, increasing j", j)
+            max_rank = max(len(list(ballot)) for ballot, _ in voters)
+            if j > max_rank:
+                break
             j += 1
             continue
 
-        # Select an arbitrary justifiable project
         c_star = next(iter(C_star))
-        selected_projects.add(c_star)
+        selected_projects.add(project_by_name[c_star])
         remaining_budget -= project_cost[c_star]
-        logger.info("Selected candidate: %s | cost=%.2f | remaining_budget=%.2f", c_star, project_cost[c_star], remaining_budget)
 
+        if verbose:
+            logger.info("Selected candidate: %s | cost=%.2f | remaining_budget=%.2f", c_star, project_cost[c_star], remaining_budget)
 
-        # Reduce weight of voters who approved c_star proportionally
-        N_prime = [i for i in range(len(voters)) if c_star in approvals[i]]
-        total_weight_to_reduce = (initial_n * project_cost[c_star]) / budget
+        N_prime = [ballot for ballot in approvals if c_star in approvals[ballot]]
+        total_weight_to_reduce = frac(
+    (int(initial_n * project_cost[c_star])),
+    (int(budget))
+)
+
 
         if N_prime:
-            sum_supporters = sum(voter_weights[i] for i in N_prime)
-            weight_fraction = total_weight_to_reduce / sum_supporters if sum_supporters > 0 else 0
-            for i in N_prime:
-                old_weight = voter_weights[i]
-                voter_weights[i] = voter_weights[i] * (1 - weight_fraction)
-                logger.debug("Reducing weight for voter index=%d — old_weight=%.4f new_weight=%.4f", i, old_weight, voter_weights[i])
+            sum_supporters = sum(voter_weights[b] for b in N_prime)
+            weight_fraction = (
+    frac((int(total_weight_to_reduce)), (int(sum_supporters)))
+    if sum_supporters > 0 else 0
+)
 
+            for ballot in N_prime:
+                old_weight = voter_weights[ballot]
+                voter_weights[ballot] = voter_weights[ballot] * (1 - weight_fraction)
+                logger.debug("Reducing weight — old_weight=%.4f new_weight=%.4f", old_weight, voter_weights[ballot])
 
-    # Construct the final BudgetAllocation object
     allocation = BudgetAllocation()
-    for name in sorted(selected_projects):
-        allocation.append(instance.get_project(name))
-    logger.info("Final selected projects: %s (total=%d)", sorted(selected_projects), len(selected_projects))
+    for project in sorted(selected_projects, key=lambda p: p.name):
+        allocation.append(project)
+
+    logger.info(
+        "Final selected projects: %s (total=%d)",
+        [p.name for p in sorted(selected_projects, key=lambda p: p.name)],
+        len(selected_projects)
+    )
     return allocation
-
-
-
