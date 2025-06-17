@@ -5,7 +5,7 @@ Module testing priceability / stable-priceability property.
 from unittest import TestCase
 
 from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot
-from pabutools.analysis.priceability_pulp import priceable, validate_price_system
+from pabutools.analysis.priceability import priceable, validate_price_system
 
 
 

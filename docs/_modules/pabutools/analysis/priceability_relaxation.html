@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../_static/documentation_options.js?v=772388c8"></script>
+    <script src="../../../_static/documentation_options.js?v=db04a367"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.16" />
+  <meta name="docsearch:version" content="1.2.0" />
   </head>
   
   
@@ -279,30 +279,15 @@
                 <article class="bd-article">
                   
   <h1>Source code for pabutools.analysis.priceability_relaxation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Module for relaxation of the stable-priceability constraint.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
 
-<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Instance</span><span class="p">,</span>
-    <span class="n">Profile</span><span class="p">,</span>
-    <span class="n">Project</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Profile</span><span class="p">,</span> <span class="n">Project</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mip</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">xsum</span><span class="p">,</span> <span class="n">minimize</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-        <span class="s2">&quot;The priceability functions need the python-mip package. This is no longer listed as a requirement as we are &quot;</span>
-        <span class="s2">&quot;slowly moving to PuLP for Python 3.13 compatibility. If you are using Python &lt; 3.13, install manually the &quot;</span>
-        <span class="s2">&quot;python-mip package. If you are using Python 3.13, please help us translate this file to PuLP.&quot;</span>
-    <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pulp</span> <span class="kn">import</span> <span class="n">LpProblem</span><span class="p">,</span> <span class="n">LpVariable</span><span class="p">,</span> <span class="n">lpSum</span><span class="p">,</span> <span class="n">LpContinuous</span><span class="p">,</span> <span class="n">value</span>
 
 
 <div class="viewcode-block" id="Relaxation">
@@ -317,6 +302,8 @@
 <span class="sd">            An instance the relaxation is operating on.</span>
 <span class="sd">        profile : :py:class:`~pabutools.election.profile.profile.Profile`</span>
 <span class="sd">            A profile the relaxation is operating on.</span>
+<span class="sd">        variables : dict</span>
+<span class="sd">            A dictionary with variables of the mip model.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -324,25 +311,31 @@
 <span class="sd">            An instance the relaxation is operating on.</span>
 <span class="sd">        profile : :py:class:`~pabutools.election.profile.profile.Profile`</span>
 <span class="sd">            A profile the relaxation is operating on.</span>
+<span class="sd">        variables : dict</span>
+<span class="sd">            A dictionary with variables of the mip model.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">Profile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">Profile</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">profile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">INF</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">*</span> <span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">variables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Relaxation.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_beta">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add beta variable to the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            mip_model : Model</span>
+<span class="sd">            model : LpProblem</span>
 <span class="sd">                The stable-priceability MIP model.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
@@ -350,13 +343,13 @@
 <div class="viewcode-block" id="Relaxation.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_objective">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add objective function to the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            mip_model : Model</span>
+<span class="sd">            model : LpProblem</span>
 <span class="sd">                The stable-priceability MIP model.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
@@ -364,13 +357,13 @@
 <div class="viewcode-block" id="Relaxation.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add relaxed stability constraint to the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            mip_model : Model</span>
+<span class="sd">            model : LpProblem</span>
 <span class="sd">                The stable-priceability MIP model.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
@@ -378,15 +371,10 @@
 <div class="viewcode-block" id="Relaxation.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.get_beta">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the value of beta from the model.</span>
-<span class="sd">        This method implicitly saves internally the value of beta variable from `mip_model`.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">            mip_model : Model</span>
-<span class="sd">                The stable-priceability MIP model.</span>
+<span class="sd">        This method implicitly saves internally the value of beta variable.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -428,37 +416,34 @@
 
 <div class="viewcode-block" id="MinMul.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LpVariable</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">LpContinuous</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinMul.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_objective">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span>  <span class="c1"># PuLP does not allow for changing optimization sense</span></div>
 
 
 <div class="viewcode-block" id="MinMul.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
         <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
         <span class="p">]</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span>
+
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">xsum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
-                <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span>
-            <span class="p">)</span></div>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">lpSum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> \
+                     <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span></div>
 
 
 <div class="viewcode-block" id="MinMul.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.get_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
 
 
@@ -473,44 +458,30 @@
 <div class="viewcode-block" id="MinAdd">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd">[docs]</a>
 <span class="k">class</span> <span class="nc">MinAdd</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A beta in (-inf, inf) is added to the right-hand side of the condition.</span>
-<span class="sd">    The objective function minimizes beta.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
 <div class="viewcode-block" id="MinAdd.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LpVariable</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">LpContinuous</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinAdd.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_objective">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span>  <span class="c1"># PuLP does not allow for changing optimization sense</span></div>
 
 
 <div class="viewcode-block" id="MinAdd.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">xsum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
-                <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span>
-            <span class="p">)</span></div>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">lpSum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> \
+                     <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span></div>
 
 
 <div class="viewcode-block" id="MinAdd.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.get_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
 
 
@@ -529,50 +500,39 @@
 <span class="sd">    A separate beta[c] in (-inf, inf) for each project c is added to the right-hand side of the condition.</span>
 <span class="sd">    The objective function minimizes the sum of beta[c] for each project c.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
 <div class="viewcode-block" id="MinAddVector.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span>
-        <span class="p">}</span>
-        <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">LpContinuous</span><span class="p">)</span>
         <span class="c1"># beta[c] is zero for selected</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">&lt;=</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span></div>
+            <span class="n">model</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">][</span><span class="n">c</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="MinAddVector.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_objective">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">xsum</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">))</span></div>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="o">-</span><span class="n">lpSum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MinAddVector.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">xsum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
-                <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span>
-            <span class="p">)</span></div>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">lpSum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> \
+                     <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span></div>
 
 
 <div class="viewcode-block" id="MinAddVector.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.get_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">return_beta</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">return_beta</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">:</span>
-                <span class="n">return_beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+                <span class="n">return_beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="n">return_beta</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">return_beta</span><span class="o">.</span><span class="n">values</span><span class="p">())}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
 
@@ -595,8 +555,9 @@
 
 <div class="viewcode-block" id="MinAddVectorPositive.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span></div>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">LpContinuous</span><span class="p">)</span></div>
 </div>
 
 
@@ -604,62 +565,42 @@
 <div class="viewcode-block" id="MinAddOffset">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset">[docs]</a>
 <span class="k">class</span> <span class="nc">MinAddOffset</span><span class="p">(</span><span class="n">Relaxation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A mixture of `MinAdd` and `MinAddVector` relaxation methods.</span>
-<span class="sd">    A separate beta[c] in [0, inf) for each project c is added to the right-hand side of the condition.</span>
-<span class="sd">    The sum of beta[c] for each project c is in [0, 0.025 * instance.budget_limit].</span>
-<span class="sd">    Additionally, a global beta in (-inf, inf) is added to the right-hand side of the condition.</span>
-<span class="sd">    The objective function minimizes the global beta.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">BUDGET_FRACTION</span> <span class="o">=</span> <span class="mf">0.025</span>
 
 <div class="viewcode-block" id="MinAddOffset.add_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">)</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="n">xsum</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
-            <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BUDGET_FRACTION</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
-        <span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">add_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LpVariable</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=-</span><span class="bp">self</span><span class="o">.</span><span class="n">INF</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">LpContinuous</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">LpContinuous</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="n">lpSum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BUDGET_FRACTION</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span></div>
 
 
 <div class="viewcode-block" id="MinAddOffset.add_objective">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">beta_global</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">add_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="MinAddOffset.add_stability_constraint">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
+    <span class="k">def</span> <span class="nf">add_stability_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LpProblem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">xsum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
-                <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">beta_global</span> <span class="o">+</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span>
-            <span class="p">)</span></div>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">lpSum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> \
+                     <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">INF</span></div>
 
 
 <div class="viewcode-block" id="MinAddOffset.get_beta">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">beta_global</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
-        <span class="n">beta</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">var_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">}</span>
-        <span class="n">return_beta</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">return_beta</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">:</span>
-                <span class="n">return_beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;beta_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+                <span class="n">return_beta</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="n">return_beta</span><span class="p">,</span>
-            <span class="s2">&quot;beta_global&quot;</span><span class="p">:</span> <span class="n">beta_global</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="s2">&quot;beta_global&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]),</span>
             <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">return_beta</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_beta</span></div>
