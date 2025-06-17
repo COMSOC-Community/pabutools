@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 """
 Utility function for internal logging: formats rows into an aligned table-style string,
 to improve readability in debug logs of the PB-EAR algorithm.
@@ -13,8 +11,7 @@ Programmer: Vivian Umansky
 Date: 2025-04-23
 """
 
-
-def format_table(headers: List[str], rows: List[Tuple[str, str, str, str]]) -> str:
+def format_table(headers: list[str], rows: list[tuple[str, str, str, str]]) -> str:
     """
     Format a table of rows with headers into a clean aligned string.
 

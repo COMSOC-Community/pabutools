@@ -24,6 +24,7 @@ Date: 2025-04-23
 
 logger = logging.getLogger(__name__)
 
+
 def pb_ear(
     instance: Instance,
     profile: AbstractProfile,
