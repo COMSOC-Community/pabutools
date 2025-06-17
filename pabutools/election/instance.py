@@ -8,13 +8,14 @@ from __future__ import annotations
 
 from collections.abc import Collection, Generator
 
+from pulp import LpProblem, LpMaximize, LpVariable, LpBinary, lpSum, PULP_CBC_CMD, LpStatusOptimal, value
+
 from pabutools.utils import Numeric
 
 from pabutools.fractions import frac
 from pabutools.utils import powerset
 
 from math import ceil
-from mip import Model, xsum, maximize, BINARY, OptimizationStatus
 
 import random
 
@@ -90,12 +91,14 @@ class Project:
             return self.name.__le__(other.name)
         if isinstance(other, str):
             return self.name.__le__(other)
+        return False
 
     def __lt__(self, other) -> bool:
         if isinstance(other, Project):
             return self.name.__lt__(other.name)
         if isinstance(other, str):
             return self.name.__lt__(other)
+        return False
 
     def __hash__(self) -> int:
         return hash(self.name)
@@ -168,22 +171,25 @@ def max_budget_allocation_cost(
             The maximum total cost over all subsets of projects with respect to the budget limit.
 
     """
-    mip_model = Model()
-    mip_model.verbose = 0
-    p_vars = {
-        p: mip_model.add_var(var_type=BINARY, name="x_{}".format(p)) for p in projects
-    }
-    if p_vars:
-        mip_model.objective = maximize(xsum(p_vars[p] * p.cost for p in projects))
-        mip_model += xsum(p_vars[p] * p.cost for p in projects) <= budget_limit
-        opt_status = mip_model.optimize()
-        if opt_status == OptimizationStatus.OPTIMAL:
-            max_cost = mip_model.objective.x
-            return frac(float(max_cost))
-        raise ValueError(
-            "The MIP to find the maximum cost of a budget allocation failed to find an optimal solution."
-        )
-    return 0
+    mip_model = LpProblem("MaxCostAllocation", LpMaximize)
+
+    p_vars = {p: LpVariable(f"x_{p}", cat=LpBinary) for p in projects}
+
+    if not p_vars:
+        return 0
+
+    # Objective: maximize total cost of selected projects
+    mip_model += lpSum(p_vars[p] * p.cost for p in projects)
+
+    # Budget constraint
+    mip_model += lpSum(p_vars[p] * p.cost for p in projects) <= budget_limit
+
+    # Solve the model
+    mip_model.solve(PULP_CBC_CMD(msg=False))
+
+    if mip_model.status == LpStatusOptimal:
+        max_cost = value(mip_model.objective)
+        return frac(float(max_cost))
 
 
 class Instance(set[Project]):

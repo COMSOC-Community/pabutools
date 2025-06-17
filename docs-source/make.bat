@@ -28,11 +28,18 @@ if "%1" == "" goto help
 
 if "%1" == "github" goto github
 
+if "%1" == "githubclean" goto githubclean
+
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
 :github
+echo. > %BUILDDIRGITHUB%\.nojekyll
 %SPHINXBUILD% -b html %SOURCEDIR% %BUILDDIRGITHUB% %SPHINXOPTS% %O%
+goto end
+
+:githubclean
+%SPHINXBUILD% -M clean %SOURCEDIR% %BUILDDIRGITHUB% %SPHINXOPTS% %O%
 goto end
 
 :help

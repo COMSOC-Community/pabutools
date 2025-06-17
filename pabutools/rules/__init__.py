@@ -39,6 +39,7 @@ from pabutools.rules.budgetallocation import (
     AllocationDetails,
 )
 from pabutools.rules.cstv import cstv, CSTV_Combination
+from pabutools.rules.maximin_support import maximin_support
 
 __all__ = [
     "completion_by_rule_combination",
@@ -55,5 +56,6 @@ __all__ = [
     "MESAllocationDetails",
     "MESIteration",
     "cstv",
-    "CSTV_Combination"
+    "CSTV_Combination",
+    "maximin_support"
 ]

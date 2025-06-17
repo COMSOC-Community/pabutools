@@ -21,6 +21,7 @@ from pabutools.election import (
 from pabutools.tiebreaking import TieBreakingRule, lexico_tie_breaking
 
 
+
 class PhragmenVoter:
     """
     Class used to summarise a voter during a run of the Phragmén's sequential rule.
@@ -180,6 +181,9 @@ def sequential_phragmen(
                             resolute,
                         )
 
+    if not isinstance(profile, AbstractApprovalProfile):
+        raise ValueError("The Sequential Phragmen Rule only applies to approval profiles.")
+
     if tie_breaking is None:
         tie_breaking = lexico_tie_breaking
     if initial_budget_allocation is None:
@@ -225,3 +229,5 @@ def sequential_phragmen(
     if resoluteness:
         return all_budget_allocations[0]
     return all_budget_allocations
+
+

@@ -10,7 +10,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 from pabutools.analysis.priceability_relaxation import Relaxation
 from pabutools.election import (
     Instance,

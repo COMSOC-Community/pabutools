@@ -16,27 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=e2360a19"></script>
+    <script src="../_static/documentation_options.js?v=db04a367"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,6 +50,7 @@
     <link rel="prev" title="Satisfaction Measures" href="satisfaction.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
   </head>
   
   
@@ -62,19 +66,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -82,7 +75,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -90,8 +82,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,7 +99,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -137,15 +130,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
@@ -303,24 +292,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -348,6 +329,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additive-utilitarian-welfare-maximiser">Additive Utilitarian Welfare Maximiser</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#greedy-approximation-of-the-welfare-maximiser">Greedy Approximation of the Welfare Maximiser</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential-phragmen-s-rule">Sequential Phragmén’s Rule</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximin-support-rule">Maximin Support Rule</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-of-equal-shares-mes">Method of Equal Shares (MES)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cumulative-support-transfer-voting-rule">Cumulative Support Transfer Voting Rule</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exhaustion-methods">Exhaustion Methods</a></li>
@@ -381,8 +363,8 @@ outcome (for visualisation/explanation purposes).</p>
 <p>The first rule provided is the Additive Utilitarian Welfare Maximiser. It aims to return
 budget allocations that maximize the utilitarian social welfare when the satisfaction
 measure is additive.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">max_additive_utilitarian_welfare</span><span class="p">,</span> <span class="n">MaxAddUtilWelfareAlgo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">max_additive_utilitarian_welfare</span><span class="p">,</span> <span class="n">MaxAddUtilWelfareAlgo</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -449,9 +431,9 @@ for non-additive satisfaction measures.</p>
 context is the Greedy Utilitarian Welfare. It behaves similarly to the
 Utilitarian Welfare Maximiser but offers additional functionalities: it is not limited
 to additive satisfaction measures (and runs faster).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.tiebreaking</span><span class="w"> </span><span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -515,9 +497,9 @@ to additive satisfaction measures (and runs faster).</p>
 <p><a class="reference internal" href="../reference/rules/index.html#pabutools.rules.phragmen.sequential_phragmen" title="pabutools.rules.phragmen.sequential_phragmen"><code class="xref py py-func docutils literal notranslate"><span class="pre">sequential_phragmen()</span></code></a></p>
 <p>Another rule provided is the Sequential Phragmén’s Rule, which is different from the
 previous two as it does not rely on a satisfaction measure.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">sequential_phragmen</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.tiebreaking</span><span class="w"> </span><span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">sequential_phragmen</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -527,7 +509,7 @@ previous two as it does not rely on a satisfaction measure.</p>
     <span class="n">ApprovalBallot</span><span class="p">({</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">8</span><span class="p">]})</span>
 <span class="p">])</span>
 
-<span class="c1"># By passing a sat_class, the profile is automatically converted to a satisfaction profile</span>
+<span class="c1"># The rule does not require a sat_class argument</span>
 <span class="n">outcome</span> <span class="o">=</span> <span class="n">sequential_phragmen</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">,</span>
     <span class="n">profile</span>
@@ -540,7 +522,7 @@ previous two as it does not rely on a satisfaction measure.</p>
     <span class="n">initial_budget_allocation</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
 <span class="p">)</span>
 
-<span class="c1"># The tie-breaking rule can be decided</span>
+<span class="c1"># The tie-breaking rule can be indicated</span>
 <span class="n">outcome</span> <span class="o">=</span> <span class="n">sequential_phragmen</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">,</span>
@@ -556,14 +538,53 @@ previous two as it does not rely on a satisfaction measure.</p>
 </pre></div>
 </div>
 </section>
+<section id="maximin-support-rule">
+<h2>Maximin Support Rule<a class="headerlink" href="#maximin-support-rule" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../reference/rules/index.html#pabutools.rules.maximin_support.maximin_support" title="pabutools.rules.maximin_support.maximin_support"><code class="xref py py-func docutils literal notranslate"><span class="pre">maximin_support()</span></code></a></p>
+<p>We also provide the Maximin Support rule. For the latter, we use the PuLP solver to compute the optimal load
+distribution at each round.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">maximin_support</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">ApprovalProfile</span><span class="p">([</span>
+    <span class="n">ApprovalBallot</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
+    <span class="n">ApprovalBallot</span><span class="p">(</span><span class="n">p</span><span class="p">[:</span><span class="mi">4</span><span class="p">]),</span>
+    <span class="n">ApprovalBallot</span><span class="p">({</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">8</span><span class="p">]})</span>
+<span class="p">])</span>
+
+<span class="c1"># The rule does not require a sat_class argument</span>
+<span class="n">outcome</span> <span class="o">=</span> <span class="n">maximin_support</span><span class="p">(</span>
+    <span class="n">instance</span><span class="p">,</span>
+    <span class="n">profile</span>
+<span class="p">)</span>
+
+<span class="c1"># An initial budget allocation can be given</span>
+<span class="n">outcome</span> <span class="o">=</span> <span class="n">maximin_support</span><span class="p">(</span>
+    <span class="n">instance</span><span class="p">,</span>
+    <span class="n">profile</span><span class="p">,</span>
+    <span class="n">initial_budget_allocation</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+<span class="p">)</span>
+
+<span class="c1"># The tie-breaking rule can be indicated</span>
+<span class="n">outcome</span> <span class="o">=</span> <span class="n">maximin_support</span><span class="p">(</span>
+    <span class="n">instance</span><span class="p">,</span>
+    <span class="n">profile</span><span class="p">,</span>
+    <span class="n">tie_breaking</span><span class="o">=</span><span class="n">app_score_tie_breaking</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="method-of-equal-shares-mes">
 <h2>Method of Equal Shares (MES)<a class="headerlink" href="#method-of-equal-shares-mes" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="../reference/rules/index.html#pabutools.rules.mes.method_of_equal_shares" title="pabutools.rules.mes.method_of_equal_shares"><code class="xref py py-func docutils literal notranslate"><span class="pre">method_of_equal_shares()</span></code></a></p>
 <p>The Method of Equal Shares is another rule that returns budget allocations based on the satisfaction
 measure provided. For more details, see the <a class="reference external" href="https://equalshares.net/">equalshares.net</a> website.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">method_of_equal_shares</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.tiebreaking</span><span class="w"> </span><span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">method_of_equal_shares</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">app_score_tie_breaking</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -631,8 +652,8 @@ improved performances, one should use the following:</p>
 <p>The <cite>cstv</cite> function implements the Cost-Sensitive Approval Voting algorithm for participatory budgeting. This rules takes as input cumulative profiles that are interpreted as donation in favour of the projects.</p>
 <p>The rule uses a combination of inner functions that need to be provided as arguments. Alternatively, pre-defined
 combinations can be used via the <a class="reference internal" href="../reference/rules/index.html#pabutools.rules.cstv.CSTV_Combination" title="pabutools.rules.cstv.CSTV_Combination"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSTV_Combination</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">CumulativeProfile</span><span class="p">,</span> <span class="n">CumulativeBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">cstv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">CumulativeProfile</span><span class="p">,</span> <span class="n">CumulativeBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">cstv</span>
 
 <span class="n">p1</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
 <span class="n">p2</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
@@ -649,14 +670,14 @@ combinations can be used via the <a class="reference internal" href="../referenc
 <span class="p">)</span>
 
 <span class="c1"># Using of the pre-defined combination:</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSTV_Combination</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">CSTV_Combination</span>
 <span class="n">cstv</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">donors</span><span class="p">,</span> <span class="n">CSTV_Combination</span><span class="o">.</span><span class="n">EWT</span><span class="p">)</span>
 <span class="n">cstv</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">donors</span><span class="p">,</span> <span class="n">CSTV_Combination</span><span class="o">.</span><span class="n">EWTC</span><span class="p">)</span>
 <span class="n">cstv</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">donors</span><span class="p">,</span> <span class="n">CSTV_Combination</span><span class="o">.</span><span class="n">EWT</span><span class="p">)</span>
 <span class="n">cstv</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">donors</span><span class="p">,</span> <span class="n">CSTV_Combination</span><span class="o">.</span><span class="n">MTC</span><span class="p">)</span>
 
 <span class="c1"># Passing all the functions (this combination is EWT):</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.cstv</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.cstv</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">select_project_ge</span><span class="p">,</span> <span class="n">is_eligible_ge</span><span class="p">,</span>
     <span class="n">elimination_with_transfers</span><span class="p">,</span> <span class="n">reverse_eliminations</span>
 <span class="p">)</span>
@@ -670,8 +691,8 @@ combinations can be used via the <a class="reference internal" href="../referenc
 <span class="p">)</span>
 
 <span class="c1"># You can also specify the usual parameters:</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">BudgetAllocation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.tiebreaking</span><span class="w"> </span><span class="kn">import</span> <span class="n">lexico_tie_breaking</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">BudgetAllocation</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">lexico_tie_breaking</span>
 <span class="n">cstv</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">,</span>
     <span class="n">donors</span><span class="p">,</span>
@@ -692,10 +713,10 @@ combinations can be used via the <a class="reference internal" href="../referenc
 methods to render their outcome exhaustive.</p>
 <p>Two methods are provided: the first applies a sequence of rules until achieving an
 exhaustive budget allocation.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cost_Sat</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span><span class="p">,</span> <span class="n">method_of_equal_shares</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">completion_by_rule_combination</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Cost_Sat</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span><span class="p">,</span> <span class="n">method_of_equal_shares</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">completion_by_rule_combination</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -719,9 +740,9 @@ exhaustive budget allocation.</p>
 rule would then return a budget allocation that is exhaustive for the original instance. If at any
 point the rule returns a budget allocation that is not feasible for the original budget limit, then
 the previously returned budget allocation is returned.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">method_of_equal_shares</span><span class="p">,</span> <span class="n">exhaustion_by_budget_increase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">frac</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span><span class="p">,</span> <span class="n">Cost_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">method_of_equal_shares</span><span class="p">,</span> <span class="n">exhaustion_by_budget_increase</span>
+<span class="kn">from</span> <span class="nn">pabutools.fractions</span> <span class="kn">import</span> <span class="n">frac</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -767,10 +788,10 @@ parameter directly to obtain the iterated version.</p>
 <p><a class="reference internal" href="../reference/rules/index.html#pabutools.rules.composition.social_welfare_comparison" title="pabutools.rules.composition.social_welfare_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">social_welfare_comparison()</span></code></a></p>
 <p>The library also provides ways to compose rules, such as selecting the outcome that is
 preferred by the largest number of voters for a given satisfaction measure.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cost_Sat</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span><span class="p">,</span> <span class="n">method_of_equal_shares</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">popularity_comparison</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Cost_Sat</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span><span class="p">,</span> <span class="n">method_of_equal_shares</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">popularity_comparison</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -793,10 +814,10 @@ preferred by the largest number of voters for a given satisfaction measure.</p>
 </div>
 <p>To run the rule as it was implemented in Wieliczka and Świece, for instance, one would run
 the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cost_Sat</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span><span class="p">,</span> <span class="n">method_of_equal_shares</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules</span><span class="w"> </span><span class="kn">import</span> <span class="n">completion_by_rule_combination</span><span class="p">,</span> <span class="n">popularity_comparison</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">ApprovalBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Cost_Sat</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">greedy_utilitarian_welfare</span><span class="p">,</span> <span class="n">method_of_equal_shares</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules</span> <span class="kn">import</span> <span class="n">completion_by_rule_combination</span><span class="p">,</span> <span class="n">popularity_comparison</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">budget_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -807,7 +828,7 @@ the following:</p>
 <span class="p">])</span>
 
 <span class="c1"># First define MES iterated and completed (to simplify)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">mes_full</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">initial_budget_allocation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">mes_full</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">initial_budget_allocation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">completion_by_rule_combination</span><span class="p">(</span>
         <span class="n">instance</span><span class="p">,</span>
         <span class="n">profile</span><span class="p">,</span>
@@ -903,7 +924,8 @@ The stored information can then be used for analytical purposes.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -916,6 +938,7 @@ The stored information can then be used for analytical purposes.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additive-utilitarian-welfare-maximiser">Additive Utilitarian Welfare Maximiser</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#greedy-approximation-of-the-welfare-maximiser">Greedy Approximation of the Welfare Maximiser</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential-phragmen-s-rule">Sequential Phragmén’s Rule</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximin-support-rule">Maximin Support Rule</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-of-equal-shares-mes">Method of Equal Shares (MES)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cumulative-support-transfer-voting-rule">Cumulative Support Transfer Voting Rule</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exhaustion-methods">Exhaustion Methods</a></li>
@@ -969,8 +992,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

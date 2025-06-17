@@ -29,6 +29,11 @@ Sequential Phragmén's Rule
 
 .. autofunction:: pabutools.rules.phragmen.sequential_phragmen
 
+Maximin Support Rule
+--------------------
+
+.. autofunction:: pabutools.rules.maximin_support.maximin_support
+
 Method of Equal Shares (MES)
 ----------------------------
 
