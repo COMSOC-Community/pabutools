@@ -34,6 +34,7 @@ if "%1" == "githubclean" goto githubclean
 goto end
 
 :github
+echo. > %BUILDDIRGITHUB%\.nojekyll
 %SPHINXBUILD% -b html %SOURCEDIR% %BUILDDIRGITHUB% %SPHINXOPTS% %O%
 goto end
 

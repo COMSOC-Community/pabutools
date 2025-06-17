@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "pabutools"
-version = "1.1.16"
+version = "1.1.17"
 description = "Implementation of all the tools necessary to explore and analyse participatory budgeting elections"
 authors = [
   { name = "Simon Rey", email = "simon.j.rey@proton.me" },
@@ -42,7 +42,9 @@ dev = [
     "unittest2",
     "parameterized",
     "sphinx-toolbox",
-    "enum-tools"
+    "enum-tools",
+    "abcvoting",
+    "pyyaml"
 ]
 
 [project.urls]

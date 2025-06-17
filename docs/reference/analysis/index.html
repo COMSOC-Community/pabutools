@@ -16,25 +16,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../_static/documentation_options.js?v=772388c8"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
@@ -47,6 +50,7 @@
     <link rel="prev" title="Rules module" href="../rules/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.16" />
   </head>
   
   
@@ -62,19 +66,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -82,7 +75,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -90,8 +82,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,7 +99,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -137,15 +130,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
@@ -303,24 +292,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -392,8 +373,68 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.justifiedrepresentation.is_strong_EJR_cardinal"><code class="docutils literal notranslate"><span class="pre">is_strong_EJR_cardinal()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#priceability-axiom">Priceability Axiom</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-priceability-axiom-relaxations">Stable-Priceability Axiom Relaxations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pabutools.analysis.priceability">Priceability Axiom</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult"><code class="docutils literal notranslate"><span class="pre">PriceableResult</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.status"><code class="docutils literal notranslate"><span class="pre">PriceableResult.status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.allocation"><code class="docutils literal notranslate"><span class="pre">PriceableResult.allocation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.voter_budget"><code class="docutils literal notranslate"><span class="pre">PriceableResult.voter_budget</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.payment_functions"><code class="docutils literal notranslate"><span class="pre">PriceableResult.payment_functions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.validate"><code class="docutils literal notranslate"><span class="pre">PriceableResult.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.priceable"><code class="docutils literal notranslate"><span class="pre">priceable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.validate_price_system"><code class="docutils literal notranslate"><span class="pre">validate_price_system()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pabutools.analysis.priceability_relaxation">Stable-Priceability Axiom Relaxations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd"><code class="docutils literal notranslate"><span class="pre">MinAdd</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAdd.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_objective"><code class="docutils literal notranslate"><span class="pre">MinAdd.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinAdd.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.get_beta"><code class="docutils literal notranslate"><span class="pre">MinAdd.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinAdd.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset"><code class="docutils literal notranslate"><span class="pre">MinAddOffset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector"><code class="docutils literal notranslate"><span class="pre">MinAddVector</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAddVector.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_objective"><code class="docutils literal notranslate"><span class="pre">MinAddVector.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinAddVector.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.get_beta"><code class="docutils literal notranslate"><span class="pre">MinAddVector.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinAddVector.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVectorPositive"><code class="docutils literal notranslate"><span class="pre">MinAddVectorPositive</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAddVectorPositive.add_beta()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul"><code class="docutils literal notranslate"><span class="pre">MinMul</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.add_beta"><code class="docutils literal notranslate"><span class="pre">MinMul.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.add_objective"><code class="docutils literal notranslate"><span class="pre">MinMul.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinMul.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.get_beta"><code class="docutils literal notranslate"><span class="pre">MinMul.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinMul.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation"><code class="docutils literal notranslate"><span class="pre">Relaxation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.instance"><code class="docutils literal notranslate"><span class="pre">Relaxation.instance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.profile"><code class="docutils literal notranslate"><span class="pre">Relaxation.profile</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_beta"><code class="docutils literal notranslate"><span class="pre">Relaxation.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_objective"><code class="docutils literal notranslate"><span class="pre">Relaxation.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">Relaxation.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.get_beta"><code class="docutils literal notranslate"><span class="pre">Relaxation.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">Relaxation.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pabutools.analysis.mesanalytics">Properties Specific to the Method of Equal Shares</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.mesanalytics.ProjectLoss"><code class="docutils literal notranslate"><span class="pre">ProjectLoss</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.mesanalytics.ProjectLoss.supporters_budget"><code class="docutils literal notranslate"><span class="pre">ProjectLoss.supporters_budget</span></code></a></li>
@@ -959,17 +1000,600 @@ of cardinal ballots.</p>
 </dd></dl>
 
 </section>
-<section id="priceability-axiom">
-<h2>Priceability Axiom<a class="headerlink" href="#priceability-axiom" title="Link to this heading">#</a></h2>
+<section id="module-pabutools.analysis.priceability">
+<span id="priceability-axiom"></span><h2>Priceability Axiom<a class="headerlink" href="#module-pabutools.analysis.priceability" title="Link to this heading">#</a></h2>
+<p>Module with tools for analysis of the priceability / stable-priceability property of budget allocation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.PriceableResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PriceableResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OptimizationStatus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allocation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relaxation_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voter_budget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payment_functions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability.html#PriceableResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability.PriceableResult" title="Link to this definition">#</a></dt>
+<dd><p>Result of <a class="reference internal" href="#pabutools.analysis.priceability.priceable" title="pabutools.analysis.priceability.priceable"><code class="xref py py-func docutils literal notranslate"><span class="pre">priceable()</span></code></a>.
+Contains information about the optimization status of ILP outcome.
+If the status is valid (i.e. <cite>OPTIMAL</cite> / <cite>FEASIBLE</cite>), the class contains
+the budget allocation, as well as the price system (<cite>voter_budget</cite>, <cite>payment_functions</cite>)
+that satisfies the priceable / stable-priceable property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status</strong> (<em>OptimizationStatus</em>) – Optimization status of the ILP outcome.</p></li>
+<li><p><strong>allocation</strong> (Collection[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>], optional) – The selected collection of projects.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>voter_budget</strong> (<em>float</em><em>, </em><em>optional</em>) – Voter initial endowment.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>payment_functions</strong> (list[dict[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>, Numeric]], optional) – List of payment functions for each voter.
+A payment function indicates the amounts paid for each project by a voter.
+Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.PriceableResult.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#pabutools.analysis.priceability.PriceableResult.status" title="Link to this definition">#</a></dt>
+<dd><p>Optimization status of the ILP outcome.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>OptimizationStatus</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.PriceableResult.allocation">
+<span class="sig-name descname"><span class="pre">allocation</span></span><a class="headerlink" href="#pabutools.analysis.priceability.PriceableResult.allocation" title="Link to this definition">#</a></dt>
+<dd><p>The selected collection of projects.
+<cite>None</cite> if the optimization status is not <cite>OPTIMAL</cite> / <cite>FEASIBLE</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collection[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>] or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.PriceableResult.voter_budget">
+<span class="sig-name descname"><span class="pre">voter_budget</span></span><a class="headerlink" href="#pabutools.analysis.priceability.PriceableResult.voter_budget" title="Link to this definition">#</a></dt>
+<dd><p>Voter initial endowment.
+<cite>None</cite> if the optimization status is not <cite>OPTIMAL</cite> / <cite>FEASIBLE</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>bool</em> or <em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.PriceableResult.payment_functions">
+<span class="sig-name descname"><span class="pre">payment_functions</span></span><a class="headerlink" href="#pabutools.analysis.priceability.PriceableResult.payment_functions" title="Link to this definition">#</a></dt>
+<dd><p>List of payment functions for each voter.
+A payment function indicates the amounts paid for each project by a voter.
+<cite>None</cite> if the optimization status is not <cite>OPTIMAL</cite> / <cite>FEASIBLE</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>, Numeric]] or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.PriceableResult.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability.html#PriceableResult.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability.PriceableResult.validate" title="Link to this definition">#</a></dt>
+<dd><p>Checks if the optimization status is <cite>OPTIMAL</cite> / <cite>FEASIBLE</cite>.
+:returns: Validity of optimization status.
+:rtype: bool</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.priceable">
+<span class="sig-name descname"><span class="pre">priceable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.approvalprofile.AbstractApprovalProfile" title="pabutools.election.profile.approvalprofile.AbstractApprovalProfile"><span class="pre">AbstractApprovalProfile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget_allocation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voter_budget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payment_functions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exhaustive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relaxation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pabutools.analysis.priceability_relaxation.Relaxation" title="pabutools.analysis.priceability_relaxation.Relaxation"><span class="pre">Relaxation</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pabutools.analysis.priceability.PriceableResult" title="pabutools.analysis.priceability.PriceableResult"><span class="pre">PriceableResult</span></a></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability.html#priceable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability.priceable" title="Link to this definition">#</a></dt>
+<dd><p>Finds a priceable / stable-priceable budget allocation for approval profile
+using Linear Programming via <cite>mip</cite> Python package.</p>
+<p>Reference paper: <a class="reference external" href="https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf">https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instance</span></code></a>) – The instance.</p></li>
+<li><p><strong>profile</strong> (<a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.AbstractProfile" title="pabutools.election.profile.profile.AbstractProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProfile</span></code></a>) – The profile.</p></li>
+<li><p><strong>budget_allocation</strong> (Collection[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>], optional) – The selected collection of projects.
+If specified, the allocation is hardcoded into the model.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>voter_budget</strong> (<em>Numeric</em>) – Voter initial endowment.
+If specified, the voter budget is hardcoded into the model.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>payment_functions</strong> (Collection[dict[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>, Numeric]]) – Collection of payment functions for each voter.
+If specified, the payment functions are hardcoded into the model.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>stable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Search stable-priceable allocation.
+Defaults to <cite>False</cite>.</p></li>
+<li><p><strong>exhaustive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Search exhaustive allocation.
+Defaults to <cite>True</cite>.</p></li>
+<li><p><strong>relaxation</strong> (<a class="reference internal" href="#pabutools.analysis.priceability_relaxation.Relaxation" title="pabutools.analysis.priceability_relaxation.Relaxation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Relaxation</span></code></a>, optional) – Relaxation method to the stable-priceability condition.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>**max_seconds</strong> (<em>int</em><em>, </em><em>optional</em>) – Model’s maximum runtime in seconds.
+Defaults to 600.</p></li>
+<li><p><strong>**verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Display additional information.
+Defaults to <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dataclass containing priceable result details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pabutools.analysis.priceability.PriceableResult" title="pabutools.analysis.priceability.PriceableResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">PriceableResult</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability.validate_price_system">
+<span class="sig-name descname"><span class="pre">validate_price_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.approvalprofile.AbstractApprovalProfile" title="pabutools.election.profile.approvalprofile.AbstractApprovalProfile"><span class="pre">AbstractApprovalProfile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget_allocation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voter_budget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payment_functions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exhaustive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relaxation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pabutools.analysis.priceability_relaxation.Relaxation" title="pabutools.analysis.priceability_relaxation.Relaxation"><span class="pre">Relaxation</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability.html#validate_price_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability.validate_price_system" title="Link to this definition">#</a></dt>
+<dd><p>Given a price system (<cite>voter_budget</cite>, <cite>payment_functions</cite>),
+verifies whether <cite>budget_allocation</cite> is priceable / stable-priceable.</p>
+<p><a class="reference internal" href="../utils.html#pabutools.utils.round_cmp" title="pabutools.utils.round_cmp"><code class="xref py py-func docutils literal notranslate"><span class="pre">round_cmp()</span></code></a>: is used across the implementation to ensure no rounding errors.</p>
+<p>Reference paper: <a class="reference external" href="https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf">https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instance</span></code></a>) – The instance.</p></li>
+<li><p><strong>profile</strong> (<a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.AbstractProfile" title="pabutools.election.profile.profile.AbstractProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProfile</span></code></a>) – The profile.</p></li>
+<li><p><strong>budget_allocation</strong> (Collection[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>]) – The selected collection of projects.</p></li>
+<li><p><strong>voter_budget</strong> (<em>Numeric</em>) – Voter initial endowment.</p></li>
+<li><p><strong>payment_functions</strong> (list[dict[<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>, Numeric]]) – Collection of payment functions for each voter.
+A payment function indicates the amounts paid for each project by a voter.</p></li>
+<li><p><strong>stable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Verify for stable-priceable allocation.
+Defaults to <cite>False</cite>.</p></li>
+<li><p><strong>exhaustive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Verify for exhaustiveness of the allocation.
+Defaults to <cite>True</cite>.</p></li>
+<li><p><strong>relaxation</strong> (<a class="reference internal" href="#pabutools.analysis.priceability_relaxation.Relaxation" title="pabutools.analysis.priceability_relaxation.Relaxation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Relaxation</span></code></a>, optional) – Relaxation method to the stable-priceability condition.
+Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>**verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Display additional information.
+Defaults to <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean value specifying whether <cite>budget_allocation</cite> is priceable / stable-priceable.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>bool</em></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="stable-priceability-axiom-relaxations">
-<h2>Stable-Priceability Axiom Relaxations<a class="headerlink" href="#stable-priceability-axiom-relaxations" title="Link to this heading">#</a></h2>
+<section id="module-pabutools.analysis.priceability_relaxation">
+<span id="stable-priceability-axiom-relaxations"></span><h2>Stable-Priceability Axiom Relaxations<a class="headerlink" href="#module-pabutools.analysis.priceability_relaxation" title="Link to this heading">#</a></h2>
+<p>Module for relaxation of the stable-priceability constraint.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAdd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinAdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><span class="pre">Profile</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAdd" title="Link to this definition">#</a></dt>
+<dd><p>A beta in (-inf, inf) is added to the right-hand side of the condition.
+The objective function minimizes beta.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAdd.add_beta">
+<span class="sig-name descname"><span class="pre">add_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAdd.add_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_beta" title="Link to this definition">#</a></dt>
+<dd><p>Add beta variable to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAdd.add_objective">
+<span class="sig-name descname"><span class="pre">add_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAdd.add_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_objective" title="Link to this definition">#</a></dt>
+<dd><p>Add objective function to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint">
+<span class="sig-name descname"><span class="pre">add_stability_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAdd.add_stability_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint" title="Link to this definition">#</a></dt>
+<dd><p>Add relaxed stability constraint to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAdd.get_beta">
+<span class="sig-name descname"><span class="pre">get_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAdd.get_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAdd.get_beta" title="Link to this definition">#</a></dt>
+<dd><p>Get the value of beta from the model.
+This method implicitly saves internally the value of beta variable from <cite>mip_model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of beta from the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real | <em>dict</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAdd.get_relaxed_cost">
+<span class="sig-name descname"><span class="pre">get_relaxed_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAdd.get_relaxed_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAdd.get_relaxed_cost" title="Link to this definition">#</a></dt>
+<dd><p>Get relaxed cost of a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>) – The project to get the relaxed cost for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relaxed cost of the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>float</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddOffset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinAddOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><span class="pre">Profile</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddOffset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddOffset" title="Link to this definition">#</a></dt>
+<dd><p>A mixture of <cite>MinAdd</cite> and <cite>MinAddVector</cite> relaxation methods.
+A separate beta[c] in [0, inf) for each project c is added to the right-hand side of the condition.
+The sum of beta[c] for each project c is in [0, 0.025 * instance.budget_limit].
+Additionally, a global beta in (-inf, inf) is added to the right-hand side of the condition.
+The objective function minimizes the global beta.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta">
+<span class="sig-name descname"><span class="pre">add_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddOffset.add_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta" title="Link to this definition">#</a></dt>
+<dd><p>Add beta variable to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective">
+<span class="sig-name descname"><span class="pre">add_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddOffset.add_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective" title="Link to this definition">#</a></dt>
+<dd><p>Add objective function to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint">
+<span class="sig-name descname"><span class="pre">add_stability_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddOffset.add_stability_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint" title="Link to this definition">#</a></dt>
+<dd><p>Add relaxed stability constraint to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta">
+<span class="sig-name descname"><span class="pre">get_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddOffset.get_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta" title="Link to this definition">#</a></dt>
+<dd><p>Get the value of beta from the model.
+This method implicitly saves internally the value of beta variable from <cite>mip_model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of beta from the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real | <em>dict</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddOffset.get_relaxed_cost">
+<span class="sig-name descname"><span class="pre">get_relaxed_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddOffset.get_relaxed_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.get_relaxed_cost" title="Link to this definition">#</a></dt>
+<dd><p>Get relaxed cost of a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>) – The project to get the relaxed cost for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relaxed cost of the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>float</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinAddVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><span class="pre">Profile</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVector" title="Link to this definition">#</a></dt>
+<dd><p>A separate beta[c] in (-inf, inf) for each project c is added to the right-hand side of the condition.
+The objective function minimizes the sum of beta[c] for each project c.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVector.add_beta">
+<span class="sig-name descname"><span class="pre">add_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVector.add_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_beta" title="Link to this definition">#</a></dt>
+<dd><p>Add beta variable to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVector.add_objective">
+<span class="sig-name descname"><span class="pre">add_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVector.add_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_objective" title="Link to this definition">#</a></dt>
+<dd><p>Add objective function to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint">
+<span class="sig-name descname"><span class="pre">add_stability_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVector.add_stability_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint" title="Link to this definition">#</a></dt>
+<dd><p>Add relaxed stability constraint to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVector.get_beta">
+<span class="sig-name descname"><span class="pre">get_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVector.get_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVector.get_beta" title="Link to this definition">#</a></dt>
+<dd><p>Get the value of beta from the model.
+This method implicitly saves internally the value of beta variable from <cite>mip_model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of beta from the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real | <em>dict</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVector.get_relaxed_cost">
+<span class="sig-name descname"><span class="pre">get_relaxed_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVector.get_relaxed_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVector.get_relaxed_cost" title="Link to this definition">#</a></dt>
+<dd><p>Get relaxed cost of a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>) – The project to get the relaxed cost for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relaxed cost of the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>float</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVectorPositive">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinAddVectorPositive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><span class="pre">Profile</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVectorPositive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVectorPositive" title="Link to this definition">#</a></dt>
+<dd><p>A separate beta[c] in [0, inf) for each project c is added to the right-hand side of the condition.
+The objective function minimizes the sum of beta[c] for each project c.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta">
+<span class="sig-name descname"><span class="pre">add_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinAddVectorPositive.add_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta" title="Link to this definition">#</a></dt>
+<dd><p>Add beta variable to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinMul">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinMul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><span class="pre">Profile</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinMul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinMul" title="Link to this definition">#</a></dt>
+<dd><p>The right-hand side of the condition is multiplied by a beta in [0, inf).
+The objective function minimizes beta.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinMul.add_beta">
+<span class="sig-name descname"><span class="pre">add_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinMul.add_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinMul.add_beta" title="Link to this definition">#</a></dt>
+<dd><p>Add beta variable to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinMul.add_objective">
+<span class="sig-name descname"><span class="pre">add_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinMul.add_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinMul.add_objective" title="Link to this definition">#</a></dt>
+<dd><p>Add objective function to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint">
+<span class="sig-name descname"><span class="pre">add_stability_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinMul.add_stability_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint" title="Link to this definition">#</a></dt>
+<dd><p>Add relaxed stability constraint to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinMul.get_beta">
+<span class="sig-name descname"><span class="pre">get_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinMul.get_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinMul.get_beta" title="Link to this definition">#</a></dt>
+<dd><p>Get the value of beta from the model.
+This method implicitly saves internally the value of beta variable from <cite>mip_model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of beta from the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real | <em>dict</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.MinMul.get_relaxed_cost">
+<span class="sig-name descname"><span class="pre">get_relaxed_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#MinMul.get_relaxed_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.MinMul.get_relaxed_cost" title="Link to this definition">#</a></dt>
+<dd><p>Get relaxed cost of a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>) – The project to get the relaxed cost for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relaxed cost of the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>float</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Relaxation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><span class="pre">Instance</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><span class="pre">Profile</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#Relaxation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation" title="Link to this definition">#</a></dt>
+<dd><p>Base class for stable-priceability condition relaxation methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instance</span></code></a>) – An instance the relaxation is operating on.</p></li>
+<li><p><strong>profile</strong> (<a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Profile</span></code></a>) – A profile the relaxation is operating on.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.instance">
+<span class="sig-name descname"><span class="pre">instance</span></span><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.instance" title="Link to this definition">#</a></dt>
+<dd><p>An instance the relaxation is operating on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instance</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.profile">
+<span class="sig-name descname"><span class="pre">profile</span></span><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.profile" title="Link to this definition">#</a></dt>
+<dd><p>A profile the relaxation is operating on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../election/profile.html#pabutools.election.profile.profile.Profile" title="pabutools.election.profile.profile.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Profile</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.add_beta">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#Relaxation.add_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_beta" title="Link to this definition">#</a></dt>
+<dd><p>Add beta variable to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.add_objective">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#Relaxation.add_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_objective" title="Link to this definition">#</a></dt>
+<dd><p>Add objective function to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_stability_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#Relaxation.add_stability_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint" title="Link to this definition">#</a></dt>
+<dd><p>Add relaxed stability constraint to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.get_beta">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#Relaxation.get_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.get_beta" title="Link to this definition">#</a></dt>
+<dd><p>Get the value of beta from the model.
+This method implicitly saves internally the value of beta variable from <cite>mip_model</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mip_model</strong> (<em>Model</em>) – The stable-priceability MIP model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of beta from the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real | <em>dict</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pabutools.analysis.priceability_relaxation.Relaxation.get_relaxed_cost">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_relaxed_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/pabutools/analysis/priceability_relaxation.html#Relaxation.get_relaxed_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.priceability_relaxation.Relaxation.get_relaxed_cost" title="Link to this definition">#</a></dt>
+<dd><p>Get relaxed cost of a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project</strong> (<a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>) – The project to get the relaxed cost for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relaxed cost of the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>float</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-pabutools.analysis.mesanalytics">
 <span id="properties-specific-to-the-method-of-equal-shares"></span><h2>Properties Specific to the Method of Equal Shares<a class="headerlink" href="#module-pabutools.analysis.mesanalytics" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pabutools.analysis.mesanalytics.ProjectLoss">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ProjectLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">supporters_budget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget_lost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/mesanalytics.html#ProjectLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.mesanalytics.ProjectLoss" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ProjectLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">supporters_budget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget_lost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">mpq</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pabutools/analysis/mesanalytics.html#ProjectLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pabutools.analysis.mesanalytics.ProjectLoss" title="Link to this definition">#</a></dt>
 <dd><p>Class used to represent the projects and how much budget they lost due to other projects being picked.
 This extends the <a class="reference internal" href="../election/instance.html#pabutools.election.instance.Project" title="pabutools.election.instance.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a> and thus represents the project itself.</p>
 <dl class="field-list simple">
@@ -1135,7 +1759,8 @@ Defaults to <cite>False</cite>.</p></li>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1192,8 +1817,68 @@ Defaults to <cite>False</cite>.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.justifiedrepresentation.is_strong_EJR_cardinal"><code class="docutils literal notranslate"><span class="pre">is_strong_EJR_cardinal()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#priceability-axiom">Priceability Axiom</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-priceability-axiom-relaxations">Stable-Priceability Axiom Relaxations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pabutools.analysis.priceability">Priceability Axiom</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult"><code class="docutils literal notranslate"><span class="pre">PriceableResult</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.status"><code class="docutils literal notranslate"><span class="pre">PriceableResult.status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.allocation"><code class="docutils literal notranslate"><span class="pre">PriceableResult.allocation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.voter_budget"><code class="docutils literal notranslate"><span class="pre">PriceableResult.voter_budget</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.payment_functions"><code class="docutils literal notranslate"><span class="pre">PriceableResult.payment_functions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.PriceableResult.validate"><code class="docutils literal notranslate"><span class="pre">PriceableResult.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.priceable"><code class="docutils literal notranslate"><span class="pre">priceable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability.validate_price_system"><code class="docutils literal notranslate"><span class="pre">validate_price_system()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pabutools.analysis.priceability_relaxation">Stable-Priceability Axiom Relaxations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd"><code class="docutils literal notranslate"><span class="pre">MinAdd</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAdd.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_objective"><code class="docutils literal notranslate"><span class="pre">MinAdd.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinAdd.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.get_beta"><code class="docutils literal notranslate"><span class="pre">MinAdd.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAdd.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinAdd.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset"><code class="docutils literal notranslate"><span class="pre">MinAddOffset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddOffset.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinAddOffset.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector"><code class="docutils literal notranslate"><span class="pre">MinAddVector</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAddVector.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_objective"><code class="docutils literal notranslate"><span class="pre">MinAddVector.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinAddVector.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.get_beta"><code class="docutils literal notranslate"><span class="pre">MinAddVector.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVector.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinAddVector.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVectorPositive"><code class="docutils literal notranslate"><span class="pre">MinAddVectorPositive</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta"><code class="docutils literal notranslate"><span class="pre">MinAddVectorPositive.add_beta()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul"><code class="docutils literal notranslate"><span class="pre">MinMul</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.add_beta"><code class="docutils literal notranslate"><span class="pre">MinMul.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.add_objective"><code class="docutils literal notranslate"><span class="pre">MinMul.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">MinMul.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.get_beta"><code class="docutils literal notranslate"><span class="pre">MinMul.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.MinMul.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">MinMul.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation"><code class="docutils literal notranslate"><span class="pre">Relaxation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.instance"><code class="docutils literal notranslate"><span class="pre">Relaxation.instance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.profile"><code class="docutils literal notranslate"><span class="pre">Relaxation.profile</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_beta"><code class="docutils literal notranslate"><span class="pre">Relaxation.add_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_objective"><code class="docutils literal notranslate"><span class="pre">Relaxation.add_objective()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint"><code class="docutils literal notranslate"><span class="pre">Relaxation.add_stability_constraint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.get_beta"><code class="docutils literal notranslate"><span class="pre">Relaxation.get_beta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.priceability_relaxation.Relaxation.get_relaxed_cost"><code class="docutils literal notranslate"><span class="pre">Relaxation.get_relaxed_cost()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pabutools.analysis.mesanalytics">Properties Specific to the Method of Equal Shares</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.mesanalytics.ProjectLoss"><code class="docutils literal notranslate"><span class="pre">ProjectLoss</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pabutools.analysis.mesanalytics.ProjectLoss.supporters_budget"><code class="docutils literal notranslate"><span class="pre">ProjectLoss.supporters_budget</span></code></a></li>
@@ -1254,8 +1939,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

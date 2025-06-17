@@ -15,25 +15,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../../_static/documentation_options.js?v=772388c8"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
@@ -44,6 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.16" />
   </head>
   
   
@@ -59,19 +63,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -79,7 +72,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -87,8 +79,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -106,7 +98,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -136,15 +129,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
@@ -254,24 +243,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -298,26 +279,26 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for pabutools.visualisation.visualisation</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractProfile</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">AbstractProfile</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">jinja2</span>
+    <span class="kn">import</span> <span class="nn">jinja2</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;You need to install jinja2 to use this visualisation module&quot;</span><span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.analysis.profileproperties</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.analysis.profileproperties</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">votes_count_by_project</span><span class="p">,</span>
     <span class="n">voter_flow_matrix</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">total_cost</span><span class="p">,</span> <span class="n">Instance</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.greedywelfare.greedywelfare_details</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.instance</span> <span class="kn">import</span> <span class="n">total_cost</span><span class="p">,</span> <span class="n">Instance</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.greedywelfare.greedywelfare_details</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">GreedyWelfareAllocationDetails</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.mes.mes_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">MESAllocationDetails</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.mes.mes_details</span> <span class="kn">import</span> <span class="n">MESAllocationDetails</span>
 
 <span class="n">ENV</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span>
     <span class="n">loader</span><span class="o">=</span><span class="n">jinja2</span><span class="o">.</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
@@ -326,14 +307,14 @@ document.write(`
 
 <div class="viewcode-block" id="Visualiser">
 <a class="viewcode-back" href="../../../reference/visualisation/index.html#pabutools.visualisation.Visualiser">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Visualiser</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Visualiser</span><span class="p">:</span>
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="MESVisualiser">
 <a class="viewcode-back" href="../../../reference/visualisation/index.html#pabutools.visualisation.MESVisualiser">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MESVisualiser</span><span class="p">(</span><span class="n">Visualiser</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MESVisualiser</span><span class="p">(</span><span class="n">Visualiser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class used to visualise the results of a MES election. The visualisation result consists of two</span>
 <span class="sd">    pages: a summary page called &#39;summary.html&#39; and a round by round analysis page called</span>
@@ -360,7 +341,7 @@ document.write(`
         <span class="s2">&quot;./templates/mes_page_summary_template.html&quot;</span>
     <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -376,7 +357,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">were_projects_selected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rounds</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_rounds_dictinary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_calculate_rounds_dictinary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the round by round dictionary that will be used to render the template.</span>
 
@@ -602,7 +583,7 @@ document.write(`
             <span class="p">}</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_pie_charts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projectVotes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_calculate_pie_charts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projectVotes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the data necessary for the pie charts in the round by round analysis page.</span>
 
@@ -652,7 +633,7 @@ document.write(`
                 <span class="n">pie_chart_items</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pie_chart_items</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
             <span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_avg_voter_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voters_budget</span><span class="p">,</span> <span class="n">supporters</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_calculate_avg_voter_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voters_budget</span><span class="p">,</span> <span class="n">supporters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the average budget of the supporters for a project.</span>
 
@@ -673,7 +654,7 @@ document.write(`
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">voters_budget</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">supporters</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">supporters</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_voters_for_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_voters_for_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the supporters of a project.</span>
 
@@ -687,7 +668,7 @@ document.write(`
             <span class="k">if</span> <span class="n">project_details</span><span class="o">.</span><span class="n">project</span> <span class="o">==</span> <span class="n">project</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">project_details</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">supporter_indices</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the data necessary for the visualisation.</span>
 
@@ -708,7 +689,7 @@ document.write(`
 
 <div class="viewcode-block" id="MESVisualiser.render">
 <a class="viewcode-back" href="../../../reference/visualisation/index.html#pabutools.visualisation.MESVisualiser.render">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render the visualisation.</span>
 
@@ -793,7 +774,7 @@ document.write(`
 
 <div class="viewcode-block" id="GreedyWelfareVisualiser">
 <a class="viewcode-back" href="../../../reference/visualisation/index.html#pabutools.visualisation.GreedyWelfareVisualiser">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">GreedyWelfareVisualiser</span><span class="p">(</span><span class="n">Visualiser</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">GreedyWelfareVisualiser</span><span class="p">(</span><span class="n">Visualiser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class used to visualise the results of a Greedy Welfare election. The visualisation result</span>
 <span class="sd">    consists of a round by round analysis page called &#39;round_analysis.html&#39;.</span>
@@ -817,7 +798,7 @@ document.write(`
 
     <span class="n">template</span> <span class="o">=</span> <span class="n">ENV</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;./templates/greedy_round_analysis_template.html&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="n">profile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -834,7 +815,7 @@ document.write(`
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">project_votes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">project_votes</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the data necessary for the visualisation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -884,7 +865,7 @@ document.write(`
 
 <div class="viewcode-block" id="GreedyWelfareVisualiser.render">
 <a class="viewcode-back" href="../../../reference/visualisation/index.html#pabutools.visualisation.GreedyWelfareVisualiser.render">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_folder_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render the visualisation.</span>
 
@@ -998,8 +979,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

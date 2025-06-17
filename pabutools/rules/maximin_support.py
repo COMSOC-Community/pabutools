@@ -151,7 +151,9 @@ def _compute_optimal_load(projects, profile):
     prob += z  # Objective: minimize max load
 
     status = prob.solve(PULP_CBC_CMD(msg=False))
+
+    # This can mean a project that no one approves of for instance
     if status != LpStatusOptimal:
-        raise RuntimeError("LP did not converge")
+        return float("inf")
 
     return value(z)

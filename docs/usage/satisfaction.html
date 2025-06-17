@@ -16,25 +16,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=772388c8"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
@@ -47,6 +50,7 @@
     <link rel="prev" title="Preference Libraries" href="libraries.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.16" />
   </head>
   
   
@@ -62,19 +66,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -82,7 +75,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -90,8 +82,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,7 +99,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -137,15 +130,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
@@ -303,24 +292,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -376,15 +357,15 @@ of satisfaction functions. We also have
 which represents satisfaction profiles as multisets (see our discussion above about multiprofiles).</p>
 <p>The typical workflow involves gathering the ballots into a profile, converting them
 into a collection of satisfaction functions, and then using these functions as input to a rule.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">SatisfactionProfile</span><span class="p">,</span> <span class="n">SatisfactionMeasure</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_pabulib</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">SatisfactionProfile</span><span class="p">,</span> <span class="n">SatisfactionMeasure</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">parse_pabulib</span>
 
 <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">parse_pabulib</span><span class="p">(</span><span class="s2">&quot;path_to_the_file&quot;</span><span class="p">)</span>
 <span class="n">sat_profile</span> <span class="o">=</span> <span class="n">SatisfactionProfile</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span>
 
 <span class="c1"># We define a satisfaction function:</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">MySatisfaction</span><span class="p">(</span><span class="n">SatisfactionMeasure</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MySatisfaction</span><span class="p">(</span><span class="n">SatisfactionMeasure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">100</span> <span class="k">if</span> <span class="s2">&quot;p1&quot;</span> <span class="ow">in</span> <span class="n">projects</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span>
 
 <span class="c1"># We populate the satisfaction profile</span>
@@ -397,8 +378,8 @@ into a collection of satisfaction functions, and then using these functions as i
 </div>
 <p>To simplify the process of defining the satisfaction profile, we offer convenient
 methods and provide several widely used satisfaction functions.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">SatisfactionProfile</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_pabulib</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">SatisfactionProfile</span><span class="p">,</span> <span class="n">Cardinality_Sat</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">parse_pabulib</span>
 
 <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">parse_pabulib</span><span class="p">(</span><span class="s2">&quot;path_to_the_file&quot;</span><span class="p">)</span>
 <span class="c1"># If a profile and a sat_class are given to the constructor, the satisfaction profile</span>
@@ -435,13 +416,13 @@ This class corresponds to a satisfaction function defined by a function that tak
 an instance, a profile, a ballot, and a set of projects. To demonstrate its use, we illustrate
 how to define the Chamberlin-Courant satisfaction function with approval (equal to 1 if
 at least one approved project is selected and 0 otherwise).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionalSatisfaction</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">FunctionalSatisfaction</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">cc_sat_func</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cc_sat_func</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="ow">in</span> <span class="n">ballot</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">))</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">CC_Sat</span><span class="p">(</span><span class="n">FunctionalSatisfaction</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CC_Sat</span><span class="p">(</span><span class="n">FunctionalSatisfaction</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">CC_Sat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">cc_sat_func</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -456,13 +437,13 @@ instance, profile, ballot, project, and pre-computed values to a score. The pre-
 argument is used to pass fixed parameters to the function that can be used
 for expensive computations not to be done more than once. As an example, we demonstrate
 how to define the cardinality satisfaction function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdditiveSatisfaction</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">AdditiveSatisfaction</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">cardinality_sat_func</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">precomputed_values</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cardinality_sat_func</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">precomputed_values</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">project</span> <span class="ow">in</span> <span class="n">ballot</span><span class="p">)</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Cardinality_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Cardinality_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Cardinality_Sat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">cardinality_sat_func</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -475,15 +456,15 @@ satisfaction depends on the position of projects in their ballot. The class
 implements these functions. Its constructor takes two functions as parameters: one that maps
 ballots and projects to a score and another that aggregates the individual scores for sets
 of projects. As an example, we define the additive Borda satisfaction function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">PositionalSatisfaction</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">PositionalSatisfaction</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">borda_sat_func</span><span class="p">(</span><span class="n">ballot</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">borda_sat_func</span><span class="p">(</span><span class="n">ballot</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">project</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ballot</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ballot</span><span class="p">)</span> <span class="o">-</span> <span class="n">ballot</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Additive_Borda_Sat</span><span class="p">(</span><span class="n">PositionalSatisfaction</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Additive_Borda_Sat</span><span class="p">(</span><span class="n">PositionalSatisfaction</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Additive_Borda_Sat</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">borda_sat_func</span><span class="p">,</span> <span class="nb">sum</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -526,7 +507,8 @@ of projects. As an example, we define the additive Borda satisfaction function.<
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -587,8 +569,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>
