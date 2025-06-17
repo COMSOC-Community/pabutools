@@ -246,6 +246,7 @@ def priceable(
     relaxation: Relaxation | None = None,
     *,
     max_seconds: int = 600,
+    mip_solver_name: str | None = None,
     verbose: bool = False,
 ) -> PriceableResult:
     """
@@ -284,6 +285,8 @@ def priceable(
         **max_seconds : int, optional
             Model's maximum runtime in seconds.
             Defaults to 600.
+        **mip_solver_name : str, optional
+            python-mip solver to use.
         **verbose : bool, optional
             Display additional information.
             Defaults to `False`.
@@ -298,7 +301,7 @@ def priceable(
     N = profile
     INF = instance.budget_limit * 10
 
-    mip_model = Model("stable-priceability" if stable else "priceability")
+    mip_model = Model("stable-priceability" if stable else "priceability", solver_name=mip_solver_name)
     mip_model.verbose = verbose
     mip_model.integer_tol = 1e-8
 

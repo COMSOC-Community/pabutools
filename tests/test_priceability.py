@@ -43,14 +43,14 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5, v6])
 
         allocation = p[1:4] + p[7:]
-        self.assertFalse(priceable(instance, profile, allocation).validate())
+        self.assertFalse(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
         allocation = p[1:9] + p[10:12] + p[13:15]
-        self.assertTrue(priceable(instance, profile, allocation).validate())
+        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
-        res = priceable(instance, profile)
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
-        self.assertTrue(priceable(instance, profile, res.allocation).validate())
+        res = priceable(instance, profile, mip_solver_name='cbc')
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, res.allocation, mip_solver_name='cbc').validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
 
@@ -88,17 +88,17 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5])
 
         allocation = p[1:3]
-        self.assertFalse(priceable(instance, profile, allocation).validate())
+        self.assertFalse(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
         allocation = p[1:6]
-        self.assertTrue(priceable(instance, profile, allocation).validate())
+        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
         allocation = p[6:]
-        self.assertTrue(priceable(instance, profile, allocation).validate())
+        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
-        res = priceable(instance, profile)
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
-        self.assertTrue(priceable(instance, profile, res.allocation).validate())
+        res = priceable(instance, profile, mip_solver_name='cbc')
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, res.allocation, mip_solver_name='cbc').validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
 
@@ -142,17 +142,17 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5, v6, v7, v8, v9])
 
         allocation = p[1:10]
-        self.assertTrue(priceable(instance, profile, allocation).validate())
+        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
         allocation = p[1:6] + p[7:9] + p[10:12]
-        self.assertTrue(priceable(instance, profile, allocation).validate())
+        self.assertTrue(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
         allocation = p[1:6] + p[7:9] + p[11:12]
-        self.assertFalse(priceable(instance, profile, allocation).validate())
+        self.assertFalse(priceable(instance, profile, allocation, mip_solver_name='cbc').validate())
 
-        res = priceable(instance, profile)
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions).validate())
-        self.assertTrue(priceable(instance, profile, res.allocation).validate())
+        res = priceable(instance, profile, mip_solver_name='cbc')
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, res.allocation, mip_solver_name='cbc').validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions))
 
@@ -187,16 +187,16 @@ class TestPriceability(TestCase):
         profile = ApprovalProfile(init=[v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11])
 
         allocation = [p[0], p[1]]
-        self.assertFalse(priceable(instance, profile, allocation, stable=True).validate())
+        self.assertFalse(priceable(instance, profile, allocation, stable=True, mip_solver_name='cbc').validate())
 
         allocation = [p[0], p[2], p[4]]
-        self.assertFalse(priceable(instance, profile, allocation, stable=True).validate())
+        self.assertFalse(priceable(instance, profile, allocation, stable=True, mip_solver_name='cbc').validate())
 
         allocation = p[1:]
-        self.assertTrue(priceable(instance, profile, allocation, stable=True).validate())
+        self.assertTrue(priceable(instance, profile, allocation, stable=True, mip_solver_name='cbc').validate())
 
-        res = priceable(instance, profile, stable=True)
-        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True).validate())
-        self.assertTrue(priceable(instance, profile, res.allocation, stable=True).validate())
+        res = priceable(instance, profile, stable=True, mip_solver_name='cbc')
+        self.assertTrue(priceable(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True, mip_solver_name='cbc').validate())
+        self.assertTrue(priceable(instance, profile, res.allocation, stable=True, mip_solver_name='cbc').validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True))
