@@ -15,30 +15,27 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <script src="_static/documentation_options.js?v=dbab8ab3"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=772388c8"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +44,6 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.14" />
   </head>
   
   
@@ -63,8 +59,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -72,6 +79,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -79,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -98,8 +106,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -129,11 +136,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
@@ -243,16 +254,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -327,44 +346,6 @@
 </li>
       <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile">AbstractProfile (class in pabutools.election.profile.profile)</a>
 </li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_beta">add_beta() (MinAdd method)</a>
-
-      <ul>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_beta">(MinAddOffset method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_beta">(MinAddVector method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVectorPositive.add_beta">(MinAddVectorPositive method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_beta">(MinMul method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_beta">(Relaxation method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_objective">add_objective() (MinAdd method)</a>
-
-      <ul>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_objective">(MinAddOffset method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_objective">(MinAddVector method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_objective">(MinMul method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_objective">(Relaxation method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.add_stability_constraint">add_stability_constraint() (MinAdd method)</a>
-
-      <ul>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.add_stability_constraint">(MinAddOffset method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.add_stability_constraint">(MinAddVector method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.add_stability_constraint">(MinMul method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.add_stability_constraint">(Relaxation method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.positionalsatisfaction.Additive_Borda_Sat">Additive_Borda_Sat (class in pabutools.election.satisfaction.positionalsatisfaction)</a>
 </li>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cardinal_Relative_Sat">Additive_Cardinal_Relative_Sat (class in pabutools.election.satisfaction.additivesatisfaction)</a>
@@ -378,8 +359,6 @@
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction">AdditiveSatisfaction (class in pabutools.election.satisfaction.additivesatisfaction)</a>
 </li>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.positionalsatisfaction.PositionalSatisfaction.aggregation_func">aggregation_func (PositionalSatisfaction attribute)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult.allocation">allocation (PriceableResult attribute)</a>
 </li>
       <li><a href="reference/rules/index.html#pabutools.rules.budgetallocation.AllocationDetails">AllocationDetails (class in pabutools.rules.budgetallocation)</a>
 </li>
@@ -413,8 +392,6 @@
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionprofile.SatisfactionProfile.append">(SatisfactionProfile method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.AbstractApprovalProfile.approval_score">approval_score() (AbstractApprovalProfile method)</a>
 
       <ul>
@@ -423,6 +400,8 @@
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile.approval_score">(ApprovalProfile method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/election/libraries.html#pabutools.election.preflib.approval_to_preflib">approval_to_preflib() (in module pabutools.election.preflib)</a>
 </li>
       <li><a href="reference/election/ballot.html#pabutools.election.ballot.approvalballot.ApprovalBallot">ApprovalBallot (class in pabutools.election.ballot.approvalballot)</a>
@@ -451,9 +430,11 @@
         <li><a href="reference/election/profile.html#pabutools.election.profile.profile.Profile.as_multiprofile">(Profile method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.as_sat_profile">as_sat_profile() (AbstractProfile method)</a>
+      <li><a href="reference/election/profile.html#pabutools.election.profile.cumulativeprofile.AbstractCumulativeProfile.as_sat_profile">as_sat_profile() (AbstractCumulativeProfile method)</a>
 
       <ul>
+        <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.as_sat_profile">(AbstractProfile method)</a>
+</li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalMultiProfile.as_sat_profile">(ApprovalMultiProfile method)</a>
 </li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile.as_sat_profile">(ApprovalProfile method)</a>
@@ -861,18 +842,6 @@
       </ul></li>
       <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.get_all_approval_profiles">get_all_approval_profiles() (in module pabutools.election.profile.approvalprofile)</a>
 </li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.get_beta">get_beta() (MinAdd method)</a>
-
-      <ul>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.get_beta">(MinAddOffset method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.get_beta">(MinAddVector method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.get_beta">(MinMul method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.get_beta">(Relaxation method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/election/instance.html#pabutools.election.instance.Instance.get_project">get_project() (Instance method)</a>
 </li>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cardinal_Relative_Sat.get_project_sat">get_project_sat() (Additive_Cardinal_Relative_Sat method)</a>
@@ -907,18 +876,6 @@
 </li>
       <li><a href="reference/election/instance.html#pabutools.election.instance.get_random_instance">get_random_instance() (in module pabutools.election.instance)</a>
 </li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd.get_relaxed_cost">get_relaxed_cost() (MinAdd method)</a>
-
-      <ul>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset.get_relaxed_cost">(MinAddOffset method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector.get_relaxed_cost">(MinAddVector method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul.get_relaxed_cost">(MinMul method)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.get_relaxed_cost">(Relaxation method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/utils.html#pabutools.utils.gini_coefficient">gini_coefficient() (in module pabutools.utils)</a>
 </li>
       <li><a href="reference/analysis/index.html#pabutools.analysis.votersatisfaction.gini_coefficient_of_satisfaction">gini_coefficient_of_satisfaction() (in module pabutools.analysis.votersatisfaction)</a>
@@ -1004,8 +961,6 @@
 </li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.profile.Profile.instance">(Profile attribute)</a>
 </li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.instance">(Relaxation attribute)</a>
-</li>
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure.instance">(SatisfactionMeasure attribute)</a>
 </li>
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionprofile.SatisfactionMultiProfile.instance">(SatisfactionMultiProfile attribute)</a>
@@ -1013,14 +968,14 @@
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionprofile.SatisfactionProfile.instance">(SatisfactionProfile attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/election/ballot.html#pabutools.election.ballot.approvalballot.ApprovalBallot.intersection">intersection() (ApprovalBallot method)</a>
 
       <ul>
         <li><a href="reference/election/instance.html#pabutools.election.instance.Instance.intersection">(Instance method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/election/ballot.html#pabutools.election.ballot.approvalballot.ApprovalBallot.intersection_update">intersection_update() (ApprovalBallot method)</a>
 
       <ul>
@@ -1297,16 +1252,6 @@
 </li>
       <li><a href="reference/tiebreaking.html#pabutools.tiebreaking.min_cost_tie_breaking">min_cost_tie_breaking (in module pabutools.tiebreaking)</a>
 </li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAdd">MinAdd (class in pabutools.analysis.priceability_relaxation)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddOffset">MinAddOffset (class in pabutools.analysis.priceability_relaxation)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVector">MinAddVector (class in pabutools.analysis.priceability_relaxation)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinAddVectorPositive">MinAddVectorPositive (class in pabutools.analysis.priceability_relaxation)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.MinMul">MinMul (class in pabutools.analysis.priceability_relaxation)</a>
-</li>
       <li>
     module
 
@@ -1320,10 +1265,6 @@
         <li><a href="reference/analysis/index.html#module-pabutools.analysis.justifiedrepresentation">pabutools.analysis.justifiedrepresentation</a>
 </li>
         <li><a href="reference/analysis/index.html#module-pabutools.analysis.mesanalytics">pabutools.analysis.mesanalytics</a>
-</li>
-        <li><a href="reference/analysis/index.html#module-pabutools.analysis.priceability">pabutools.analysis.priceability</a>
-</li>
-        <li><a href="reference/analysis/index.html#module-pabutools.analysis.priceability_relaxation">pabutools.analysis.priceability_relaxation</a>
 </li>
         <li><a href="reference/analysis/index.html#module-pabutools.analysis.profileproperties">pabutools.analysis.profileproperties</a>
 </li>
@@ -1368,9 +1309,11 @@
 </li>
       <li><a href="reference/rules/index.html#pabutools.rules.cstv.CSTV_Combination.MTC">MTC (CSTV_Combination attribute)</a>
 </li>
-      <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.multiplicity">multiplicity() (AbstractProfile method)</a>
+      <li><a href="reference/election/profile.html#pabutools.election.profile.cumulativeprofile.AbstractCumulativeProfile.multiplicity">multiplicity() (AbstractCumulativeProfile method)</a>
 
       <ul>
+        <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.multiplicity">(AbstractProfile method)</a>
+</li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalMultiProfile.multiplicity">(ApprovalMultiProfile method)</a>
 </li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile.multiplicity">(ApprovalProfile method)</a>
@@ -1434,9 +1377,11 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.num_ballots">num_ballots() (AbstractProfile method)</a>
+      <li><a href="reference/election/profile.html#pabutools.election.profile.cumulativeprofile.AbstractCumulativeProfile.num_ballots">num_ballots() (AbstractCumulativeProfile method)</a>
 
       <ul>
+        <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.num_ballots">(AbstractProfile method)</a>
+</li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalMultiProfile.num_ballots">(ApprovalMultiProfile method)</a>
 </li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile.num_ballots">(ApprovalProfile method)</a>
@@ -1517,20 +1462,6 @@
 
       <ul>
         <li><a href="reference/analysis/index.html#module-pabutools.analysis.mesanalytics">module</a>
-</li>
-      </ul></li>
-      <li>
-    pabutools.analysis.priceability
-
-      <ul>
-        <li><a href="reference/analysis/index.html#module-pabutools.analysis.priceability">module</a>
-</li>
-      </ul></li>
-      <li>
-    pabutools.analysis.priceability_relaxation
-
-      <ul>
-        <li><a href="reference/analysis/index.html#module-pabutools.analysis.priceability_relaxation">module</a>
 </li>
       </ul></li>
       <li>
@@ -1621,8 +1552,6 @@
 </li>
       <li><a href="reference/election/instance.html#pabutools.election.instance.Instance.parsing_errors">parsing_errors (Instance attribute)</a>
 </li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult.payment_functions">payment_functions (PriceableResult attribute)</a>
-</li>
       <li><a href="reference/analysis/index.html#pabutools.analysis.votersatisfaction.percent_non_empty_handed">percent_non_empty_handed() (in module pabutools.analysis.votersatisfaction)</a>
 </li>
       <li><a href="reference/analysis/index.html#pabutools.analysis.votersatisfaction.percent_positive_satisfaction">percent_positive_satisfaction() (in module pabutools.analysis.votersatisfaction)</a>
@@ -1705,10 +1634,6 @@
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cost_Sat.preprocessing">(Relative_Cost_Sat method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.priceable">priceable() (in module pabutools.analysis.priceability)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult">PriceableResult (class in pabutools.analysis.priceability)</a>
-</li>
       <li><a href="reference/rules/index.html#pabutools.rules.maxwelfare.MaxAddUtilWelfareAlgo.PRIMAL_DUAL">PRIMAL_DUAL (MaxAddUtilWelfareAlgo attribute)</a>
 </li>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction.profile">profile (AdditiveSatisfaction attribute)</a>
@@ -1719,8 +1644,6 @@
 
       <ul>
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.positionalsatisfaction.PositionalSatisfaction.profile">(PositionalSatisfaction attribute)</a>
-</li>
-        <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation.profile">(Relaxation attribute)</a>
 </li>
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure.profile">(SatisfactionMeasure attribute)</a>
 </li>
@@ -1745,8 +1668,6 @@
 </li>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cost_Sat">Relative_Cost_Sat (class in pabutools.election.satisfaction.additivesatisfaction)</a>
 </li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability_relaxation.Relaxation">Relaxation (class in pabutools.analysis.priceability_relaxation)</a>
-</li>
       <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile.remove">remove() (ApprovalProfile method)</a>
 
       <ul>
@@ -1759,8 +1680,6 @@
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionprofile.SatisfactionProfile.remove">(SatisfactionProfile method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionmeasure.GroupSatisfactionMeasure.remove_satisfied">remove_satisfied() (GroupSatisfactionMeasure method)</a>
 
       <ul>
@@ -1769,6 +1688,8 @@
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionprofile.SatisfactionProfile.remove_satisfied">(SatisfactionProfile method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/visualisation/index.html#pabutools.visualisation.GreedyWelfareVisualiser.render">render() (GreedyWelfareVisualiser method)</a>
 
       <ul>
@@ -1923,8 +1844,6 @@
         <li><a href="reference/election/satisfaction.html#pabutools.election.satisfaction.satisfactionprofile.SatisfactionProfile.sort">(SatisfactionProfile method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult.status">status (PriceableResult attribute)</a>
-</li>
       <li><a href="reference/analysis/index.html#pabutools.analysis.instanceproperties.std_dev_project_cost">std_dev_project_cost() (in module pabutools.analysis.instanceproperties)</a>
 </li>
       <li><a href="reference/fractions.html#pabutools.fractions.str_as_frac">str_as_frac() (in module pabutools.fractions)</a>
@@ -2053,11 +1972,11 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult.validate">validate() (PriceableResult method)</a>
-</li>
-      <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.validate_ballot">validate_ballot() (AbstractProfile method)</a>
+      <li><a href="reference/election/profile.html#pabutools.election.profile.cumulativeprofile.AbstractCumulativeProfile.validate_ballot">validate_ballot() (AbstractCumulativeProfile method)</a>
 
       <ul>
+        <li><a href="reference/election/profile.html#pabutools.election.profile.profile.AbstractProfile.validate_ballot">(AbstractProfile method)</a>
+</li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalMultiProfile.validate_ballot">(ApprovalMultiProfile method)</a>
 </li>
         <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalProfile.validate_ballot">(ApprovalProfile method)</a>
@@ -2075,8 +1994,6 @@
         <li><a href="reference/election/profile.html#pabutools.election.profile.ordinalprofile.OrdinalProfile.validate_ballot">(OrdinalProfile method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.validate_price_system">validate_price_system() (in module pabutools.analysis.priceability)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/election/profile.html#pabutools.election.profile.approvalprofile.ApprovalMultiProfile.values">values() (ApprovalMultiProfile method)</a>
@@ -2092,8 +2009,6 @@
 </li>
       </ul></li>
       <li><a href="reference/visualisation/index.html#pabutools.visualisation.Visualiser">Visualiser (class in pabutools.visualisation)</a>
-</li>
-      <li><a href="reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult.voter_budget">voter_budget (PriceableResult attribute)</a>
 </li>
       <li><a href="reference/analysis/index.html#pabutools.analysis.profileproperties.voter_flow_matrix">voter_flow_matrix() (in module pabutools.analysis.profileproperties)</a>
 </li>
@@ -2176,8 +2091,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>
