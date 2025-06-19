@@ -32,6 +32,8 @@ def maximin_support(
     """
     The maximin support rule (also introduced as "Generalised Sequential Phragmén" by Aziz, Lee and Talmon (2018)).
 
+    Contributed by Shlomi Asraf.
+
     Parameters
     ----------
         instance : :py:class:`~pabutools.election.instance.Instance`
