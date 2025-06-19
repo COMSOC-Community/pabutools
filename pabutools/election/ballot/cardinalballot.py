@@ -5,7 +5,7 @@ Cardinal ballots, i.e., ballots in which the voters map projects to scores.
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import Collection, Mapping
+from collections.abc import Mapping, Iterable
 
 from pabutools.election.ballot.ballot import FrozenBallot, Ballot, AbstractBallot
 from pabutools.election.instance import Project
@@ -129,7 +129,7 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
         Ballot.__init__(self, name=name, meta=meta)
         AbstractCardinalBallot.__init__(self)
 
-    def complete(self, projects: Collection[Project], default_score: Numeric) -> None:
+    def complete(self, projects: Iterable[Project], default_score: Numeric) -> None:
         """
         Completes the ballot by assigning the `default_score` to all projects from `projects` that have not been
         assigned a score yet.

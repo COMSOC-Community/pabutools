@@ -5,7 +5,7 @@ Ordinal ballots, i.e., ballots in which the voters order the projects given thei
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 
 from pabutools.election.ballot.ballot import FrozenBallot, Ballot, AbstractBallot
 from pabutools.election.instance import Project
@@ -13,7 +13,7 @@ from pabutools.election.instance import Project
 
 class AbstractOrdinalBallot(AbstractBallot, ABC, Collection[Project]):
     """
-    Abstract class for cumulative ballots. Essentially used for typing purposes.
+    Abstract class for ordinal ballots. Essentially used for typing purposes.
     """
 
     @abstractmethod
@@ -41,7 +41,7 @@ class FrozenOrdinalBallot(tuple[Project], FrozenBallot, AbstractOrdinalBallot):
     Parameters
     ----------
         init: Iterable[:py:class:`~pabutools.election.instance.Project`], optional
-            Collection of :py:class:`~pabutools.election.instance.Project` used to initialise the tuple. In case an
+            Iterable of :py:class:`~pabutools.election.instance.Project` used to initialise the tuple. In case an
             :py:class:`~pabutools.election.ballot.ballot.AbstractBallot` object is passed, the
             additional attributes are also copied (except if the corresponding keyword arguments have been given).
             Defaults to `()`.
@@ -67,7 +67,7 @@ class FrozenOrdinalBallot(tuple[Project], FrozenBallot, AbstractOrdinalBallot):
 
     def __init__(
         self,
-        init: Collection[Project] = (),
+        init: Iterable[Project] = (),
         name: str | None = None,
         meta: dict | None = None,
     ) -> None:
@@ -112,7 +112,7 @@ class OrdinalBallot(dict, Ballot, AbstractOrdinalBallot):
     Parameters
     ----------
         init: Iterable[:py:class:`~pabutools.election.instance.Project`], optional
-            Collection of :py:class:`~pabutools.election.instance.Project` used to initialise the ballot. In case an
+            Iterable of :py:class:`~pabutools.election.instance.Project` used to initialise the ballot. In case an
             :py:class:`~pabutools.election.ballot.ballot.AbstractBallot` object is passed, the
             additional attributes are also copied (except if the corresponding keyword arguments have been given).
             Defaults to `()`.
@@ -138,7 +138,7 @@ class OrdinalBallot(dict, Ballot, AbstractOrdinalBallot):
 
     def __init__(
         self,
-        init: Collection[Project] = (),
+        init: Iterable[Project] = (),
         name: str | None = None,
         meta: dict | None = None,
     ) -> None:
@@ -206,7 +206,7 @@ class OrdinalBallot(dict, Ballot, AbstractOrdinalBallot):
 
     def at_index(self, index: int) -> Project:
         """
-        Returns the project at index `index`. A `ValueError` is raised if the index is invalid.
+        Returns the project at index `index`, or None . A `ValueError` is raised if the index is invalid.
 
         Parameters
         ----------
@@ -218,17 +218,16 @@ class OrdinalBallot(dict, Ballot, AbstractOrdinalBallot):
             :py:class:`~pabutools.election.instance.Project`
                 The project at position `index`.
         """
-        if index > len(self):
-            raise ValueError(
-                "Index {} invalid for ordinal ballot of length {}.".format(
-                    index, len(self)
-                )
-            )
         i = 0
         for e in self:
             if i == index:
                 return e
             i += 1
+        raise ValueError(
+            "Index {} invalid for ordinal ballot of length {}.".format(
+                index, len(self)
+            )
+        )
 
     def frozen(self) -> FrozenOrdinalBallot:
         """
