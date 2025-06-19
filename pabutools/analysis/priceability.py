@@ -6,6 +6,9 @@ from __future__ import annotations
 
 import collections
 from collections.abc import Collection
+import logging
+
+logger = logging.getLogger(__name__)
 
 from pabutools.analysis.priceability_relaxation import Relaxation
 from pabutools.election import (
@@ -155,7 +158,7 @@ def validate_price_system(
 
     if verbose:
         for condition, error in errors.items():
-            print(f"({condition}) {error}")
+            logger.info("(%s) %s", condition, error)
 
     return not errors
 

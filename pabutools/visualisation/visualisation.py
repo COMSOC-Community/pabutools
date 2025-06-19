@@ -1,6 +1,10 @@
 from __future__ import annotations
 import os
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 from pabutools.election import AbstractProfile
 
@@ -417,7 +421,7 @@ class MESVisualiser(Visualiser):
         None
         """
         if not self.were_projects_selected:
-            print(
+            logger.info(
                 "No projects were selected in this election - therefore no visualisation will be created."
             )
             return
@@ -425,7 +429,7 @@ class MESVisualiser(Visualiser):
         for round in self.rounds:
             del round["_current_iteration"]
         if self.verbose:
-            print(self.rounds)
+            logger.info(self.rounds)
 
         # Round by Round
         round_analysis_page_output = MESVisualiser.template.render(
@@ -588,7 +592,7 @@ class GreedyWelfareVisualiser(Visualiser):
         """
         self._calculate()
         if self.verbose:
-            print(self.rounds)
+            logger.info(self.rounds)
 
         # Round by Round
         round_analysis_page_output = GreedyWelfareVisualiser.template.render(
