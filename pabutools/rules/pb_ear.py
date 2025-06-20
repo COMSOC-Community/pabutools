@@ -7,11 +7,11 @@ from pabutools.election import total_cost
 from pabutools.election.instance import Instance
 from pabutools.election.profile.ordinalprofile import AbstractOrdinalProfile
 from pabutools.rules.budgetallocation import BudgetAllocation
-import logging
-from pabutools.utils_formatting import format_table
+from pabutools.utils import format_table
 from pabutools.fractions import frac
 from pabutools.election.instance import Project
 
+import logging
 logger = logging.getLogger(__name__)
 
 def pb_ear(
