@@ -719,6 +719,9 @@ def method_of_equal_shares(
         if sat_profile is None:
             sat_profile = profile.as_sat_profile(sat_class=sat_class)
 
+    if profile.num_ballots() == 0:
+        return budget_allocation if resoluteness else [budget_allocation]
+
     if binary_sat is None:
         binary_sat = isinstance(profile, AbstractApprovalProfile)
 

@@ -34,6 +34,8 @@ class PhragmenVoter:
             The initial load of the voter.
         multiplicity: int
             The multiplicity of the ballot.
+        max_load: Numeric, optional
+            The maximum load of the voter. If the load exceeds this value, the voter no longer considered.
 
     Attributes
     ----------
@@ -43,14 +45,17 @@ class PhragmenVoter:
             The initial load of the voter.
         multiplicity: int
             The multiplicity of the ballot.
+        max_load: Numeric
+            The maximum load of the voter.
     """
 
     def __init__(
-        self, ballot: AbstractApprovalBallot, load: Numeric, multiplicity: int
+        self, ballot: AbstractApprovalBallot, load: Numeric, multiplicity: int, max_load: Numeric = None
     ):
         self.ballot = ballot
         self.load = load
         self.multiplicity = multiplicity
+        self.max_load = max_load
 
     def total_load(self):
         return self.multiplicity * self.load
@@ -60,6 +65,7 @@ def sequential_phragmen(
     instance: Instance,
     profile: AbstractApprovalProfile,
     initial_loads: list[Numeric] | None = None,
+    global_max_load: Numeric | None = None,
     initial_budget_allocation: Collection[Project] | None = None,
     tie_breaking: TieBreakingRule | None = None,
     resoluteness: bool = True,
@@ -70,7 +76,7 @@ def sequential_phragmen(
     buy a project they all approve, the project is bought. The rule stops as soon as there is a project that could be
     bought  but only by violating the budget constraint.
 
-    Note that this rule can only be applied to profile of approval ballots.
+    Note that this rule can only be applied to profiles of approval ballots.
 
     Parameters
     ----------
@@ -80,6 +86,8 @@ def sequential_phragmen(
             The profile.
         initial_loads: list[Numeric], optional
             A list of initial load, one per ballot in `profile`. By defaults, the initial load is `0`.
+        global_max_load: Numeric, optional
+            A maximum load. The rule stops when any voter would exceed this limit.
         initial_budget_allocation : Iterable[:py:class:`~pabutools.election.instance.Project`]
             An initial budget allocation, typically empty.
         tie_breaking : :py:class:`~pabutools.tiebreaking.TieBreakingRule`, optional
@@ -97,16 +105,11 @@ def sequential_phragmen(
     """
 
     def aux(
-        inst,
         projects,
-        prof,
         voters,
-        supporters,
-        approval_scores,
         alloc,
         cost,
         allocs,
-        resolute,
     ):
         if len(projects) == 0:
             alloc.sort()
@@ -130,16 +133,22 @@ def sequential_phragmen(
                 elif min_new_maxload == new_maxload:
                     arg_min_new_maxload.append(project)
 
+            # Stop if any of the potential projects cost too much
             if any(
-                cost + project.cost > inst.budget_limit
+                cost + project.cost > instance.budget_limit
                 for project in arg_min_new_maxload
             ):
                 alloc.sort()
                 if alloc not in allocs:
                     allocs.append(alloc)
+            # Stop if selecting any project would exceed the global max load bound.
+            elif global_max_load is not None and min_new_maxload > global_max_load:
+                alloc.sort()
+                if alloc not in allocs:
+                    allocs.append(alloc)
             else:
-                tied_projects = tie_breaking.order(inst, prof, arg_min_new_maxload)
-                if resolute:
+                tied_projects = tie_breaking.order(instance, profile, arg_min_new_maxload)
+                if resoluteness:
                     selected_project = tied_projects[0]
                     for voter in voters:
                         if selected_project in voter.ballot:
@@ -147,16 +156,11 @@ def sequential_phragmen(
                     alloc.append(selected_project)
                     projects.remove(selected_project)
                     aux(
-                        inst,
                         projects,
-                        prof,
                         voters,
-                        supporters,
-                        approval_scores,
                         alloc,
                         cost + selected_project.cost,
                         allocs,
-                        resolute,
                     )
                 else:
                     for selected_project in tied_projects:
@@ -169,16 +173,11 @@ def sequential_phragmen(
                         new_projs = deepcopy(projects)
                         new_projs.remove(selected_project)
                         aux(
-                            inst,
                             new_projs,
-                            prof,
                             new_voters,
-                            supporters,
-                            approval_scores,
                             new_alloc,
                             new_cost,
                             allocs,
-                            resolute,
                         )
 
     if not isinstance(profile, AbstractApprovalProfile):
@@ -205,25 +204,21 @@ def sequential_phragmen(
             PhragmenVoter(b, initial_loads[i], profile.multiplicity(b))
             for i, b in enumerate(profile)
         ]
-    supps = {
+    supporters = {
         proj: [i for i, v in enumerate(voters_details) if proj in v.ballot]
         for proj in initial_projects
     }
 
-    scores = {project: profile.approval_score(project) for project in instance}
+    approval_scores = {project: profile.approval_score(project) for project in instance}
 
+    print("\n")
     all_budget_allocations: list[BudgetAllocation] = []
     aux(
-        instance,
         initial_projects,
-        profile,
         voters_details,
-        supps,
-        scores,
         initial_budget_allocation,
         current_cost,
         all_budget_allocations,
-        resoluteness,
     )
 
     if resoluteness:

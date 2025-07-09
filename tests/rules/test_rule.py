@@ -497,6 +497,12 @@ class TestRule(TestCase):
     def test_phragmen(self):
         run_non_sat_rule(sequential_phragmen)
 
+        p = Project("p", 1)
+        instance = Instance([p], budget_limit=1)
+        profile = ApprovalProfile([ApprovalBallot([p])])
+
+        assert len(sequential_phragmen(instance, profile, global_max_load=0)) == 0
+
     def test_mes_approval(self):
         run_sat_rule(method_of_equal_shares, verbose=False)
         run_sat_rule(mes_iterated, verbose=False)
