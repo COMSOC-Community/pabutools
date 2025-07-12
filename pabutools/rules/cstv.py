@@ -842,4 +842,8 @@ def acceptance_of_under_supported_projects(
         if selected_project.cost <= budget:
             selected_projects.append(selected_project)
             budget -= selected_project.cost
+            for donor in donors:
+                if donor.get(selected_project, 0) > 0:
+                    for project in donor.keys():
+                        donor[project] = 0
         eliminated_projects.remove(selected_project)
