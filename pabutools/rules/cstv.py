@@ -272,6 +272,12 @@ def cstv(
             )
             if not flag:
                 # Perform the inclusive maximality postprocedure
+                if verbose:
+                    print(
+                        f"Beginning exhaustiveness postprocess\n \
+                            Remaining projects: {eligible_projects}\n \
+                            Eliminated projects: {eliminated_projects}",
+                    )
                 exhaustiveness_postprocess_func(
                     selected_projects,
                     donations,
@@ -671,8 +677,6 @@ def minimal_transfer(
             eliminated_projects.
 
     """
-    if pabutools.fractions.FRACTION != pabutools.fractions.FLOAT_FRAC:
-        warnings.warn("You are using minimal transfers with exact fractions, this may never end...")
     for project in projects.copy():
         donors_of_selected_project = [
             donor.values()
@@ -699,7 +703,6 @@ def minimal_transfer(
     donors_of_selected_project = [
         i for i, donor in enumerate(donors) if donor.get(chosen_project.name, 0) > 0
     ]
-
     project_cost = chosen_project.cost
 
     # Calculate initial support ratio
@@ -725,7 +728,6 @@ def minimal_transfer(
                 total_support -= total
                 project_cost -= total
                 r = frac(total_support, project_cost)
-
     # Loop until the required support is achieved
     if donors_of_selected_project:
         num_loop_run = 0
@@ -763,6 +765,18 @@ def minimal_transfer(
                 #raise RuntimeError("The while loop of the minimal_transfer function ran for too long. This can be due to"
                 #                " issues with floating point arithmetic.")
                 break
+
+    diff = project_cost - sum(donor.get(chosen_project.name, 0) for donor in donors)
+    if diff > 0:
+        mn_supp = project_cost
+        mn_i = 0
+        for idx, donor in enumerate(donors):
+            supp = donor.get(chosen_project.name, 0)
+            if supp > 0 and mn_supp > supp:
+                mn_supp = supp
+                mn_i = idx
+        donors[mn_i][chosen_project.name] += diff
+
     return True
 
 
