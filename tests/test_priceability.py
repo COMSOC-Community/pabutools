@@ -7,7 +7,7 @@ from unittest import TestCase
 from pabutools.analysis.justifiedrepresentation import is_in_core
 
 from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot, CardinalProfile, CardinalBallot, \
-    Additive_Cardinal_Sat
+    Additive_Cardinal_Sat, OrdinalProfile
 from pabutools.analysis.priceability import priceable, validate_price_system
 
 
@@ -273,3 +273,12 @@ class TestPriceability(TestCase):
                                     profile=profile,
                                     sat_class=Additive_Cardinal_Sat,
                                     budget_allocation=res_any.allocation))
+
+    def test_stable_priceable_ordinal(self):
+        p = []
+
+        instance = Instance(p, budget_limit=1)
+
+        profile = OrdinalProfile()
+
+        self.assertRaises(NotImplementedError, priceable, instance=instance, profile=profile, stable=True)
