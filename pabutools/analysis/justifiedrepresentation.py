@@ -55,6 +55,7 @@ def is_in_core(
                         return False
     return True
 
+
 def is_strong_EJR_approval(
     instance: Instance,
     profile: AbstractApprovalProfile,

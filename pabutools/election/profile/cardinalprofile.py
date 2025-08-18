@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from collections.abc import Collection, Iterable
 
-from pabutools.election.ballot.cardinalballot import AbstractCardinalBallot, get_random_cost_utility_cardinal_ballot
+from pabutools.election.ballot.cardinalballot import AbstractCardinalBallot
 from pabutools.utils import Numeric
 
 from pabutools.election.ballot import (
