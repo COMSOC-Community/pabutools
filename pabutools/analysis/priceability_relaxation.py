@@ -170,14 +170,14 @@ class MinAddVector(Relaxation):
         # beta[c] is zero for selected
         for c in self.C:
             model += self.variables[f"beta_{c.name}"] <= (1 - self.variables[f"x_{c.name}"]) * self.instance.budget_limit
-            model += (self.variables[f"x_{c.name}"] - 1) * self.instance.budget_limit <= self.variables["beta"][c]
+            model += (self.variables[f"x_{c.name}"] - 1) * self.instance.budget_limit <= self.variables[f"beta_{c.name}"]
 
     def add_objective(self, model: LpProblem) -> None:
         model += -lpSum(self.variables[f"beta_{c.name}"] for c in self.C)
 
     def add_stability_constraint(self, model: LpProblem) -> None:
         for c in self.C:
-            model += lpSum(self.variables[f"m_{idx}"] for idx, i in enumerate(self.N) if c in i) \
+            model += lpSum(self.variables[f"m_{idx}_{c.name}"] for idx, _ in enumerate(self.N)) \
                      <= c.cost + self.variables[f"beta_{c.name}"] + self.variables[f"x_{c.name}"] * self.INF
 
     def get_beta(self) -> dict:
