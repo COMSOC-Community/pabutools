@@ -20,11 +20,11 @@ from pabutools.utils import powerset
 
 
 def is_in_core(
-        instance: Instance,
-        profile: AbstractProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
-        up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
+    instance: Instance,
+    profile: AbstractProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
+    up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
 ) -> bool:
     """
     Test if a given budget allocation is in the core of the instance.
@@ -33,10 +33,10 @@ def is_in_core(
         if len(group) > 0:
             for project_set in powerset(instance):
                 if is_large_enough(
-                        len(group),
-                        profile.num_ballots(),
-                        total_cost(project_set),
-                        instance.budget_limit,
+                    len(group),
+                    profile.num_ballots(),
+                    total_cost(project_set),
+                    instance.budget_limit,
                 ):
                     all_better_alone = True
                     for ballot in group:
@@ -55,12 +55,11 @@ def is_in_core(
                         return False
     return True
 
-
 def is_strong_EJR_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies strong EJR for the given instance and the given profile of
@@ -79,11 +78,11 @@ def is_strong_EJR_approval(
 
 
 def is_EJR_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
-        up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
+    up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
 ) -> bool:
     """
     Test if a budget allocation satisfies EJR for the given instance and the given profile of
@@ -109,10 +108,10 @@ def is_EJR_approval(
 
 
 def is_EJR_any_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies EJR up to any project for the given instance and the
@@ -128,10 +127,10 @@ def is_EJR_any_approval(
 
 
 def is_EJR_one_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies EJR up to one project for the given instance and the given
@@ -147,11 +146,11 @@ def is_EJR_one_approval(
 
 
 def is_PJR_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
-        up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
+    up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
 ) -> bool:
     """
     Test if a budget allocation satisfies PJR for the given instance and the given profile of
@@ -173,10 +172,10 @@ def is_PJR_approval(
 
 
 def is_PJR_any_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies PJR up to any project for the given instance and the given
@@ -192,10 +191,10 @@ def is_PJR_any_approval(
 
 
 def is_PJR_one_approval(
-        instance: Instance,
-        profile: AbstractApprovalProfile,
-        sat_class: type[SatisfactionMeasure],
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractApprovalProfile,
+    sat_class: type[SatisfactionMeasure],
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies PJR up to one project for the given instance and the given
@@ -211,10 +210,10 @@ def is_PJR_one_approval(
 
 
 def is_strong_EJR_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Collection[Project],
-        sat_class: type[SatisfactionMeasure] | None = None,
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Collection[Project],
+    sat_class: type[SatisfactionMeasure] | None = None,
 ) -> bool:
     """
     Test if a budget allocation satisfies strong EJR for the given instance and the given profile
@@ -236,11 +235,11 @@ def is_strong_EJR_cardinal(
 
 
 def is_EJR_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Collection[Project],
-        sat_class: type[SatisfactionMeasure] | None = None,
-        up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Collection[Project],
+    sat_class: type[SatisfactionMeasure] | None = None,
+    up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
 ) -> bool:
     """
     Test if a budget allocation satisfies EJR for the given instance and the given profile of
@@ -269,9 +268,9 @@ def is_EJR_cardinal(
 
 
 def is_EJR_any_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies EJR up to any project for the given instance and
@@ -283,9 +282,9 @@ def is_EJR_any_cardinal(
 
 
 def is_EJR_one_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Collection[Project],
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Collection[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies EJR up to one project for the given instance and
@@ -297,10 +296,10 @@ def is_EJR_one_cardinal(
 
 
 def is_PJR_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Iterable[Project],
-        up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Iterable[Project],
+    up_to_func: Callable[[Iterable[Numeric]], Numeric] | None = None,
 ) -> bool:
     """
     Test if a budget allocation satisfies PJR for the given instance and the given profile of
@@ -322,9 +321,9 @@ def is_PJR_cardinal(
 
 
 def is_PJR_any_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Iterable[Project],
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Iterable[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies PJR up to any project for the given instance and
@@ -336,9 +335,9 @@ def is_PJR_any_cardinal(
 
 
 def is_PJR_one_cardinal(
-        instance: Instance,
-        profile: AbstractCardinalProfile,
-        budget_allocation: Iterable[Project],
+    instance: Instance,
+    profile: AbstractCardinalProfile,
+    budget_allocation: Iterable[Project],
 ) -> bool:
     """
     Test if a budget allocation satisfies PJR up to one project for the given instance and
