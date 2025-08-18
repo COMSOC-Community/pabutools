@@ -457,19 +457,3 @@ CardinalMultiProfile._wrap_methods(
         "copy",
     ]
 )
-
-def get_random_cost_utility_cardinal_profile(
-    instance: Instance,
-    num_agents: int,
-    approval_probability: float = 0.5
-) -> CardinalProfile:
-    profile = CardinalProfile(instance=instance)
-    for i in range(num_agents):
-        profile.append(
-            get_random_cost_utility_cardinal_ballot(
-                instance,
-                name="RandomAppBallot {}".format(i),
-                approval_probability=approval_probability
-            )
-        )
-    return profile
