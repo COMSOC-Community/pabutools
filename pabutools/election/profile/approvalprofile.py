@@ -310,9 +310,10 @@ def get_random_approval_profile(instance: Instance, num_agents: int) -> Approval
             The randomly generated profile.
     """
     profile = ApprovalProfile(instance=instance)
+    sorted_instance: list[Project] = sorted(instance)
     for i in range(num_agents):
         profile.append(
-            get_random_approval_ballot(instance, name="RandomAppBallot {}".format(i))
+            get_random_approval_ballot(sorted_instance, name="RandomAppBallot {}".format(i))
         )
     return profile
 
