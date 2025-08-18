@@ -121,13 +121,14 @@ class MinMul(Relaxation):
 
     def add_stability_constraint(self, model: LpProblem) -> None:
         x_vars = {c: self.variables[f"x_{c.name}"] for c in self.C}
-        m_vars = [
-            self.variables[f"m_{idx}"] for idx, _ in enumerate(self.N)
-        ]
+        m_vars = {
+            idx: {c: self.variables[f"m_{idx}_{c.name}"] for c in self.C}
+            for idx, _ in enumerate(self.N)
+        }
         beta = self.variables["beta"]
 
         for c in self.C:
-            model += lpSum(m_vars[idx] for idx, i in enumerate(self.N) if c in i) \
+            model += lpSum(m_vars[idx][c] for idx, i in enumerate(self.N)) \
                      <= c.cost * beta + x_vars[c] * self.INF
 
     def get_beta(self) -> Real:

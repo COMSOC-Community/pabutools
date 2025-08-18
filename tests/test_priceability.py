@@ -4,7 +4,10 @@ Module testing priceability / stable-priceability property.
 
 from unittest import TestCase
 
-from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot
+from pabutools.analysis.justifiedrepresentation import is_in_core
+
+from pabutools.election import Project, Instance, ApprovalProfile, ApprovalBallot, CardinalProfile, CardinalBallot, \
+    Additive_Cardinal_Sat
 from pabutools.analysis.priceability import priceable, validate_price_system
 
 
@@ -179,3 +182,34 @@ class TestPriceability(TestCase):
         self.assertTrue(priceable(instance, profile, res.allocation, stable=True).validate())
 
         self.assertTrue(validate_price_system(instance, profile, res.allocation, res.voter_budget, res.payment_functions, stable=True))
+
+    def test_stable_priceable_additive(self):
+        # Example from Master's Thesis "Stable Priceability for Additive Utilities" section 2.4
+        p = [
+            Project("p1", cost=1),
+            Project("p2", cost=1),
+            Project("p3", cost=1),
+            Project("p4", cost=1)
+        ]
+
+        instance = Instance(p, budget_limit=2)
+
+        profile = CardinalProfile(
+            [
+                CardinalBallot({p[0]: 2, p[1]: 5, p[2]: 1, p[3]: 3}),
+                CardinalBallot({p[2]: 1, p[3]: 4}),
+                CardinalBallot({p[0]: 1, p[2]: 2}),
+                CardinalBallot({p[0]: 3, p[1]: 4, p[3]: 2})
+            ]
+        )
+
+        res_any = priceable(instance=instance, profile=profile, stable=True)
+        self.assertTrue(
+            priceable(instance, profile, res_any.allocation, res_any.voter_budget,
+                      res_any.payment_functions).validate())
+
+        # Additionally, it's a counterexample to SP implying the core for additive utilities
+        self.assertFalse(is_in_core(instance=instance,
+                                    profile=profile,
+                                    sat_class=Additive_Cardinal_Sat,
+                                    budget_allocation=res_any.allocation))

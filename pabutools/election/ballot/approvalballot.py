@@ -129,6 +129,12 @@ class ApprovalBallot(set[Project], Ballot, AbstractApprovalBallot):
         Ballot.__init__(self, name, meta)
         AbstractApprovalBallot.__init__(self)
 
+    def supports(self, c):
+        return self.utility(c) > 0
+
+    def utility(self, c):
+        return 1 if c in self else 0
+
     def frozen(self) -> FrozenApprovalBallot:
         """
         Returns the frozen approval ballot (that is hashable) corresponding to the ballot.

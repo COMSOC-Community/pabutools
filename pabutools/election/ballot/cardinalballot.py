@@ -52,10 +52,10 @@ class FrozenCardinalBallot(
     """
 
     def __init__(
-        self,
-        init: dict[Project, Numeric] = (),
-        name: str | None = None,
-        meta: dict | None = None,
+            self,
+            init: dict[Project, Numeric] = (),
+            name: str | None = None,
+            meta: dict | None = None,
     ):
         dict.__init__(self, init)
         if name is None:
@@ -108,10 +108,10 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
     """
 
     def __init__(
-        self,
-        init: dict[Project, Numeric] | None = None,
-        name: str | None = None,
-        meta: dict | None = None,
+            self,
+            init: dict[Project, Numeric] | None = None,
+            name: str | None = None,
+            meta: dict | None = None,
     ):
         if init is None:
             init = dict()
@@ -155,6 +155,12 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
                 The frozen cardinal ballot.
         """
         return FrozenCardinalBallot(self)
+
+    def supports(self, c):
+        return self.utility(c) > 0
+
+    def utility(self, c):
+        return self[c] if c in self else 0
 
     # This allows dict method returning copies of a dict to work
     @classmethod
