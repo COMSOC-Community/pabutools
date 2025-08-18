@@ -218,7 +218,7 @@ class MinAddOffset(Relaxation):
 
     def add_stability_constraint(self, model: LpProblem) -> None:
         for c in self.C:
-            model += lpSum(self.variables[f"m_{idx}"] for idx, i in enumerate(self.N) if c in i) \
+            model += lpSum(self.variables[f"m_{idx}_{c.name}"] for idx, _ in enumerate(self.N)) \
                      <= c.cost + self.variables["beta"] + self.variables[f"beta_{c.name}"] + self.variables[f"x_{c.name}"] * self.INF
 
     def get_beta(self) -> dict:
