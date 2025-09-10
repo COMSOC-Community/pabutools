@@ -69,7 +69,7 @@ class FrozenCardinalBallot(
             else:
                 meta = dict()
         FrozenBallot.__init__(self, name=name, meta=meta)
-        AbstractCardinalBallot.__init__(self)
+        AbstractCardinalBallot.__init__(self, name=name, meta=meta)
 
     def __setitem__(self, key, value):
         raise ValueError("You cannot set values of a FrozenCardinalBallot")
@@ -125,9 +125,9 @@ class CardinalBallot(dict[Project, Numeric], Ballot, AbstractCardinalBallot):
             if isinstance(init, AbstractBallot):
                 meta = init.meta
             else:
-                meta = dict
+                meta = dict()
         Ballot.__init__(self, name=name, meta=meta)
-        AbstractCardinalBallot.__init__(self)
+        AbstractCardinalBallot.__init__(self, name=name, meta=meta)
 
     def complete(self, projects: Iterable[Project], default_score: Numeric) -> None:
         """
