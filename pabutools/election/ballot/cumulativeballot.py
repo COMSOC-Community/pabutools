@@ -75,9 +75,9 @@ class FrozenCumulativeBallot(
             if isinstance(init, AbstractBallot):
                 meta = init.meta
             else:
-                meta = dict
+                meta = dict()
         FrozenBallot.__init__(self, name=name, meta=meta)
-        AbstractCumulativeBallot.__init__(self)
+        AbstractCumulativeBallot.__init__(self, name=name, meta=meta)
 
     def __setitem__(self, key, value):
         raise ValueError("You cannot set values of a FrozenCumulativeBallot")
@@ -134,9 +134,9 @@ class CumulativeBallot(CardinalBallot, AbstractCumulativeBallot):
             if isinstance(init, AbstractBallot):
                 meta = init.meta
             else:
-                meta = dict
+                meta = dict()
         CardinalBallot.__init__(self, init, name=name, meta=meta)
-        AbstractCumulativeBallot.__init__(self)
+        AbstractCumulativeBallot.__init__(self, name=name, meta=meta)
 
     def frozen(self) -> FrozenCumulativeBallot:
         """

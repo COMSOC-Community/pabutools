@@ -82,8 +82,8 @@ class FrozenOrdinalBallot(tuple[Project], FrozenBallot, AbstractOrdinalBallot):
                 meta = init.meta
             else:
                 meta = dict()
-        FrozenBallot.__init__(self, name, meta)
-        AbstractOrdinalBallot.__init__(self)
+        FrozenBallot.__init__(self, name=name, meta=meta)
+        AbstractOrdinalBallot.__init__(self, name=name, meta=meta)
 
     def __new__(
         cls,
@@ -154,7 +154,7 @@ class OrdinalBallot(dict, Ballot, AbstractOrdinalBallot):
                 meta = dict()
         dict.__init__(self, {e: None for e in init})
         Ballot.__init__(self, name=name, meta=meta)
-        AbstractOrdinalBallot.__init__(self)
+        AbstractOrdinalBallot.__init__(self, name=name, meta=meta)
 
     def append(self, project: Project) -> None:
         """

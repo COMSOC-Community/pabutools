@@ -72,9 +72,9 @@ def sequential_phragmen(
 ) -> BudgetAllocation | list[BudgetAllocation]:
     """
     Phragmén's sequential rule. It works as follows. Voters receive money in a virtual currency. They all start with a
-    budget of 0 and that budget continuously increases. As soon asa group of supporters have enough virtual currency to
+    budget of 0 and that budget continuously increases. As soon as a group of supporters have enough virtual currency to
     buy a project they all approve, the project is bought. The rule stops as soon as there is a project that could be
-    bought  but only by violating the budget constraint.
+    bought but only by violating the budget constraint.
 
     Note that this rule can only be applied to profiles of approval ballots.
 
@@ -211,7 +211,6 @@ def sequential_phragmen(
 
     approval_scores = {project: profile.approval_score(project) for project in instance}
 
-    print("\n")
     all_budget_allocations: list[BudgetAllocation] = []
     aux(
         initial_projects,

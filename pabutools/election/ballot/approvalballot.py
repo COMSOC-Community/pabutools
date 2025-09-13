@@ -64,9 +64,9 @@ class FrozenApprovalBallot(tuple[Project], FrozenBallot, AbstractApprovalBallot)
             if isinstance(init, AbstractBallot):
                 meta = init.meta
             else:
-                meta = dict
-        FrozenBallot.__init__(self, name, meta)
-        AbstractApprovalBallot.__init__(self)
+                meta = dict()
+        FrozenBallot.__init__(self, name=name, meta=meta)
+        AbstractApprovalBallot.__init__(self, name=name, meta=meta)
 
     def __new__(
         cls,
@@ -126,8 +126,8 @@ class ApprovalBallot(set[Project], Ballot, AbstractApprovalBallot):
                 meta = init.meta
             else:
                 meta = dict()
-        Ballot.__init__(self, name, meta)
-        AbstractApprovalBallot.__init__(self)
+        Ballot.__init__(self, name=name, meta=meta)
+        AbstractApprovalBallot.__init__(self, name=name, meta=meta)
 
     def supports(self, c):
         return self.utility(c) > 0
