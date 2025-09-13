@@ -15,7 +15,7 @@ from pabutools.election import (
     Instance,
     AbstractApprovalProfile,
     Project,
-    total_cost,
+    total_cost, AbstractProfile, AbstractCardinalProfile,
 )
 from pabutools.utils import Numeric, round_cmp
 
@@ -241,7 +241,7 @@ class PriceableResult:
 
 def priceable(
     instance: Instance,
-    profile: AbstractApprovalProfile,
+    profile: AbstractProfile,
     budget_allocation: Collection[Project] | None = None,
     voter_budget: Numeric | None = None,
     payment_functions: list[dict[Project, Numeric]] | None = None,
@@ -298,6 +298,11 @@ def priceable(
                 Dataclass containing priceable result details.
 
     """
+    if not isinstance(profile, AbstractApprovalProfile) and not isinstance(profile, AbstractCardinalProfile):
+        raise NotImplementedError(
+            f"Priceability and Stable-Priceability are not supported for {type(profile)}. "
+        )
+
     C = instance
     N = profile
     INF = instance.budget_limit * 10
@@ -378,21 +383,30 @@ def priceable(
                 <= c.cost + x_vars[c] * INF
             ), f"C_supp_notselected_noafford_{c.name}"
     else:
-        m_vars = [pulp.LpVariable(f"m_{idx}") for idx, _ in enumerate(N)]
+        m_vars = [
+            {c: pulp.LpVariable(f"m_{idx}_{c.name}", lowBound=0) for c in C}
+            for idx, i in enumerate(N)
+        ]
+        for idx, i in enumerate(N):
+            for c1 in C:
+                if i.supports(c1):
+                    for c2 in C:
+                        if i.supports(c2):
+                            model += (m_vars[idx][c1] * (1.0/i.utility(c1))) - (p_vars[idx][c2] * (1.0/i.utility(c2))) >= 0
+                    model += m_vars[idx][c1] >= b - pulp.lpSum(p_vars[idx][c2] for c2 in C)
+                else:
+                    model += m_vars[idx][c1] == 0
         # Add the vars to the relaxation
         if relaxation is not None:
             for idx, _ in enumerate(N):
-                relaxation.variables[f"m_{idx}"] = m_vars[idx]
-        for idx, _ in enumerate(N):
-            for c in C:
-                model += m_vars[idx] >= p_vars[idx][c]
-            model += m_vars[idx] >= b - pulp.lpSum(p_vars[idx][c] for c in C)
+                for c in C:
+                    relaxation.variables[f"m_{idx}_{c.name}"] = m_vars[idx][c]
 
         # (S5) stability constraint
         if relaxation is None:
             for c in C:
                 model += (
-                    pulp.lpSum(m_vars[idx] for idx, i in enumerate(N) if c in i)
+                    pulp.lpSum(m_vars[idx][c] for idx, _ in enumerate(N)) \
                     <= c.cost + x_vars[c] * INF
                 )
         else:
