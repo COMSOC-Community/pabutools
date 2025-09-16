@@ -30,7 +30,8 @@ dependencies = [
     "gmpy2>=2.1.5",
     "preflibtools>=2.0.33",
     "natsort",
-    "pulp"
+    "pulp",
+    "gurobipy"
 ]
 
 [project.optional-dependencies]
