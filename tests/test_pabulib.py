@@ -697,6 +697,7 @@ max_sum_cost;21064
 edition;4
 language;pl
 currency;PLN
+fully_funded;1
 PROJECTS
 project_id;cost;votes;name;category;target;selected
 658;21064;8;Dobre grzyby (mikoryza) dla drzew Pola Mokotowskiego;environmental protection,public space,urban greenery;seniors,families with children,animals;1

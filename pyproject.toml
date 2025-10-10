@@ -4,10 +4,10 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "pabutools"
-version = "1.1.11"
+version = "1.2.2"
 description = "Implementation of all the tools necessary to explore and analyse participatory budgeting elections"
 authors = [
-  { name = "Simon Rey", email = "reysimon@orange.fr" },
+  { name = "Simon Rey", email = "simon.j.rey@proton.me" },
   { name = "Grzegorz Pierczyński", email = "g.pierczynski@mimuw.edu.pl" },
   { name = "Markus Utke", email = "markusutke@gmx.de" },
   { name = "Piotr Skowron", email = "p.skowron@mimuw.edu.pl" },
@@ -21,14 +21,17 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.9"
 dependencies = [
     "numpy",
-    "mip>=1.16rc0",
     "gmpy2>=2.1.5",
-    "preflibtools",
-    "natsort"
+    "preflibtools>=2.0.33",
+    "natsort",
+    "pulp",
+    "gurobipy"
 ]
 
 [project.optional-dependencies]
@@ -40,7 +43,9 @@ dev = [
     "unittest2",
     "parameterized",
     "sphinx-toolbox",
-    "enum-tools"
+    "enum-tools",
+    "abcvoting",
+    "pyyaml"
 ]
 
 [project.urls]

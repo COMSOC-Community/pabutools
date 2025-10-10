@@ -1,23 +1,24 @@
 META
 key;value
-description;District PB in Częstochowa
+description;District PB in Częstochowa, Grabówka
 country;Poland
-unit;Czestochowa
+unit;Częstochowa
+district;Grabówka
 subunit;Grabówka
 instance;2020
-district;Grabówka
 num_projects;8
 num_votes;201
 budget;225862
 vote_type;cumulative
 rule;greedy
-date_begin;6.09.2019
+date_begin;06.09.2019
 date_end;25.09.2019
 min_sum_points;1
 max_sum_points;10
-language;polish
 edition;6
-comments;This is not the original data. Some voters (around 0.5%) were removed due to the ambiguity.
+language;pl
+currency;PLN
+comment;#1: This is not the original data. Some voters (around 0.5%) were removed due to the ambiguity.
 PROJECTS
 project_id;cost;votes;score;name
 196;25000;72;435;Doświetlenie przejścia dla pieszych przy ul. Odrodzenia

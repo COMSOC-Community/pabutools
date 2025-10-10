@@ -116,7 +116,7 @@ app_score_tie_breaking = TieBreakingRule(
     lambda inst, prof, proj: -prof.approval_score(proj)
 )
 """
-Implements tie breaking based on the approval score wher the projects with the highest number of supporters in the 
+Implements tie breaking based on the approval score where the projects with the highest number of supporters in the 
 profile is selected. Can only be applied to approval profiles.
 """
 

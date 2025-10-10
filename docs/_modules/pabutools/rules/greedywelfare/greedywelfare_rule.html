@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../../../_static/documentation_options.js?v=db04a367"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.0" />
   </head>
   
   
@@ -177,14 +177,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -288,33 +283,33 @@
 <span class="sd">Greedy approximations of the maximum welfare.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Iterable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">inf</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">inf</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.budgetallocation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BudgetAllocation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.greedywelfare.greedywelfare_details</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.budgetallocation</span> <span class="kn">import</span> <span class="n">BudgetAllocation</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.greedywelfare.greedywelfare_details</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">GreedyWelfareAllocationDetails</span><span class="p">,</span>
     <span class="n">GreedyWelfareProjectDetails</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span>
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.profile</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractProfile</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">AbstractBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.profile</span> <span class="kn">import</span> <span class="n">AbstractProfile</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">frac</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">total_cost</span><span class="p">,</span> <span class="n">Project</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.satisfaction</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.fractions</span> <span class="kn">import</span> <span class="n">frac</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.instance</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">total_cost</span><span class="p">,</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.satisfaction</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AdditiveSatisfaction</span><span class="p">,</span>
     <span class="n">SatisfactionMeasure</span><span class="p">,</span>
     <span class="n">GroupSatisfactionMeasure</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.tiebreaking</span><span class="w"> </span><span class="kn">import</span> <span class="n">lexico_tie_breaking</span><span class="p">,</span> <span class="n">TieBreakingRule</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">lexico_tie_breaking</span><span class="p">,</span> <span class="n">TieBreakingRule</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">greedy_utilitarian_scheme</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">greedy_utilitarian_scheme</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">sat_profile</span><span class="p">:</span> <span class="n">GroupSatisfactionMeasure</span><span class="p">,</span>
@@ -352,7 +347,7 @@
 <span class="sd">            (:code:`resoluteness == False`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">prof</span><span class="p">,</span> <span class="n">feasible</span><span class="p">,</span> <span class="n">sats</span><span class="p">,</span> <span class="n">allocs</span><span class="p">,</span> <span class="n">alloc</span><span class="p">,</span> <span class="n">tie</span><span class="p">,</span> <span class="n">resolute</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">prof</span><span class="p">,</span> <span class="n">feasible</span><span class="p">,</span> <span class="n">sats</span><span class="p">,</span> <span class="n">allocs</span><span class="p">,</span> <span class="n">alloc</span><span class="p">,</span> <span class="n">tie</span><span class="p">,</span> <span class="n">resolute</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">feasible</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">resolute</span><span class="p">:</span>
                 <span class="n">allocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alloc</span><span class="p">)</span>
@@ -426,7 +421,7 @@
         <span class="k">return</span> <span class="n">all_budget_allocations</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">greedy_utilitarian_scheme_additive</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">greedy_utilitarian_scheme_additive</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">sat_profile</span><span class="p">:</span> <span class="n">GroupSatisfactionMeasure</span><span class="p">,</span>
@@ -477,7 +472,7 @@
         <span class="n">projects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="n">projects</span> <span class="o">=</span> <span class="n">tie_breaking</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">satisfaction_density</span><span class="p">(</span><span class="n">proj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">satisfaction_density</span><span class="p">(</span><span class="n">proj</span><span class="p">):</span>
         <span class="n">total_sat</span> <span class="o">=</span> <span class="n">sat_profile</span><span class="o">.</span><span class="n">total_satisfaction_project</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">total_sat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">proj</span><span class="o">.</span><span class="n">cost</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -514,7 +509,7 @@
 
 <div class="viewcode-block" id="greedy_utilitarian_welfare">
 <a class="viewcode-back" href="../../../../reference/rules/index.html#pabutools.rules.greedywelfare.greedy_utilitarian_welfare">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">greedy_utilitarian_welfare</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">greedy_utilitarian_welfare</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">sat_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">SatisfactionMeasure</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -538,8 +533,8 @@
 <span class="sd">            The profile.</span>
 <span class="sd">        sat_class : type[:py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`]</span>
 <span class="sd">            The class defining the satisfaction function used to measure the social welfare. It should be a class</span>
-<span class="sd">            inhereting from :py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`.</span>
-<span class="sd">            If no satisfaction is provided, a satisfaction profile needs to be provided. If a satisfation profile is</span>
+<span class="sd">            inheriting from :py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`.</span>
+<span class="sd">            If no satisfaction is provided, a satisfaction profile needs to be provided. If a satisfaction profile is</span>
 <span class="sd">            provided, the satisfaction argument is disregarded.</span>
 <span class="sd">        sat_profile : :py:class:`~pabutools.election.satisfaction.satisfactionmeasure.GroupSatisfactionMeasure`</span>
 <span class="sd">            The satisfaction profile corresponding to the instance and the profile. If no satisfaction profile is</span>
@@ -662,8 +657,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -24,6 +24,9 @@ from pabutools.election.satisfaction import SatisfactionMeasure
 from pabutools.tiebreaking import TieBreakingRule, lexico_tie_breaking
 from pabutools.fractions import frac
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class MESVoter:
     """
@@ -342,16 +345,16 @@ def mes_inner_algo(
         current_iteration.voters_budget = [voter.budget for voter in voters]
     best_afford = float("inf")
     if verbose:
-        print("========================")
+        logger.info("========================")
     for project in sorted(projects, key=lambda p: p.affordability):
         if verbose:
-            print(f"\tConsidering: {project}")
+             logger.info(f"\tConsidering: {project}")
         available_budget = sum(
             voters[i].total_budget() for i in project.supporter_indices
         )
         if available_budget < project.cost:  # unaffordable, can delete
             if verbose:
-                print(
+                 logger.info(
                     f"\t\t Removed for lack of budget: "
                     f"{float(available_budget)} < {float(project.cost)}"
                 )
@@ -363,7 +366,7 @@ def mes_inner_algo(
             project.affordability > best_afford
         ):  # best possible afford for this round isn't good enough
             if verbose:
-                print(
+                 logger.info(
                     f"\t\t Skipped as affordability is too high: {float(project.affordability)} > {float(best_afford)}"
                 )
             break
@@ -376,7 +379,7 @@ def mes_inner_algo(
             supporter = voters[i]
             afford_factor = frac(project.cost - current_contribution, denominator)
             if verbose:
-                print(
+                 logger.info(
                     f"\t\t\t {project.cost} - {current_contribution} / {denominator} = {afford_factor} * "
                     f"{project.supporters_sat(supporter)} ?? {supporter.budget}"
                 )
@@ -391,10 +394,10 @@ def mes_inner_algo(
                     eff_vote_count = frac(
                         denominator, project.cost - current_contribution
                     )
-                    print(
+                    logger.info(
                         f"\t\tFactor: {float(afford_factor)} = ({float(project.cost)} - {float(current_contribution)})/{float(denominator)}"
                     )
-                    print(f"\t\tEff: {float(eff_vote_count)}")
+                    logger.info(f"\t\tEff: {float(eff_vote_count)}")
                 if afford_factor < best_afford:
                     best_afford = afford_factor
                     tied_projects = [project]
@@ -404,7 +407,7 @@ def mes_inner_algo(
             current_contribution += supporter.total_budget()
             denominator -= supporter.multiplicity * project.supporters_sat(supporter)
     if verbose:
-        print(f"{tied_projects}")
+        logger.info(f"{tied_projects}")
     if not tied_projects:
         if analytics and skipped_project:
             cover = sum(voters[i].budget for i in skipped_project.supporter_indices)
@@ -437,7 +440,7 @@ def mes_inner_algo(
             new_alloc.append(selected_project.project)
             new_projects.remove(selected_project)
             if verbose:
-                print(
+                logger.info(
                     f"Price is {best_afford * selected_project.supporters_sat(selected_project.supporter_indices[0])}"
                 )
             for i in selected_project.supporter_indices:
@@ -538,7 +541,7 @@ def method_of_equal_shares_scheme(
             (:code:`resoluteness == False`).
     """
     if verbose:
-        print(f"Initial budget per voter is: {initial_budget_per_voter}")
+        logger.info(f"Initial budget per voter is: {initial_budget_per_voter}")
     voters = []
     for index, sat in enumerate(sat_profile):
         voters.append(
@@ -664,8 +667,8 @@ def method_of_equal_shares(
             The profile.
         sat_class : type[:py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`]
             The class defining the satisfaction function used to measure the social welfare. It should be a class
-            inhereting from pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure.
-            If no satisfaction is provided, a satisfaction profile needs to be provided. If a satisfation profile is
+            inheriting from pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure.
+            If no satisfaction is provided, a satisfaction profile needs to be provided. If a satisfaction profile is
             provided, the satisfaction argument is disregarded.
         sat_profile : :py:class:`~pabutools.election.satisfaction.satisfactionmeasure.GroupSatisfactionMeasure`
             The satisfaction profile corresponding to the instance and the profile. If no satisfaction profile is
@@ -715,6 +718,9 @@ def method_of_equal_shares(
     else:
         if sat_profile is None:
             sat_profile = profile.as_sat_profile(sat_class=sat_class)
+
+    if profile.num_ballots() == 0:
+        return budget_allocation if resoluteness else [budget_allocation]
 
     if binary_sat is None:
         binary_sat = isinstance(profile, AbstractApprovalProfile)

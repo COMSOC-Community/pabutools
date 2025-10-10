@@ -27,6 +27,11 @@ extensions = [
     "enum_tools.autoenum",
 ]
 
+nitpicky = True
+nitpick_ignore_regex = [
+    (r"^py:.*$", r"^(?!pabutools\.).*")
+]
+
 add_module_names = False
 autodoc_member_order = "groupwise"
 autodoc_typehints_format = "short"

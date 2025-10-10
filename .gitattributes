@@ -1,0 +1,2 @@
+*.pb linguist-detectable=false
+docs-source/** linguist-documentation=true

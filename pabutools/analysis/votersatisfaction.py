@@ -94,7 +94,7 @@ def percent_positive_satisfaction(
             Collection of projects.
         sat_class : type[:py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`]
             The class defining the satisfaction function used to measure the social welfare. It should be a class
-            inhereting from :py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`.
+            inheriting from :py:class:`~pabutools.election.satisfaction.satisfactionmeasure.SatisfactionMeasure`.
 
     Returns
     -------

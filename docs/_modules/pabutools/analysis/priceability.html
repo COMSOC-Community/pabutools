@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../../_static/documentation_options.js?v=778ca11c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.2" />
   </head>
   
   
@@ -177,14 +177,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -288,21 +283,25 @@
 <span class="sd">Module with tools for analysis of the priceability / stable-priceability property of budget allocation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">mip</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">xsum</span><span class="p">,</span> <span class="n">BINARY</span><span class="p">,</span> <span class="n">OptimizationStatus</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.analysis.priceability_relaxation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Relaxation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.analysis.priceability_relaxation</span> <span class="kn">import</span> <span class="n">Relaxation</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Instance</span><span class="p">,</span>
     <span class="n">AbstractApprovalProfile</span><span class="p">,</span>
     <span class="n">Project</span><span class="p">,</span>
     <span class="n">total_cost</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span><span class="p">,</span> <span class="n">round_cmp</span>
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span><span class="p">,</span> <span class="n">round_cmp</span>
+
+
+<span class="kn">import</span> <span class="nn">pulp</span>
 
 <span class="n">CHECK_ROUND_PRECISION</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">ROUND_PRECISION</span> <span class="o">=</span> <span class="mi">6</span>
@@ -310,7 +309,7 @@
 
 <div class="viewcode-block" id="validate_price_system">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability.validate_price_system">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">validate_price_system</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">validate_price_system</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractApprovalProfile</span><span class="p">,</span>
     <span class="n">budget_allocation</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span>
@@ -442,7 +441,7 @@
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="ow">not</span> <span class="n">errors</span></div>
 
@@ -450,49 +449,53 @@
 
 <div class="viewcode-block" id="PriceableResult">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">PriceableResult</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">PriceableResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Result of :py:func:`~pabutools.analysis.priceability.priceable`.</span>
-<span class="sd">    Contains information about the optimization status of ILP outcome.</span>
-<span class="sd">    If the status is valid (i.e. `OPTIMAL` / `FEASIBLE`), the class contains</span>
+<span class="sd">    Contains information about the optimization status of LP outcome.</span>
+<span class="sd">    If the status is valid (i.e. `Optimal` / `Feasible`), the class contains</span>
 <span class="sd">    the budget allocation, as well as the price system (`voter_budget`, `payment_functions`)</span>
 <span class="sd">    that satisfies the priceable / stable-priceable property.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">        status : OptimizationStatus</span>
-<span class="sd">            Optimization status of the ILP outcome.</span>
-<span class="sd">        allocation : Collection[:py:class:`~pabutools.election.instance.Project`], optional</span>
+<span class="sd">        status : str</span>
+<span class="sd">            Optimization status from PuLP (e.g., &#39;Optimal&#39;, &#39;Infeasible&#39;, etc.).</span>
+<span class="sd">        allocation : list[:py:class:`~pabutools.election.instance.Project`], optional</span>
 <span class="sd">            The selected collection of projects.</span>
+<span class="sd">            Defaults to `None`.</span>
+<span class="sd">        relaxation_beta : float or dict, optional</span>
+<span class="sd">            Relaxation parameter beta, if used.</span>
 <span class="sd">            Defaults to `None`.</span>
 <span class="sd">        voter_budget : float, optional</span>
 <span class="sd">            Voter initial endowment.</span>
 <span class="sd">            Defaults to `None`.</span>
-<span class="sd">        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]], optional</span>
+<span class="sd">        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, float]], optional</span>
 <span class="sd">            List of payment functions for each voter.</span>
 <span class="sd">            A payment function indicates the amounts paid for each project by a voter.</span>
 <span class="sd">            Defaults to `None`.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">        status : OptimizationStatus</span>
-<span class="sd">            Optimization status of the ILP outcome.</span>
-<span class="sd">        allocation : Collection[:py:class:`~pabutools.election.instance.Project`] or None</span>
+<span class="sd">        status : str</span>
+<span class="sd">            Optimization status from PuLP.</span>
+<span class="sd">        allocation : list[:py:class:`~pabutools.election.instance.Project`] or None</span>
 <span class="sd">            The selected collection of projects.</span>
-<span class="sd">            `None` if the optimization status is not `OPTIMAL` / `FEASIBLE`.</span>
-<span class="sd">        voter_budget : bool or None</span>
+<span class="sd">            `None` if the optimization status is not `Optimal` / `Feasible`.</span>
+<span class="sd">        relaxation_beta : float or dict or None</span>
+<span class="sd">            Relaxation parameter beta, if applicable.</span>
+<span class="sd">        voter_budget : float or None</span>
 <span class="sd">            Voter initial endowment.</span>
-<span class="sd">            `None` if the optimization status is not `OPTIMAL` / `FEASIBLE`.</span>
-<span class="sd">        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]] or None</span>
+<span class="sd">            `None` if the optimization status is not `Optimal` / `Feasible`.</span>
+<span class="sd">        payment_functions : list[dict[:py:class:`~pabutools.election.instance.Project`, float]] or None</span>
 <span class="sd">            List of payment functions for each voter.</span>
 <span class="sd">            A payment function indicates the amounts paid for each project by a voter.</span>
-<span class="sd">            `None` if the optimization status is not `OPTIMAL` / `FEASIBLE`.</span>
-
+<span class="sd">            `None` if the optimization status is not `Optimal` / `Feasible`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">status</span><span class="p">:</span> <span class="n">OptimizationStatus</span><span class="p">,</span>
+        <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">allocation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">relaxation_beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">voter_budget</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -506,25 +509,29 @@
 
 <div class="viewcode-block" id="PriceableResult.validate">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability.PriceableResult.validate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks if the optimization status is `OPTIMAL` / `FEASIBLE`.</span>
+<span class="sd">        Checks if the optimization status is &#39;Optimal&#39; / &#39;Feasible&#39;.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">            bool</span>
-<span class="sd">                Validity of optimization status.</span>
-
+<span class="sd">            bool or None</span>
+<span class="sd">                `True` if optimization succeeded,</span>
+<span class="sd">                `False` if failed,</span>
+<span class="sd">                `None` if status is unknown.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">NO_SOLUTION_FOUND</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpStatusNotSolved</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">OPTIMAL</span><span class="p">,</span> <span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">FEASIBLE</span><span class="p">]</span></div>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pulp</span><span class="o">.</span><span class="n">LpStatusOptimal</span><span class="p">]</span></div>
 
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PriceableResult[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
 
 <div class="viewcode-block" id="priceable">
 <a class="viewcode-back" href="../../../reference/analysis/index.html#pabutools.analysis.priceability.priceable">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">priceable</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">priceable</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractApprovalProfile</span><span class="p">,</span>
     <span class="n">budget_allocation</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -538,196 +545,175 @@
     <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PriceableResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds a priceable / stable-priceable budget allocation for approval profile</span>
-<span class="sd">    using Linear Programming via `mip` Python package.</span>
+<span class="sd">        Finds a priceable / stable-priceable budget allocation for approval profile</span>
+<span class="sd">        using Linear Programming via `mip` Python package.</span>
 
-<span class="sd">    Reference paper: https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf</span>
+<span class="sd">        Reference paper: https://www.cs.utoronto.ca/~nisarg/papers/priceability.pdf</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">        instance : :py:class:`~pabutools.election.instance.Instance`</span>
-<span class="sd">            The instance.</span>
-<span class="sd">        profile : :py:class:`~pabutools.election.profile.profile.AbstractProfile`</span>
-<span class="sd">            The profile.</span>
-<span class="sd">        budget_allocation : Collection[:py:class:`~pabutools.election.instance.Project`], optional</span>
-<span class="sd">            The selected collection of projects.</span>
-<span class="sd">            If specified, the allocation is hardcoded into the model.</span>
-<span class="sd">            Defaults to `None`.</span>
-<span class="sd">        voter_budget : Numeric</span>
-<span class="sd">            Voter initial endowment.</span>
-<span class="sd">            If specified, the voter budget is hardcoded into the model.</span>
-<span class="sd">            Defaults to `None`.</span>
-<span class="sd">        payment_functions : Collection[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]]</span>
-<span class="sd">            Collection of payment functions for each voter.</span>
-<span class="sd">            If specified, the payment functions are hardcoded into the model.</span>
-<span class="sd">            Defaults to `None`.</span>
-<span class="sd">        stable : bool, optional</span>
-<span class="sd">            Search stable-priceable allocation.</span>
-<span class="sd">            Defaults to `False`.</span>
-<span class="sd">        exhaustive : bool, optional</span>
-<span class="sd">            Search exhaustive allocation.</span>
-<span class="sd">            Defaults to `True`.</span>
-<span class="sd">        relaxation : :py:class:`~pabutools.analysis.priceability_relaxation.Relaxation`, optional</span>
-<span class="sd">            Relaxation method to the stable-priceability condition.</span>
-<span class="sd">            Defaults to `None`.</span>
-<span class="sd">        **max_seconds : int, optional</span>
-<span class="sd">            Model&#39;s maximum runtime in seconds.</span>
-<span class="sd">            Defaults to 600.</span>
-<span class="sd">        **verbose : bool, optional</span>
-<span class="sd">            Display additional information.</span>
-<span class="sd">            Defaults to `False`.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            instance : :py:class:`~pabutools.election.instance.Instance`</span>
+<span class="sd">                The instance.</span>
+<span class="sd">            profile : :py:class:`~pabutools.election.profile.profile.AbstractProfile`</span>
+<span class="sd">                The profile.</span>
+<span class="sd">            budget_allocation : Collection[:py:class:`~pabutools.election.instance.Project`], optional</span>
+<span class="sd">                The selected collection of projects.</span>
+<span class="sd">                If specified, the allocation is hardcoded into the model.</span>
+<span class="sd">                Defaults to `None`.</span>
+<span class="sd">            voter_budget : Numeric</span>
+<span class="sd">                Voter initial endowment.</span>
+<span class="sd">                If specified, the voter budget is hardcoded into the model.</span>
+<span class="sd">                Defaults to `None`.</span>
+<span class="sd">            payment_functions : Collection[dict[:py:class:`~pabutools.election.instance.Project`, Numeric]]</span>
+<span class="sd">                Collection of payment functions for each voter.</span>
+<span class="sd">                If specified, the payment functions are hardcoded into the model.</span>
+<span class="sd">                Defaults to `None`.</span>
+<span class="sd">            stable : bool, optional</span>
+<span class="sd">                Search stable-priceable allocation.</span>
+<span class="sd">                Defaults to `False`.</span>
+<span class="sd">            exhaustive : bool, optional</span>
+<span class="sd">                Search exhaustive allocation.</span>
+<span class="sd">                Defaults to `True`.</span>
+<span class="sd">            relaxation : :py:class:`~pabutools.analysis.priceability_relaxation.Relaxation`, optional</span>
+<span class="sd">                Relaxation method to the stable-priceability condition.</span>
+<span class="sd">                Defaults to `None`.</span>
+<span class="sd">            **max_seconds : int, optional</span>
+<span class="sd">                Model&#39;s maximum runtime in seconds.</span>
+<span class="sd">                Defaults to 600.</span>
+<span class="sd">            **verbose : bool, optional</span>
+<span class="sd">                Display additional information.</span>
+<span class="sd">                Defaults to `False`.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">        :py:class:`~pabutools.analysis.priceability.PriceableResult`</span>
-<span class="sd">            Dataclass containing priceable result details.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            :py:class:`~pabutools.analysis.priceability.PriceableResult`</span>
+<span class="sd">                Dataclass containing priceable result details.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">instance</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">profile</span>
     <span class="n">INF</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">*</span> <span class="mi">10</span>
 
-    <span class="n">mip_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="s2">&quot;stable-priceability&quot;</span> <span class="k">if</span> <span class="n">stable</span> <span class="k">else</span> <span class="s2">&quot;priceability&quot;</span><span class="p">)</span>
-    <span class="n">mip_model</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
-    <span class="n">mip_model</span><span class="o">.</span><span class="n">integer_tol</span> <span class="o">=</span> <span class="mf">1e-8</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpProblem</span><span class="p">(</span><span class="s2">&quot;stable-priceability&quot;</span> <span class="k">if</span> <span class="n">stable</span> <span class="k">else</span> <span class="s2">&quot;priceability&quot;</span><span class="p">,</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpMaximize</span><span class="p">)</span>
 
     <span class="c1"># voter budget</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;voter_budget&quot;</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpVariable</span><span class="p">(</span><span class="s2">&quot;voter_budget&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">voter_budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">b</span> <span class="o">==</span> <span class="n">voter_budget</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="n">b</span> <span class="o">==</span> <span class="n">voter_budget</span><span class="p">,</span> <span class="s2">&quot;C_voter_budget&quot;</span>
 
     <span class="c1"># prevent empty allocation as a result</span>
-    <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">profile</span><span class="o">.</span><span class="n">num_ballots</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
+    <span class="n">model</span> <span class="o">+=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">profile</span><span class="o">.</span><span class="n">num_ballots</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span><span class="p">,</span> <span class="s2">&quot;C_no_empty&quot;</span>
 
     <span class="c1"># payment functions</span>
     <span class="n">p_vars</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;p_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">}</span>
+        <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;p_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lowBound</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="k">if</span> <span class="n">payment_functions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-                <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="n">payment_functions</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
+                <span class="n">model</span> <span class="o">+=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="n">payment_functions</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;C_pf_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># winning allocation</span>
-    <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">var_type</span><span class="o">=</span><span class="n">BINARY</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">}</span>
+    <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="s2">&quot;Binary&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
+            <span class="n">relaxation</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">budget_allocation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">budget_allocation</span><span class="p">:</span>
-                <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span> <span class="ow">in</span> <span class="n">budget_allocation</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;C_init_alloc_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="n">cost_total</span> <span class="o">=</span> <span class="n">xsum</span><span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span>
+    <span class="n">cost_total</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span>
 
     <span class="c1"># (C0a) the winning allocation is feasible</span>
-    <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">cost_total</span> <span class="o">&lt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
+    <span class="n">model</span> <span class="o">+=</span> <span class="n">cost_total</span> <span class="o">&lt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span><span class="p">,</span> <span class="s2">&quot;C_alloc_feas&quot;</span>
 
     <span class="k">if</span> <span class="n">exhaustive</span><span class="p">:</span>
         <span class="c1"># (C0b) the winning allocation is exhaustive</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">cost_total</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">INF</span> <span class="o">&gt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="p">)</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">cost_total</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">INF</span> <span class="o">&gt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;C_alloc_exh_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># (C1) voter can pay only for projects they approve of</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
-                <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="n">model</span> <span class="o">+=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;C_app_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># (C2) voter will not spend more than their initial budget</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-        <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">xsum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">b</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">b</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;C_no_overspend_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># (C3) the sum of the payments for selected project equals its cost</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-        <span class="n">payments_total</span> <span class="o">=</span> <span class="n">xsum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
-
-        <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">payments_total</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span>
-        <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">INF</span> <span class="o">&lt;=</span> <span class="n">payments_total</span>
+        <span class="n">payments_total</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="n">payments_total</span> <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;C_pay_to_cost_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_nomore&quot;</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">INF</span> <span class="o">&lt;=</span> <span class="n">payments_total</span><span class="p">,</span>  <span class="sa">f</span><span class="s2">&quot;C_pay_to_cost_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_selected&quot;</span>
 
     <span class="c1"># (C4) voters do not pay for not selected projects</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">INF</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;C_nonselected_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_lb&quot;</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">INF</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;C_nonselected_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_ub&quot;</span>
 
     <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">relaxation</span><span class="o">.</span><span class="n">add_beta</span><span class="p">(</span><span class="n">mip_model</span><span class="p">)</span>
+        <span class="n">relaxation</span><span class="o">.</span><span class="n">add_beta</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">stable</span><span class="p">:</span>
-        <span class="n">r_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;r_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+        <span class="n">r_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">pulp</span><span class="o">.</span><span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;r_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">r_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span> <span class="o">-</span> <span class="n">xsum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">r_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span> <span class="o">-</span> <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;C_rest_money_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="c1"># (C5) supporters of not selected project have no more money than its cost</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">xsum</span><span class="p">(</span><span class="n">r_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">r_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
                 <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">INF</span>
-            <span class="p">)</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;C_supp_notselected_noafford_</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mip_model</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+        <span class="n">m_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">pulp</span><span class="o">.</span><span class="n">LpVariable</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+        <span class="c1"># Add the vars to the relaxation</span>
+        <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">relaxation</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;m_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-                <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
-            <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">xsum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span>
+                <span class="n">model</span> <span class="o">+=</span> <span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
+            <span class="n">model</span> <span class="o">+=</span> <span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">)</span>
 
         <span class="c1"># (S5) stability constraint</span>
         <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-                <span class="n">mip_model</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">xsum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">model</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">pulp</span><span class="o">.</span><span class="n">lpSum</span><span class="p">(</span><span class="n">m_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span>
                     <span class="o">&lt;=</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span> <span class="o">+</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">INF</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">relaxation</span><span class="o">.</span><span class="n">add_stability_constraint</span><span class="p">(</span><span class="n">mip_model</span><span class="p">)</span>
+            <span class="n">relaxation</span><span class="o">.</span><span class="n">add_stability_constraint</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">relaxation</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">mip_model</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span> <span class="n">max_solutions</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">relaxation</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">+=</span> <span class="mi">0</span>  <span class="c1"># No-op objective if none is specified</span>
 
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="nb">hasattr</span><span class="p">(</span><span class="n">OptimizationStatus</span><span class="p">,</span> <span class="s2">&quot;INF_OR_UNBD&quot;</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">status</span> <span class="o">==</span> <span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">INF_OR_UNBD</span>
-    <span class="p">):</span>
-        <span class="c1"># https://support.gurobi.com/hc/en-us/articles/4402704428177-How-do-I-resolve-the-error-Model-is-infeasible-or-unbounded</span>
-        <span class="c1"># https://github.com/coin-or/python-mip/blob/1.15.0/mip/gurobi.py#L777</span>
-        <span class="c1"># https://github.com/coin-or/python-mip/blob/1.16-pre/mip/gurobi.py#L778</span>
-        <span class="c1"># This is not part of old python-mip version, hence the first test</span>
-        <span class="c1">#</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">set_int_param</span><span class="p">(</span><span class="s2">&quot;DualReductions&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">mip_model</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span> <span class="n">max_solutions</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">)</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">INFEASIBLE</span>
-            <span class="k">if</span> <span class="n">mip_model</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">get_int_attr</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
-            <span class="k">else</span> <span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">UNBOUNDED</span>
-        <span class="p">)</span>
+    <span class="n">solver</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">PULP_CBC_CMD</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">timeLimit</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">OPTIMAL</span><span class="p">,</span> <span class="n">OptimizationStatus</span><span class="o">.</span><span class="n">FEASIBLE</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pulp</span><span class="o">.</span><span class="n">LpStatusOptimal</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">PriceableResult</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
 
     <span class="n">payment_functions</span> <span class="o">=</span> <span class="p">[</span><span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">N</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">:</span>
-                <span class="n">payment_functions</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">:</span>
+                <span class="n">payment_functions</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="k">return</span> <span class="n">PriceableResult</span><span class="p">(</span>
         <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-        <span class="n">allocation</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">if</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mf">0.99</span><span class="p">])),</span>
-        <span class="n">voter_budget</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+        <span class="n">allocation</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">if</span> <span class="n">pulp</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mf">0.99</span><span class="p">])),</span>
+        <span class="n">voter_budget</span><span class="o">=</span><span class="n">pulp</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">b</span><span class="p">),</span>
         <span class="n">relaxation_beta</span><span class="o">=</span><span class="p">(</span>
-            <span class="n">relaxation</span><span class="o">.</span><span class="n">get_beta</span><span class="p">(</span><span class="n">mip_model</span><span class="p">)</span> <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">relaxation</span><span class="o">.</span><span class="n">get_beta</span><span class="p">()</span> <span class="k">if</span> <span class="n">relaxation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">),</span>
         <span class="n">payment_functions</span><span class="o">=</span><span class="n">payment_functions</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -794,8 +780,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

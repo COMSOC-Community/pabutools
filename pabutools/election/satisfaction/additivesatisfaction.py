@@ -6,10 +6,11 @@ from __future__ import annotations
 
 from collections.abc import Callable, Collection
 
+from pulp import LpProblem, LpMaximize, LpBinary, LpVariable, lpSum, PULP_CBC_CMD, value
+
 from pabutools.utils import Numeric
 
 import numpy as np
-from mip import Model, BINARY, maximize, xsum
 
 from pabutools.election.satisfaction.satisfactionmeasure import SatisfactionMeasure
 from pabutools.election.ballot import (
@@ -145,7 +146,7 @@ def cardinality_sat_func(
     precomputed_values: dict,
 ) -> int:
     """
-    Computes the cardinality satisfaction for ballots. It is equal to 1 if the project is appears in the ballot and
+    Computes the cardinality satisfaction for ballots. It is equal to 1 if the project appears in the ballot and
     0 otherwise.
 
     Parameters
@@ -778,19 +779,23 @@ class Additive_Cardinal_Relative_Sat(AdditiveSatisfaction):
         ballot: AbstractCardinalBallot,
     ):
         res = 0
-        mip_model = Model()
-        mip_model.verbose = 0
+        mip_model = LpProblem("MaxBudgetAllocationScore", LpMaximize)
+
+        # Create binary variables for each project
         p_vars = {
-            p: mip_model.add_var(var_type=BINARY, name="x_{}".format(p))
+            p: LpVariable(f"x_{p}", cat=LpBinary)
             for p in instance
         }
+
         if p_vars:
-            mip_model.objective = maximize(
-                xsum(p_vars[p] * ballot.get(p, 0) for p in instance)
-            )
-            mip_model += (
-                xsum(p_vars[p] * p.cost for p in instance) <= instance.budget_limit
-            )
-            mip_model.optimize()
-            res = mip_model.objective.x
+            # Objective: maximize total ballot score
+            mip_model += lpSum(p_vars[p] * ballot.get(p, 0) for p in instance)
+
+            # Budget constraint
+            mip_model += lpSum(p_vars[p] * p.cost for p in instance) <= instance.budget_limit
+
+            mip_model.solve(PULP_CBC_CMD(msg=False))
+
+            res = value(mip_model.objective)
+
         return {"max_budget_allocation_score": frac(res)}

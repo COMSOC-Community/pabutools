@@ -45,31 +45,39 @@ class TestAnalysis(TestCase):
         app_multi_profile = app_profile.as_multiprofile()
 
         budget_allocation = [projects[0], projects[1], projects[8], projects[9]]
-
-        assert avg_satisfaction(
-            instance, app_profile, budget_allocation, Cost_Sat
-        ) == frac(78, 5)
-        assert avg_satisfaction(
-            instance, app_multi_profile, budget_allocation, Cost_Sat
-        ) == frac(78, 5)
-        assert percent_non_empty_handed(
-            instance, app_profile, budget_allocation
-        ) == frac(4, 5)
-        assert percent_non_empty_handed(
-            instance, app_multi_profile, budget_allocation
-        ) == frac(4, 5)
-        assert gini_coefficient_of_satisfaction(
-            instance, app_profile, budget_allocation, Cardinality_Sat
-        ) == frac(1, 3)
-        assert gini_coefficient_of_satisfaction(
-            instance, app_multi_profile, budget_allocation, Cardinality_Sat
-        ) == frac(1, 3)
-        assert gini_coefficient_of_satisfaction(
-            instance, app_profile, budget_allocation, Cardinality_Sat, invert=True
-        ) == frac(2, 3)
-        assert gini_coefficient_of_satisfaction(
-            instance, app_multi_profile, budget_allocation, Cardinality_Sat, invert=True
-        ) == frac(2, 3)
+        self.assertEqual(
+            avg_satisfaction(instance, app_profile, budget_allocation, Cost_Sat),
+            frac(78, 5)
+        )
+        self.assertEqual(
+            avg_satisfaction(instance, app_multi_profile, budget_allocation, Cost_Sat),
+            frac(78, 5)
+        )
+        self.assertEqual(
+            percent_non_empty_handed(instance, app_profile, budget_allocation),
+            frac(4, 5)
+        )
+        self.assertEqual(
+            percent_non_empty_handed(instance, app_multi_profile, budget_allocation),
+            frac(4, 5)
+        )
+        self.assertEqual(
+            gini_coefficient_of_satisfaction(instance, app_profile, budget_allocation, Cardinality_Sat),
+            frac(1, 3)
+        )
+        self.assertEqual(
+            gini_coefficient_of_satisfaction(instance, app_multi_profile, budget_allocation, Cardinality_Sat),
+            frac(1, 3)
+        )
+        self.assertEqual(
+            gini_coefficient_of_satisfaction(instance, app_profile, budget_allocation, Cardinality_Sat, invert=True),
+            frac(2, 3)
+        )
+        self.assertEqual(
+            gini_coefficient_of_satisfaction(instance, app_multi_profile, budget_allocation, Cardinality_Sat,
+                                             invert=True),
+            frac(2, 3)
+        )
 
         ord_ball_1 = OrdinalBallot([projects[0], projects[1], projects[2], projects[3]])
         ord_ball_2 = OrdinalBallot([projects[0]])

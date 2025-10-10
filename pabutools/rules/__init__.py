@@ -8,7 +8,7 @@ The rules implemented are:
 * The method of equal shares: :py:func:`~pabutools.rules.mes.method_of_equal_shares`
 * The sequential Phragmén rule: :py:func:`~pabutools.rules.phragmen.sequential_phragmen`
 
-Given that some rules may not used up the budget as much as possible (notably the method of equal shares and the
+Given that some rules may not be used up the budget as much as possible (notably the method of equal shares and the
 sequential Phragmén rule), we also implement methods to make the outcome exhaustive. Specifically, we implemented:
 
 * The completion method by rule combination: :py:func:`~pabutools.rules.exhaustion.completion_by_rule_combination`
@@ -39,6 +39,7 @@ from pabutools.rules.budgetallocation import (
     AllocationDetails,
 )
 from pabutools.rules.cstv import cstv, CSTV_Combination
+from pabutools.rules.maximin_support import maximin_support
 
 __all__ = [
     "completion_by_rule_combination",
@@ -55,5 +56,6 @@ __all__ = [
     "MESAllocationDetails",
     "MESIteration",
     "cstv",
-    "CSTV_Combination"
+    "CSTV_Combination",
+    "maximin_support"
 ]

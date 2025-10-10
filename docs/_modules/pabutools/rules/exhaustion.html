@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../../_static/documentation_options.js?v=db04a367"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.0" />
   </head>
   
   
@@ -177,14 +177,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -284,22 +279,21 @@
                 <article class="bd-article">
                   
   <h1>Source code for pabutools.rules.exhaustion</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span><span class="p">,</span> <span class="n">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span><span class="p">,</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.profile</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractProfile</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">frac</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.budgetallocation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BudgetAllocation</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.instance</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.profile</span> <span class="kn">import</span> <span class="n">AbstractProfile</span>
+<span class="kn">from</span> <span class="nn">pabutools.fractions</span> <span class="kn">import</span> <span class="n">frac</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.budgetallocation</span> <span class="kn">import</span> <span class="n">BudgetAllocation</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span>
-
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span>
 
 <div class="viewcode-block" id="completion_by_rule_combination">
 <a class="viewcode-back" href="../../../reference/rules/index.html#pabutools.rules.exhaustion.completion_by_rule_combination">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">completion_by_rule_combination</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">completion_by_rule_combination</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">rule_sequence</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Callable</span><span class="p">],</span>
@@ -346,15 +340,20 @@
                 <span class="sa">f</span><span class="s2">&quot;The rule parameter at position </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> sets the resoluteness parameter to a different &quot;</span>
                 <span class="s2">&quot;one that the resoluteness argument passed to completion_by_rule_combination.&quot;</span>
             <span class="p">)</span>
-    <span class="n">budget_allocations</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">exhaustive_allocations</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Only used for resoluteness = False</span>
     <span class="k">if</span> <span class="n">initial_budget_allocation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">budget_allocations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BudgetAllocation</span><span class="p">())</span>
+        <span class="n">previous_allocations</span> <span class="o">=</span> <span class="p">[</span><span class="n">BudgetAllocation</span><span class="p">()]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">budget_allocations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BudgetAllocation</span><span class="p">(</span><span class="n">initial_budget_allocation</span><span class="p">))</span>
+        <span class="n">previous_allocations</span> <span class="o">=</span> <span class="p">[</span><span class="n">BudgetAllocation</span><span class="p">(</span><span class="n">initial_budget_allocation</span><span class="p">)]</span>
+
+    <span class="c1"># Go through the rules</span>
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rule_sequence</span><span class="p">):</span>
-        <span class="n">new_budget_allocations</span> <span class="o">=</span> <span class="n">BudgetAllocation</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">budget_allocation</span> <span class="ow">in</span> <span class="n">budget_allocations</span><span class="p">:</span>
+        <span class="c1"># Complete each previous budget allocation</span>
+        <span class="n">new_budget_allocations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">irresolute_all_exhaustive</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">budget_allocation</span> <span class="ow">in</span> <span class="n">previous_allocations</span><span class="p">:</span>
+            <span class="c1"># Compute the rule</span>
             <span class="n">outcome</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
                 <span class="n">instance</span><span class="p">,</span>
                 <span class="n">profile</span><span class="p">,</span>
@@ -363,31 +362,34 @@
                 <span class="o">**</span><span class="n">rule_params</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">resoluteness</span><span class="p">:</span>
+                <span class="c1"># Check exhaustiveness, if so return, else continue with new outcome</span>
                 <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">is_exhaustive</span><span class="p">(</span><span class="n">outcome</span><span class="p">):</span>
                     <span class="k">return</span> <span class="n">outcome</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">new_budget_allocations</span> <span class="o">=</span> <span class="p">[</span><span class="n">outcome</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">all_resolute</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># Go through all the new outcomes, save the exhaustive ones and continue with the others</span>
                 <span class="k">for</span> <span class="n">alloc</span> <span class="ow">in</span> <span class="n">outcome</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">is_exhaustive</span><span class="p">(</span><span class="n">alloc</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">alloc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
-                            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alloc</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">alloc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exhaustive_allocations</span><span class="p">:</span>
+                            <span class="n">exhaustive_allocations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alloc</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">all_resolute</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">irresolute_all_exhaustive</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="n">new_budget_allocations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alloc</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">all_resolute</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">res</span>
-        <span class="n">budget_allocations</span> <span class="o">=</span> <span class="n">new_budget_allocations</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resoluteness</span> <span class="ow">and</span> <span class="n">irresolute_all_exhaustive</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">exhaustive_allocations</span>
+        <span class="n">previous_allocations</span> <span class="o">=</span> <span class="n">new_budget_allocations</span>
+
     <span class="k">if</span> <span class="n">resoluteness</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">budget_allocations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">res</span> <span class="o">+</span> <span class="n">budget_allocations</span></div>
+        <span class="k">return</span> <span class="n">previous_allocations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">exhaustive_allocations</span> <span class="o">+</span> <span class="n">previous_allocations</span></div>
 
 
 
 <div class="viewcode-block" id="exhaustion_by_budget_increase">
 <a class="viewcode-back" href="../../../reference/rules/index.html#pabutools.rules.exhaustion.exhaustion_by_budget_increase">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">exhaustion_by_budget_increase</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">exhaustion_by_budget_increase</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">rule</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
@@ -535,8 +537,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

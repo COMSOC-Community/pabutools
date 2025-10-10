@@ -17,7 +17,7 @@ def category_proportionality(
     specifically, for each category (an error is raised if not category are specified) we compute the amount of money
     dedicated to projects from the category in the budget allocation; together with the amount of money allocated to
     the category in the ballots of the voters. For each category, the average between these two scores is raised to the
-    power 2, the global average over all categories is then considered and we return the exponential of minus that
+    power 2, the global average over all categories is then considered, and we return the exponential of minus that
     value.
 
     It mostly makes sense for approval ballots, though any profile of ballots supporting the `in` operator can be used.

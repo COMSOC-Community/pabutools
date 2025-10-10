@@ -10,7 +10,6 @@ from pabutools.rules.budgetallocation import BudgetAllocation
 
 from pabutools.utils import Numeric
 
-
 def completion_by_rule_combination(
     instance: Instance,
     profile: AbstractProfile,
@@ -58,15 +57,20 @@ def completion_by_rule_combination(
                 f"The rule parameter at position {i} sets the resoluteness parameter to a different "
                 "one that the resoluteness argument passed to completion_by_rule_combination."
             )
-    budget_allocations = []
-    res = []
+
+    exhaustive_allocations = []  # Only used for resoluteness = False
     if initial_budget_allocation is None:
-        budget_allocations.append(BudgetAllocation())
+        previous_allocations = [BudgetAllocation()]
     else:
-        budget_allocations.append(BudgetAllocation(initial_budget_allocation))
+        previous_allocations = [BudgetAllocation(initial_budget_allocation)]
+
+    # Go through the rules
     for index, rule in enumerate(rule_sequence):
-        new_budget_allocations = BudgetAllocation()
-        for budget_allocation in budget_allocations:
+        # Complete each previous budget allocation
+        new_budget_allocations = []
+        irresolute_all_exhaustive = True
+        for budget_allocation in previous_allocations:
+            # Compute the rule
             outcome = rule(
                 instance,
                 profile,
@@ -75,25 +79,28 @@ def completion_by_rule_combination(
                 **rule_params[index],
             )
             if resoluteness:
+                # Check exhaustiveness, if so return, else continue with new outcome
                 if instance.is_exhaustive(outcome):
                     return outcome
                 else:
                     new_budget_allocations = [outcome]
             else:
-                all_resolute = True
+                # Go through all the new outcomes, save the exhaustive ones and continue with the others
                 for alloc in outcome:
                     if instance.is_exhaustive(alloc):
-                        if alloc not in res:
-                            res.append(alloc)
+                        if alloc not in exhaustive_allocations:
+                            exhaustive_allocations.append(alloc)
                     else:
-                        all_resolute = False
+                        irresolute_all_exhaustive = False
                         new_budget_allocations.append(alloc)
-                if all_resolute:
-                    return res
-        budget_allocations = new_budget_allocations
+
+        if not resoluteness and irresolute_all_exhaustive:
+            return exhaustive_allocations
+        previous_allocations = new_budget_allocations
+
     if resoluteness:
-        return budget_allocations[0]
-    return res + budget_allocations
+        return previous_allocations[0]
+    return exhaustive_allocations + previous_allocations
 
 
 def exhaustion_by_budget_increase(

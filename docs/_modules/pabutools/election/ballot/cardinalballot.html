@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../../../_static/documentation_options.js?v=778ca11c"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.2" />
   </head>
   
   
@@ -177,14 +177,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -288,20 +283,20 @@
 <span class="sd">Cardinal ballots, i.e., ballots in which the voters map projects to scores.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Iterable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.ballot.ballot</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">AbstractBallot</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.ballot.ballot</span> <span class="kn">import</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">AbstractBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.instance</span> <span class="kn">import</span> <span class="n">Project</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span>
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span>
 
 
 <div class="viewcode-block" id="AbstractCardinalBallot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.cardinalballot.AbstractCardinalBallot">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">AbstractCardinalBallot</span><span class="p">(</span><span class="n">AbstractBallot</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">AbstractCardinalBallot</span><span class="p">(</span><span class="n">AbstractBallot</span><span class="p">,</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class for cardinal ballots. Essentially used for typing purposes.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
@@ -310,7 +305,7 @@
 
 <div class="viewcode-block" id="FrozenCardinalBallot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.cardinalballot.FrozenCardinalBallot">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">FrozenCardinalBallot</span><span class="p">(</span>
+<span class="k">class</span> <span class="nc">FrozenCardinalBallot</span><span class="p">(</span>
     <span class="nb">dict</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">],</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">AbstractCardinalBallot</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -342,7 +337,7 @@
 <span class="sd">            strings. Could for instance store the gender of the voter, their location etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -362,17 +357,17 @@
         <span class="n">FrozenBallot</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
         <span class="n">AbstractCardinalBallot</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You cannot set values of a FrozenCardinalBallot&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
 
 
 
 <div class="viewcode-block" id="CardinalBallot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.cardinalballot.CardinalBallot">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">CardinalBallot</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">],</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">AbstractCardinalBallot</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CardinalBallot</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">],</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">AbstractCardinalBallot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A cardinal ballot, that is, a ballot in which the voter assigned scores to projects. This class inherits from the</span>
 <span class="sd">    Python class `dict` and can be used as one.</span>
@@ -401,7 +396,7 @@
 <span class="sd">            strings. Could for instance store the gender of the voter, their location etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="n">Numeric</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -425,7 +420,7 @@
 
 <div class="viewcode-block" id="CardinalBallot.complete">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.cardinalballot.CardinalBallot.complete">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projects</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">default_score</span><span class="p">:</span> <span class="n">Numeric</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projects</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">default_score</span><span class="p">:</span> <span class="n">Numeric</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Completes the ballot by assigning the `default_score` to all projects from `projects` that have not been</span>
 <span class="sd">        assigned a score yet.</span>
@@ -444,7 +439,7 @@
 
 <div class="viewcode-block" id="CardinalBallot.frozen">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.cardinalballot.CardinalBallot.frozen">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrozenCardinalBallot</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrozenCardinalBallot</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the frozen cardinal ballot (that is hashable) corresponding to the ballot.</span>
 
@@ -458,9 +453,9 @@
 
     <span class="c1"># This allows dict method returning copies of a dict to work</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">wrap_method_closure</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-            <span class="k">def</span><span class="w"> </span><span class="nf">inner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_wrap_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrap_method_closure</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span> <span class="n">name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
                     <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
@@ -537,8 +532,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

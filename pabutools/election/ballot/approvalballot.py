@@ -7,7 +7,7 @@ from __future__ import annotations
 import random
 from abc import ABC
 
-from collections.abc import Collection
+from collections.abc import Iterable
 
 from pabutools.election.instance import Project
 from pabutools.election.ballot.ballot import Ballot, FrozenBallot, AbstractBallot
@@ -27,7 +27,7 @@ class FrozenApprovalBallot(tuple[Project], FrozenBallot, AbstractApprovalBallot)
     Parameters
     ----------
         init: Iterable[:py:class:`~pabutools.election.instance.Project`], optional
-            Collection of :py:class:`~pabutools.election.instance.Project` used to initialise the tuple. In case an
+            Iterable of :py:class:`~pabutools.election.instance.Project` used to initialise the tuple. In case an
             :py:class:`~pabutools.election.ballot.ballot.AbstractBallot` object is passed, the
             additional attributes are also copied (except if the corresponding keyword arguments have been given).
             Defaults to `()`.
@@ -50,7 +50,7 @@ class FrozenApprovalBallot(tuple[Project], FrozenBallot, AbstractApprovalBallot)
 
     def __init__(
         self,
-        init: Collection[Project] = (),
+        init: Iterable[Project] = (),
         name: str | None = None,
         meta: dict | None = None,
     ) -> None:
@@ -64,13 +64,13 @@ class FrozenApprovalBallot(tuple[Project], FrozenBallot, AbstractApprovalBallot)
             if isinstance(init, AbstractBallot):
                 meta = init.meta
             else:
-                meta = dict
-        FrozenBallot.__init__(self, name, meta)
-        AbstractApprovalBallot.__init__(self)
+                meta = dict()
+        FrozenBallot.__init__(self, name=name, meta=meta)
+        AbstractApprovalBallot.__init__(self, name=name, meta=meta)
 
     def __new__(
         cls,
-        approved: Collection[Project] = (),
+        approved: Iterable[Project] = (),
         name: str = "",
         meta: dict | None = None,
     ):
@@ -111,7 +111,7 @@ class ApprovalBallot(set[Project], Ballot, AbstractApprovalBallot):
 
     def __init__(
         self,
-        init: Collection[Project] = (),
+        init: Iterable[Project] = (),
         name: str | None = None,
         meta: dict | None = None,
     ) -> None:
@@ -126,8 +126,14 @@ class ApprovalBallot(set[Project], Ballot, AbstractApprovalBallot):
                 meta = init.meta
             else:
                 meta = dict()
-        Ballot.__init__(self, name, meta)
-        AbstractApprovalBallot.__init__(self)
+        Ballot.__init__(self, name=name, meta=meta)
+        AbstractApprovalBallot.__init__(self, name=name, meta=meta)
+
+    def supports(self, c):
+        return self.utility(c) > 0
+
+    def utility(self, c):
+        return 1 if c in self else 0
 
     def frozen(self) -> FrozenApprovalBallot:
         """
@@ -184,7 +190,7 @@ ApprovalBallot._wrap_methods(
 
 
 def get_random_approval_ballot(
-    projects: Collection[Project], name: str = "RandomAppBallot"
+    projects: Iterable[Project], name: str = "RandomAppBallot"
 ) -> ApprovalBallot:
     """
     Generates a random approval ballot in which each project is approved with probability 0.5.
@@ -192,7 +198,7 @@ def get_random_approval_ballot(
     Parameters
     ----------
         projects : Iterable[:py:class:`~pabutools.election.instance.Project`]
-            A collection of projects.
+            An iterable of projects.
         name : str, optional
             The identifier of the ballot.
             Defaults to `"RandomAppBallot"`.

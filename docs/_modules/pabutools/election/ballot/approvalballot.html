@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../../../_static/documentation_options.js?v=778ca11c"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.2" />
   </head>
   
   
@@ -177,14 +177,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -288,20 +283,20 @@
 <span class="sd">Approval ballots, i.e., ballots in which the voters indicate which projects they approve of.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.ballot.ballot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">AbstractBallot</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.instance</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">pabutools.election.ballot.ballot</span> <span class="kn">import</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">AbstractBallot</span>
 
 
 <div class="viewcode-block" id="AbstractApprovalBallot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.approvalballot.AbstractApprovalBallot">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">AbstractApprovalBallot</span><span class="p">(</span><span class="n">AbstractBallot</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AbstractApprovalBallot</span><span class="p">(</span><span class="n">AbstractBallot</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class for approval ballots. Essentially used for typing purposes.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
@@ -310,7 +305,7 @@
 
 <div class="viewcode-block" id="FrozenApprovalBallot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.approvalballot.FrozenApprovalBallot">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">FrozenApprovalBallot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">AbstractApprovalBallot</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">FrozenApprovalBallot</span><span class="p">(</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">FrozenBallot</span><span class="p">,</span> <span class="n">AbstractApprovalBallot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Frozen approval ballot, that is, a ballot in which the voter expressed their preferences by simply selecting</span>
 <span class="sd">    some projects they approve of. It derives from the Python class `tuple` and can be used as one.</span>
@@ -318,7 +313,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">        init: Iterable[:py:class:`~pabutools.election.instance.Project`], optional</span>
-<span class="sd">            Collection of :py:class:`~pabutools.election.instance.Project` used to initialise the tuple. In case an</span>
+<span class="sd">            Iterable of :py:class:`~pabutools.election.instance.Project` used to initialise the tuple. In case an</span>
 <span class="sd">            :py:class:`~pabutools.election.ballot.ballot.AbstractBallot` object is passed, the</span>
 <span class="sd">            additional attributes are also copied (except if the corresponding keyword arguments have been given).</span>
 <span class="sd">            Defaults to `()`.</span>
@@ -339,9 +334,9 @@
 <span class="sd">            strings. Could for instance store the gender of the voter, their location etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">init</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">init</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -359,22 +354,22 @@
         <span class="n">FrozenBallot</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
         <span class="n">AbstractApprovalBallot</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">approved</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">approved</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">approved</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="ApprovalBallot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.approvalballot.ApprovalBallot">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ApprovalBallot</span><span class="p">(</span><span class="nb">set</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">AbstractApprovalBallot</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ApprovalBallot</span><span class="p">(</span><span class="nb">set</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">Ballot</span><span class="p">,</span> <span class="n">AbstractApprovalBallot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An approval ballot, that is, a ballot in which the voter has indicated the projects that they approve of. It</span>
 <span class="sd">    is a subclass of the Python class `set` and can be used as one.</span>
@@ -403,9 +398,9 @@
 <span class="sd">            strings. Could for instance store the gender of the voter, their location etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">init</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">init</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -425,7 +420,7 @@
 
 <div class="viewcode-block" id="ApprovalBallot.frozen">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.approvalballot.ApprovalBallot.frozen">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrozenApprovalBallot</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrozenApprovalBallot</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the frozen approval ballot (that is hashable) corresponding to the ballot.</span>
 
@@ -439,9 +434,9 @@
 
     <span class="c1"># Ensures that methods returning copies of sets cast back into ApprovalBallot</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">methods</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">wrap_method_closure</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
-            <span class="k">def</span><span class="w"> </span><span class="nf">inner_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_wrap_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">methods</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrap_method_closure</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">inner_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span> <span class="n">method</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
                     <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
@@ -483,8 +478,8 @@
 
 <div class="viewcode-block" id="get_random_approval_ballot">
 <a class="viewcode-back" href="../../../../reference/election/ballot.html#pabutools.election.ballot.approvalballot.get_random_approval_ballot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_random_approval_ballot</span><span class="p">(</span>
-    <span class="n">projects</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;RandomAppBallot&quot;</span>
+<span class="k">def</span> <span class="nf">get_random_approval_ballot</span><span class="p">(</span>
+    <span class="n">projects</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Project</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;RandomAppBallot&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ApprovalBallot</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a random approval ballot in which each project is approved with probability 0.5.</span>
@@ -492,7 +487,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">        projects : Iterable[:py:class:`~pabutools.election.instance.Project`]</span>
-<span class="sd">            A collection of projects.</span>
+<span class="sd">            An iterable of projects.</span>
 <span class="sd">        name : str, optional</span>
 <span class="sd">            The identifier of the ballot.</span>
 <span class="sd">            Defaults to `&quot;RandomAppBallot&quot;`.</span>
@@ -569,8 +564,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -27,7 +27,9 @@ from pabutools.tiebreaking import TieBreakingRule, lexico_tie_breaking
 from pabutools.utils import Numeric
 
 import pabutools.fractions
+import logging
 
+logger = logging.getLogger(__name__)
 
 ###################################################################
 #                                                                 #
@@ -229,7 +231,7 @@ def cstv(
     while True:
         # Calculate the total budget
         if verbose:
-            print(f"Budget is: {budget}")
+            logger.info(f"Budget is: {budget}")
 
         # Halting condition: if there are no more projects to consider
         if not current_projects:
@@ -243,21 +245,21 @@ def cstv(
                 tie_breaking,
             )
             if verbose:
-                print(f"Final selected projects: {selected_projects}")
+                logger.info(f"Final selected projects: {selected_projects}")
             return selected_projects
 
         # Log donations for each project
         if verbose:
             for project in current_projects:
                 total_donation = sum(donor[project] for donor in donations)
-                print(
+                logger.info(
                     f"Donors and total donations for {project}: {total_donation}. Price: {project.cost}"
                 )
 
         # Determine eligible projects for funding
         eligible_projects = eligible_projects_func(current_projects, donations)
         if verbose:
-            print(
+            logger.info(
                 f"Eligible projects: {eligible_projects}",
             )
 
@@ -273,7 +275,7 @@ def cstv(
             if not flag:
                 # Perform the inclusive maximality postprocedure
                 if verbose:
-                    print(
+                    logger.info(
                         f"Beginning exhaustiveness postprocess\n \
                             Remaining projects: {eligible_projects}\n \
                             Eliminated projects: {eliminated_projects}",
@@ -287,7 +289,7 @@ def cstv(
                     tie_breaking,
                 )
                 if verbose:
-                    print(f"Final selected projects: {selected_projects}")
+                    logger.info(f"Final selected projects: {selected_projects}")
                 return selected_projects
             eligible_projects = eligible_projects_func(current_projects, donations)
 
@@ -301,13 +303,13 @@ def cstv(
             p = tied_projects[0]
         excess_support = sum(donor.get(p.name, 0) for donor in donations) - p.cost
         if verbose:
-            print(f"Excess support for {p}: {excess_support}")
+            logger.info(f"Excess support for {p}: {excess_support}")
 
         # Add the project to the selected set and remove it from further consideration
         selected_projects.append(p)
         current_projects.remove(p)
         if verbose:
-            print(f"Updated selected projects: {selected_projects}")
+            logger.info(f"Updated selected projects: {selected_projects}")
         budget -= p.cost
 
         if excess_support > 0.01:
@@ -317,7 +319,7 @@ def cstv(
         else:
             # Reset donations for the eliminated project
             if verbose:
-                print(f"Resetting donations for eliminated project: {p}")
+                logger.info(f"Resetting donations for eliminated project: {p}")
             for donor in donations:
                 donor[p] = 0
         continue

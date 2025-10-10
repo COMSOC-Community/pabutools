@@ -21,9 +21,9 @@ from pabutools.analysis.profileproperties import (
     median_total_score,
 )
 from pabutools.analysis.priceability import (
-    validate_price_system,
-    priceable,
-    PriceableResult,
+     validate_price_system,
+     priceable,
+     PriceableResult,
 )
 from pabutools.analysis.mesanalytics import (
     ProjectLoss,

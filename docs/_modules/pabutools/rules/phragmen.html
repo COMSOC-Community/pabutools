@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../../_static/documentation_options.js?v=778ca11c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +47,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.2" />
   </head>
   
   
@@ -177,14 +177,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -288,26 +283,27 @@
 <span class="sd">Phragmén&#39;s methods.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.rules.budgetallocation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BudgetAllocation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span>
+<span class="kn">from</span> <span class="nn">pabutools.rules.budgetallocation</span> <span class="kn">import</span> <span class="n">BudgetAllocation</span>
+<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">frac</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">pabutools.fractions</span> <span class="kn">import</span> <span class="n">frac</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Instance</span><span class="p">,</span>
     <span class="n">Project</span><span class="p">,</span>
     <span class="n">total_cost</span><span class="p">,</span>
     <span class="n">AbstractApprovalBallot</span><span class="p">,</span>
     <span class="n">AbstractApprovalProfile</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.tiebreaking</span><span class="w"> </span><span class="kn">import</span> <span class="n">TieBreakingRule</span><span class="p">,</span> <span class="n">lexico_tie_breaking</span>
+<span class="kn">from</span> <span class="nn">pabutools.tiebreaking</span> <span class="kn">import</span> <span class="n">TieBreakingRule</span><span class="p">,</span> <span class="n">lexico_tie_breaking</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">PhragmenVoter</span><span class="p">:</span>
+
+<span class="k">class</span> <span class="nc">PhragmenVoter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class used to summarise a voter during a run of the Phragmén&#39;s sequential rule.</span>
 
@@ -319,6 +315,8 @@
 <span class="sd">            The initial load of the voter.</span>
 <span class="sd">        multiplicity: int</span>
 <span class="sd">            The multiplicity of the ballot.</span>
+<span class="sd">        max_load: Numeric, optional</span>
+<span class="sd">            The maximum load of the voter. If the load exceeds this value, the voter no longer considered.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -328,25 +326,29 @@
 <span class="sd">            The initial load of the voter.</span>
 <span class="sd">        multiplicity: int</span>
 <span class="sd">            The multiplicity of the ballot.</span>
+<span class="sd">        max_load: Numeric</span>
+<span class="sd">            The maximum load of the voter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractApprovalBallot</span><span class="p">,</span> <span class="n">load</span><span class="p">:</span> <span class="n">Numeric</span><span class="p">,</span> <span class="n">multiplicity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractApprovalBallot</span><span class="p">,</span> <span class="n">load</span><span class="p">:</span> <span class="n">Numeric</span><span class="p">,</span> <span class="n">multiplicity</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_load</span><span class="p">:</span> <span class="n">Numeric</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ballot</span> <span class="o">=</span> <span class="n">ballot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="n">load</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">=</span> <span class="n">multiplicity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_load</span> <span class="o">=</span> <span class="n">max_load</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">total_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">total_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span>
 
 
 <div class="viewcode-block" id="sequential_phragmen">
 <a class="viewcode-back" href="../../../reference/rules/index.html#pabutools.rules.phragmen.sequential_phragmen">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">sequential_phragmen</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">sequential_phragmen</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractApprovalProfile</span><span class="p">,</span>
     <span class="n">initial_loads</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Numeric</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_max_load</span><span class="p">:</span> <span class="n">Numeric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">initial_budget_allocation</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tie_breaking</span><span class="p">:</span> <span class="n">TieBreakingRule</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">resoluteness</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -357,7 +359,7 @@
 <span class="sd">    buy a project they all approve, the project is bought. The rule stops as soon as there is a project that could be</span>
 <span class="sd">    bought  but only by violating the budget constraint.</span>
 
-<span class="sd">    Note that this rule can only be applied to profile of approval ballots.</span>
+<span class="sd">    Note that this rule can only be applied to profiles of approval ballots.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -367,6 +369,8 @@
 <span class="sd">            The profile.</span>
 <span class="sd">        initial_loads: list[Numeric], optional</span>
 <span class="sd">            A list of initial load, one per ballot in `profile`. By defaults, the initial load is `0`.</span>
+<span class="sd">        global_max_load: Numeric, optional</span>
+<span class="sd">            A maximum load. The rule stops when any voter would exceed this limit.</span>
 <span class="sd">        initial_budget_allocation : Iterable[:py:class:`~pabutools.election.instance.Project`]</span>
 <span class="sd">            An initial budget allocation, typically empty.</span>
 <span class="sd">        tie_breaking : :py:class:`~pabutools.tiebreaking.TieBreakingRule`, optional</span>
@@ -383,17 +387,12 @@
 <span class="sd">            (:code:`resoluteness == False`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">(</span>
-        <span class="n">inst</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span>
         <span class="n">projects</span><span class="p">,</span>
-        <span class="n">prof</span><span class="p">,</span>
         <span class="n">voters</span><span class="p">,</span>
-        <span class="n">supporters</span><span class="p">,</span>
-        <span class="n">approval_scores</span><span class="p">,</span>
         <span class="n">alloc</span><span class="p">,</span>
         <span class="n">cost</span><span class="p">,</span>
         <span class="n">allocs</span><span class="p">,</span>
-        <span class="n">resolute</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">alloc</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
@@ -417,16 +416,22 @@
                 <span class="k">elif</span> <span class="n">min_new_maxload</span> <span class="o">==</span> <span class="n">new_maxload</span><span class="p">:</span>
                     <span class="n">arg_min_new_maxload</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
 
+            <span class="c1"># Stop if any of the potential projects cost too much</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-                <span class="n">cost</span> <span class="o">+</span> <span class="n">project</span><span class="o">.</span><span class="n">cost</span> <span class="o">&gt;</span> <span class="n">inst</span><span class="o">.</span><span class="n">budget_limit</span>
+                <span class="n">cost</span> <span class="o">+</span> <span class="n">project</span><span class="o">.</span><span class="n">cost</span> <span class="o">&gt;</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
                 <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">arg_min_new_maxload</span>
             <span class="p">):</span>
                 <span class="n">alloc</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">alloc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allocs</span><span class="p">:</span>
                     <span class="n">allocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alloc</span><span class="p">)</span>
+            <span class="c1"># Stop if selecting any project would exceed the global max load bound.</span>
+            <span class="k">elif</span> <span class="n">min_new_maxload</span> <span class="o">&gt;</span> <span class="n">global_max_load</span><span class="p">:</span>
+                <span class="n">alloc</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">alloc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allocs</span><span class="p">:</span>
+                    <span class="n">allocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alloc</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">tied_projects</span> <span class="o">=</span> <span class="n">tie_breaking</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">prof</span><span class="p">,</span> <span class="n">arg_min_new_maxload</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">resolute</span><span class="p">:</span>
+                <span class="n">tied_projects</span> <span class="o">=</span> <span class="n">tie_breaking</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">arg_min_new_maxload</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">resoluteness</span><span class="p">:</span>
                     <span class="n">selected_project</span> <span class="o">=</span> <span class="n">tied_projects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">voter</span> <span class="ow">in</span> <span class="n">voters</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">selected_project</span> <span class="ow">in</span> <span class="n">voter</span><span class="o">.</span><span class="n">ballot</span><span class="p">:</span>
@@ -434,16 +439,11 @@
                     <span class="n">alloc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selected_project</span><span class="p">)</span>
                     <span class="n">projects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">selected_project</span><span class="p">)</span>
                     <span class="n">aux</span><span class="p">(</span>
-                        <span class="n">inst</span><span class="p">,</span>
                         <span class="n">projects</span><span class="p">,</span>
-                        <span class="n">prof</span><span class="p">,</span>
                         <span class="n">voters</span><span class="p">,</span>
-                        <span class="n">supporters</span><span class="p">,</span>
-                        <span class="n">approval_scores</span><span class="p">,</span>
                         <span class="n">alloc</span><span class="p">,</span>
                         <span class="n">cost</span> <span class="o">+</span> <span class="n">selected_project</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span>
                         <span class="n">allocs</span><span class="p">,</span>
-                        <span class="n">resolute</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">selected_project</span> <span class="ow">in</span> <span class="n">tied_projects</span><span class="p">:</span>
@@ -456,17 +456,15 @@
                         <span class="n">new_projs</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">projects</span><span class="p">)</span>
                         <span class="n">new_projs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">selected_project</span><span class="p">)</span>
                         <span class="n">aux</span><span class="p">(</span>
-                            <span class="n">inst</span><span class="p">,</span>
                             <span class="n">new_projs</span><span class="p">,</span>
-                            <span class="n">prof</span><span class="p">,</span>
                             <span class="n">new_voters</span><span class="p">,</span>
-                            <span class="n">supporters</span><span class="p">,</span>
-                            <span class="n">approval_scores</span><span class="p">,</span>
                             <span class="n">new_alloc</span><span class="p">,</span>
                             <span class="n">new_cost</span><span class="p">,</span>
                             <span class="n">allocs</span><span class="p">,</span>
-                            <span class="n">resolute</span><span class="p">,</span>
                         <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">AbstractApprovalProfile</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The Sequential Phragmen Rule only applies to approval profiles.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tie_breaking</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tie_breaking</span> <span class="o">=</span> <span class="n">lexico_tie_breaking</span>
@@ -489,30 +487,27 @@
             <span class="n">PhragmenVoter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">initial_loads</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">profile</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
         <span class="p">]</span>
-    <span class="n">supps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">supporters</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">proj</span><span class="p">:</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">voters_details</span><span class="p">)</span> <span class="k">if</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">ballot</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">initial_projects</span>
     <span class="p">}</span>
 
-    <span class="n">scores</span> <span class="o">=</span> <span class="p">{</span><span class="n">project</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">approval_score</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">instance</span><span class="p">}</span>
+    <span class="n">approval_scores</span> <span class="o">=</span> <span class="p">{</span><span class="n">project</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">approval_score</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">instance</span><span class="p">}</span>
 
     <span class="n">all_budget_allocations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BudgetAllocation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">aux</span><span class="p">(</span>
-        <span class="n">instance</span><span class="p">,</span>
         <span class="n">initial_projects</span><span class="p">,</span>
-        <span class="n">profile</span><span class="p">,</span>
         <span class="n">voters_details</span><span class="p">,</span>
-        <span class="n">supps</span><span class="p">,</span>
-        <span class="n">scores</span><span class="p">,</span>
         <span class="n">initial_budget_allocation</span><span class="p">,</span>
         <span class="n">current_cost</span><span class="p">,</span>
         <span class="n">all_budget_allocations</span><span class="p">,</span>
-        <span class="n">resoluteness</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">resoluteness</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">all_budget_allocations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">all_budget_allocations</span></div>
+
+
 
 </pre></div>
 
@@ -576,8 +571,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

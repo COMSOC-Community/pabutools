@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -27,19 +27,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../_static/documentation_options.js?v=778ca11c"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -50,7 +50,7 @@
     <link rel="prev" title="Profiles" href="profiles.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.2" />
   </head>
   
   
@@ -178,14 +178,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -355,14 +350,14 @@
 that conforms to the pabulib format. This function yields the instance
 and profile based on the appropriate profile class determined by the ballot
 format in the data.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_pabulib</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">parse_pabulib</span>
 
 <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">parse_pabulib</span><span class="p">(</span><span class="s2">&quot;path_to_the_file&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Pabulib files contain an extensive range of metadata. This metadata is
 stored in the <cite>meta</cite> members of the instance and profile classes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_pabulib</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">parse_pabulib</span>
 
 <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">parse_pabulib</span><span class="p">(</span><span class="s2">&quot;path_to_the_file&quot;</span><span class="p">)</span>
 <span class="n">instance</span><span class="o">.</span><span class="n">meta</span>   <span class="c1"># The meta dict is populated with all the metadata described in the file</span>
@@ -393,13 +388,13 @@ length of a ballot or the number of points that must be allocated for instance.<
 </pre></div>
 </div>
 <p>It is also possible to write instances and profiles into Pabulib files:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_pabulib</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">write_pabulib</span>
 
 <span class="n">write_pabulib</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="s2">&quot;path/to/the/file.pb&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If you need the string corresponding to the file content, you can use the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.pabulib</span><span class="w"> </span><span class="kn">import</span> <span class="n">election_as_pabulib_string</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election.pabulib</span> <span class="kn">import</span> <span class="n">election_as_pabulib_string</span>
 
 <span class="n">str_representation</span> <span class="o">=</span> <span class="n">election_as_pabulib_string</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">)</span>
 </pre></div>
@@ -410,8 +405,8 @@ length of a ballot or the number of points that must be allocated for instance.<
 <p>In addition to <a class="reference external" href="http://pabulib.org">pabulib</a> , our package also supports the
 <a class="reference external" href="https://preflib.org">preflib</a>  format, providing functions to convert a participatory
 budgeting election into a PrefLib instance.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">CardinalProfile</span><span class="p">,</span> <span class="n">OrdinalProfile</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election</span><span class="w"> </span><span class="kn">import</span> <span class="n">approval_to_preflib</span><span class="p">,</span> <span class="n">cardinal_to_preflib</span><span class="p">,</span> <span class="n">ordinal_to_preflib</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">ApprovalProfile</span><span class="p">,</span> <span class="n">CardinalProfile</span><span class="p">,</span> <span class="n">OrdinalProfile</span>
+<span class="kn">from</span> <span class="nn">pabutools.election</span> <span class="kn">import</span> <span class="n">approval_to_preflib</span><span class="p">,</span> <span class="n">cardinal_to_preflib</span><span class="p">,</span> <span class="n">ordinal_to_preflib</span>
 
 <span class="n">instance</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">()</span>
 
@@ -527,8 +522,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -9,8 +9,8 @@ from pabutools.utils import Numeric
 class MESAllocationDetails(AllocationDetails):
     """Class representing the details of MES rule.
     This class represents the MES details using an iteration approach: at each iteration of the MES rule some
-    crucial information is saved which allow for reconstruction of the whole run. An iteration corrosponds to one
-    call to `mes_inner_algo`, and each iteration corrosponds to one project being picked.
+    crucial information is saved which allow for reconstruction of the whole run. An iteration corresponds to one
+    call to `mes_inner_algo`, and each iteration corresponds to one project being picked.
 
     Attributes
     ----------
@@ -39,7 +39,7 @@ class MESAllocationDetails(AllocationDetails):
 
     def get_final_budget(self) -> Numeric:
         """
-        Returns the budget limt used in the final feasible MES run.
+        Returns the budget limit used in the final feasible MES run.
         """
         budget_per_voter = self.iterations[0].voters_budget
         return sum(
@@ -130,7 +130,7 @@ class MESIteration(list[MESProjectDetails]):
             The budget of all voters at the start of the iteration. Defaults to `None`.
         voters_budget_after_selection: list[int], optional
             The budget of all voters after the selected project was covered. Defaults to `None`.
-        selected_project: :py:class:`~pabutools.electin.instance.Project`, optional
+        selected_project: :py:class:`~pabutools.election.instance.Project`, optional
             The project that was selected at the end of the iteration. Defaults to `None`.
 
     Attributes
@@ -162,7 +162,7 @@ class MESIteration(list[MESProjectDetails]):
         project_details.discarded = True
 
     def update_project_details_as_effective_vote_count_reduced(self, project: Project):
-        """Updates the project details of the given project as having it's effective vote count reduced during this iteration."""
+        """Updates the project details of the given project as having its effective vote count reduced during this iteration."""
         project_details = self[self.index(project)]
         project_details.effective_vote_count_reduced = True
 

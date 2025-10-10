@@ -312,7 +312,7 @@
                         <p>
                             This is the summary for the results of this participatory budgeting election decided by the Method of Equal Shares (MES). <br>
                             With this method, the total budget is virtually divided equally among the voters. <br>
-                            The following web-page outlines the process of the election and the step by step process of how each project was chosen - <a href="https://equalshares.net/explanation/">Explanation</a>. <br><br>
+                            The following web-page outlines the process of the election and the step-by-step process of how each project was chosen - <a href="https://equalshares.net/explanation/">Explanation</a>. <br><br>
                             {{ election_name}} had a total of {{ total_votes }} voters participating.<br>
                             Between these voters there was a total of {{ "{:,}".format((budget | int)) }} {{ currency }} available, of which {{ "{:,}".format((spent | int)) }} {{ currency }} was spent.<br>
                             In total, there were {{ number_of_elected_projects }} projects elected, and {{ number_of_unelected_projects }} projects not elected.<br>
@@ -352,7 +352,7 @@
             <p>This table displays at each round what project got selected in green as well as any rejected projects in white.<br>
                Further, this table features a chart in which you can hover your mouse over and compare the 
                project's final funding (blue bar) with the funding lost (red bar), where the initial funding represents the whole bar.<br>
-               Finally, each row can be expanded on to reveal more details regarding the project and its round, including expalanation on why this project got selected/rejected and a 
+               Finally, each row can be expanded on to reveal more details regarding the project and its round, including explanation on why this project got selected/rejected and a
                link to a more advanced view of how the specific round unfolded.
             </p>
             
@@ -429,14 +429,14 @@
                                     {% endfor %}
                                     <b>Other Details:</b><br>
                                     <br>
-                                    <!-- Sample expalanations -->
+                                    <!-- Sample explanations -->
                                     <div>
                                         <h4>Why was this project selected?</h4>
                                         {% if round.initial_voter_funding != round.final_voter_funding %}
                                             This project was accepted because its supporters were able to pay for the project's cost - <b>{{ "{:,}".format( (round.cost | int) ) }}</b> {{ currency }} -
                                             using the total funding available to them at the start of round {{ loop.index }} (<b>{{ "{:,.2f}".format((round.final_voter_funding | float)) }}</b> {{ currency }}). <br><br>
                                             Note that the supporters of this project initially had more funding available to them (<b>{{ "{:,.2f}".format((round.initial_voter_funding | float)) }} </b> {{ currency }}). However, this funding
-                                            was lost as these supporters had also funded projects in the previous rounds, decreasing the total funding available to them, but not to the point where the project cost exceedes the combined funds of the supporters.
+                                            was lost as these supporters had also funded projects in the previous rounds, decreasing the total funding available to them, but not to the point where the project cost exceeds the combined funds of the supporters.
                                             As a result, this project could still be afforded.<br><br>
                                             These projects and the specific funding lost can be seen below.
                                         {% else %}
@@ -517,7 +517,7 @@
                                             <b>Other Details:</b><br>
                                             <br>
 
-                                            <!-- Sample expalanations -->
+                                            <!-- Sample explanations -->
                                             <div style="text-align: left">
                                                 <h4>Why was this project not selected?</h4>
                                                 {% if rejected.initial_voter_funding >= rejected.cost %}

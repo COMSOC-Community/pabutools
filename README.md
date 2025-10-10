@@ -1,7 +1,7 @@
 # Pabutools: PB as easy as [ABC](https://github.com/martinlackner/abcvoting)
 
 [![PyPI Status](https://img.shields.io/pypi/v/pabutools.svg)](https://pypi.python.org/pypi/pabutools)
-[![Build badge](https://github.com/comsoc-community/pabutools/workflows/build/badge.svg?branch=main)](https://github.com/comsoc-community/pabutools/actions/workflows/build.yml)
+[![Build Status](https://github.com/comsoc-community/pabutools/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/comsoc-community/pabutools/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/comsoc-community/pabutools/branch/main/graphs/badge.svg)](https://codecov.io/gh/comsoc-community/pabutools/tree/main)
 
 ## Overview

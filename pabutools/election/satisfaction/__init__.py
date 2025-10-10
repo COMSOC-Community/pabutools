@@ -1,6 +1,5 @@
 """
-Module introducing different ways to approximate the voters' satisfaction given their ballots. See the
-see the :py:mod:`~pabutools.election.ballot` module for more details on the ballots.
+Module introducing different ways to approximate the voters' satisfaction given their ballots. See the :py:mod:`~pabutools.election.ballot` module for more details on the ballots.
 
 This module introduces general ways to define satisfaction measures together with a large set of already implemented
 satisfaction measures.

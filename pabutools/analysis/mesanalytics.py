@@ -146,7 +146,7 @@ def calculate_effective_supports(
     final_budget: Numeric | None = None,
 ) -> dict[Project, int]:
     """
-    Returns a dictionary of :py:class:`~pabutools.election.instance.project` and their effective support
+    Returns a dictionary of :py:class:`~pabutools.election.instance.Project` and their effective support
     in a given instance, profile and mes election. Effective support for a project is an analytical metric
     which allows to measure the ratio of initial budget received to minimal budget required to win.
     Effective support is represented in percentages.

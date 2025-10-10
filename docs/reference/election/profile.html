@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
   -->
   <noscript>
     <style>
@@ -27,19 +27,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=59ca8804"></script>
+    <script src="../../_static/documentation_options.js?v=778ca11c"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -50,7 +50,7 @@
     <link rel="prev" title="Ballot module" href="ballot.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.10" />
+  <meta name="docsearch:version" content="1.2.2" />
   </head>
   
   
@@ -178,14 +178,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -1738,13 +1733,11 @@ details.</p>
 <span class="go">[&#39;A&#39;, &#39;A&#39;, &#39;B&#39;, &#39;B&#39;, &#39;C&#39;, &#39;C&#39;]</span>
 </pre></div>
 </div>
-<p>Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prime_factors</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">17</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">prime_factors</span><span class="o">.</span><span class="n">elements</span><span class="p">())</span>
-<span class="go">1836</span>
-</pre></div>
-</div>
+<p># Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; prime_factors = Counter({2: 2, 3: 3, 17: 1})
+&gt;&gt;&gt; math.prod(prime_factors.elements())
+1836</p>
 <p>Note, if an element’s count has been set to zero or is a negative
 number, elements() will ignore it.</p>
 </dd></dl>
@@ -1972,7 +1965,7 @@ probability 0.5.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference internal" href="instance.html#pabutools.election.instance.Instance" title="pabutools.election.instance.Instance"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instance</span></code></a>) – The instance the profile is defined with respect to.</p></li>
-<li><p><strong>num_agents</strong> (<em>int</em>) – The length of the profile, i.e., the number of agents..</p></li>
+<li><p><strong>num_agents</strong> (<em>int</em>) – The length of the profile, i.e., the number of agents.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2523,13 +2516,11 @@ details.</p>
 <span class="go">[&#39;A&#39;, &#39;A&#39;, &#39;B&#39;, &#39;B&#39;, &#39;C&#39;, &#39;C&#39;]</span>
 </pre></div>
 </div>
-<p>Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prime_factors</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">17</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">prime_factors</span><span class="o">.</span><span class="n">elements</span><span class="p">())</span>
-<span class="go">1836</span>
-</pre></div>
-</div>
+<p># Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; prime_factors = Counter({2: 2, 3: 3, 17: 1})
+&gt;&gt;&gt; math.prod(prime_factors.elements())
+1836</p>
 <p>Note, if an element’s count has been set to zero or is a negative
 number, elements() will ignore it.</p>
 </dd></dl>
@@ -3328,13 +3319,11 @@ details.</p>
 <span class="go">[&#39;A&#39;, &#39;A&#39;, &#39;B&#39;, &#39;B&#39;, &#39;C&#39;, &#39;C&#39;]</span>
 </pre></div>
 </div>
-<p>Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prime_factors</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">17</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">prime_factors</span><span class="o">.</span><span class="n">elements</span><span class="p">())</span>
-<span class="go">1836</span>
-</pre></div>
-</div>
+<p># Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; prime_factors = Counter({2: 2, 3: 3, 17: 1})
+&gt;&gt;&gt; math.prod(prime_factors.elements())
+1836</p>
 <p>Note, if an element’s count has been set to zero or is a negative
 number, elements() will ignore it.</p>
 </dd></dl>
@@ -3945,13 +3934,11 @@ details.</p>
 <span class="go">[&#39;A&#39;, &#39;A&#39;, &#39;B&#39;, &#39;B&#39;, &#39;C&#39;, &#39;C&#39;]</span>
 </pre></div>
 </div>
-<p>Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prime_factors</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">17</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">prime_factors</span><span class="o">.</span><span class="n">elements</span><span class="p">())</span>
-<span class="go">1836</span>
-</pre></div>
-</div>
+<p># Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; prime_factors = Counter({2: 2, 3: 3, 17: 1})
+&gt;&gt;&gt; math.prod(prime_factors.elements())
+1836</p>
 <p>Note, if an element’s count has been set to zero or is a negative
 number, elements() will ignore it.</p>
 </dd></dl>
@@ -4530,8 +4517,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>
