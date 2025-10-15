@@ -669,7 +669,7 @@ voter_id;vote;voting_method;district
 
     def test_url_parse(self):
         url = (
-            "https://raw.githubusercontent.com/COMSOC-Community/pabutools/refs/heads/main/tests/PaBuLib/All/poland_warszawa_2018_pole-mokotowskie.pb"
+            "https://raw.githubusercontent.com/COMSOC-Community/pabutools/refs/heads/main/tests/pabulib/All/poland_warszawa_2018_pole-mokotowskie.pb"
         )
         url_inst, url_prof = parse_pabulib_from_url(url)
         assert url_inst.file_name == "poland_warszawa_2018_pole-mokotowskie.pb"
