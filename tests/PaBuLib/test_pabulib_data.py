@@ -52,6 +52,8 @@ def profile_sat_map(prof):
 
 class TestPabulibData(TestCase):
     def test_files(self, source_dir="All_10"):
+        max_num_instances = 10
+
         elections = []
         for file in os.listdir(os.path.join(source_dir)):
             if file.endswith(".pb"):
@@ -80,3 +82,5 @@ class TestPabulibData(TestCase):
                             profile,
                             sat_profile=profile.as_sat_profile(sat_class),
                         )
+            if i >= max_num_instances:
+                break

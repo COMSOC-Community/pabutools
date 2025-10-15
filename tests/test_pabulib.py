@@ -669,7 +669,7 @@ voter_id;vote;voting_method;district
 
     def test_url_parse(self):
         url = (
-            "http://pabulib.org/tiles/download/poland_warszawa_2018_pole-mokotowskie.pb"
+            "https://raw.githubusercontent.com/COMSOC-Community/pabutools/refs/heads/main/tests/PaBuLib/All/poland_warszawa_2018_pole-mokotowskie.pb"
         )
         url_inst, url_prof = parse_pabulib_from_url(url)
         assert url_inst.file_name == "poland_warszawa_2018_pole-mokotowskie.pb"
@@ -679,12 +679,12 @@ voter_id;vote;voting_method;district
             f.write(
                 """META
 key;value
-description;Local PB in Warszawa, Ochota | Pole Mokotowskie
+description;Local PB in Warsaw, Ochota | Pole Mokotowskie
 country;Poland
 unit;Warszawa
-district;Ochota
 subunit;Pole Mokotowskie
 instance;2018
+district;Ochota
 num_projects;1
 num_votes;8
 budget;21064
@@ -694,23 +694,21 @@ date_begin;14.06.2017
 date_end;30.06.2017
 min_length;1
 max_sum_cost;21064
+language;polish
 edition;4
-language;pl
-currency;PLN
-fully_funded;1
 PROJECTS
-project_id;cost;votes;name;category;target;selected
-658;21064;8;Dobre grzyby (mikoryza) dla drzew Pola Mokotowskiego;environmental protection,public space,urban greenery;seniors,families with children,animals;1
+project_id;cost;category;votes;name;target;selected
+658;21064;environmental protection,public space,urban greenery;8;Dobre grzyby (mikoryza) dla drzew Pola Mokotowskiego;seniors,families with children,animals;1
 VOTES
-voter_id;vote;age;sex;voting_method
-30397;658;43;F;internet
-39076;658;61;F;paper
-56422;658;66;M;internet
-67344;658;32;F;internet
-83776;658;73;F;internet
-89587;658;9;M;internet
-95332;658;31;F;internet
-102415;658;24;F;internet
+voter_id;age;sex;voting_method;vote
+30397;43;F;internet;658
+39076;61;F;paper;658
+56422;66;M;internet;658
+67344;32;F;internet;658
+83776;73;F;internet;658
+89587;9;M;internet;658
+95332;31;F;internet;658
+102415;24;F;internet;658
 """
             )
 
