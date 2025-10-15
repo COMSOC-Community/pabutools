@@ -5,6 +5,7 @@ Approval profiles, i.e., collections of approval ballots.
 from __future__ import annotations
 
 from abc import ABC
+from collections import defaultdict
 from collections.abc import Iterable, Generator
 from itertools import product
 
@@ -69,9 +70,25 @@ class AbstractApprovalProfile(AbstractProfile, ABC, Iterable[AbstractApprovalBal
         self.legal_min_cost = legal_min_cost
         self.legal_max_cost = legal_max_cost
 
+    def approval_scores(self) -> dict[Project, int]:
+        """
+        Returns the approval score of all the projects as a dictionary. The approval score of a project is the number of
+        voters who approves of it.
+
+        Returns
+        -------
+            int
+                The approval score.
+        """
+        approval_scores = defaultdict(int)
+        for ballot in self:
+            for project in ballot:
+                approval_scores[project] += self.multiplicity(ballot)
+        return dict(approval_scores)
+
     def approval_score(self, project: Project) -> int:
         """
-        Returns the approval score of a project, that is, the number of voters who approved of it.
+        Returns the approval score of a project, that is, the number of voters who approves of it.
 
         Parameters
         ----------
