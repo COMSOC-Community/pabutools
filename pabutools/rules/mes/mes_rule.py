@@ -176,7 +176,7 @@ def affordability_poor_rich(voters: list[MESVoter], project: MESProject) -> Nume
 
     """
     rich = set(project.supporter_indices)
-    poor = {}
+    poor = set()
     while len(rich) > 0:
         poor_budget = sum(voters[i].total_budget() for i in poor)
         numerator = frac(project.cost - poor_budget)

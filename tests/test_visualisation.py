@@ -12,7 +12,7 @@ class TestUtils(TestCase):
     def test_mes_visualisation(self):
         file_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            "PaBuLib",
+            "pabulib",
             "All_10",
             "poland_czestochowa_2020_grabowka.pb",
         )
