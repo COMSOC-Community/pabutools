@@ -3,9 +3,10 @@
 
 
 An implementation of the algorithms in:
-"Participatory Budgeting with Cumulative Votes", by Piotr Skowron, Arkadii Slinko, Stanisaw Szufa,
+"Participatory Budgeting with Cumulative Votes", 
+by Piotr Skowron, Arkadii Slinko, Stanisaw Szufa,
 Nimrod Talmon (2020), https://arxiv.org/pdf/2009.02690
-Programmer: Achiya Ben Natan
+Original implementation: Achiya Ben Natan
 Changes: Kacper Harasimowicz
 Date: 2024/05/16.
 """
@@ -745,6 +746,7 @@ def minimal_transfer(
                     eliminated_projects.append(project)
                 return False
 
+            # Redistribute all support when current ratio would need to consume all
             for i in donors_of_selected_project:
                 donor = donors[i]
                 donation = donor.get(chosen_project, 0)
@@ -768,6 +770,7 @@ def minimal_transfer(
                 #                " issues with floating point arithmetic.")
                 break
 
+    # Correction for (potentail) fraction inaccuracy
     diff = project_cost - sum(donor.get(chosen_project.name, 0) for donor in donors)
     if diff > 0:
         mn_supp = project_cost
