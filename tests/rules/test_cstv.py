@@ -709,4 +709,4 @@ class TestFunctions(unittest.TestCase):
                     })
 
 
-
+        pabutools.fractions.FRACTION = "gmpy2"
