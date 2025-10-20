@@ -89,7 +89,7 @@ def gini_coefficient(values: Iterable[Numeric]) -> Numeric:
     for v in values:
         if v < 0:
             raise ValueError(
-                "Negative values not supported by gini coefficient implementation."
+                "Negative values not supported by Gini coefficient implementation."
             )
         if all_nul and v > 0:
             all_nul = False
