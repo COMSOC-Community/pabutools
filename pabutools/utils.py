@@ -98,6 +98,7 @@ def gini_coefficient(values: Iterable[Numeric]) -> Numeric:
         return 0
     sorted_values: list[Numeric] = sorted(values)
     total_cum_sum: Numeric = 0
+    # Slightly different from Wikipedia because we start at 0
     for i, v in enumerate(sorted_values):
         total_cum_sum += v * (num_values - i)
     return frac(num_values + 1 - frac(2 * total_cum_sum, sum(values)), num_values)
