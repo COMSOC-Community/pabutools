@@ -8,7 +8,7 @@ import logging
 
 from collections.abc import Collection
 
-from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatusOptimal, value, PULP_CBC_CMD
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpStatusOptimal, value, HiGHS
 
 from pabutools.election import (
     Instance,
@@ -152,7 +152,7 @@ def _compute_optimal_load(projects, profile):
 
     prob += z  # Objective: minimize max load
 
-    status = prob.solve(PULP_CBC_CMD(msg=False))
+    status = prob.solve(HiGHS(msg=False))
 
     # This can mean a project that no one approves of for instance
     if status != LpStatusOptimal:

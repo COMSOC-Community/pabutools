@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Collection
 
-from pulp import LpProblem, LpMaximize, LpBinary, LpVariable, lpSum, PULP_CBC_CMD, value
+from pulp import LpProblem, LpMaximize, LpBinary, LpVariable, lpSum, value, HiGHS
 
 from pabutools.utils import Numeric
 
@@ -794,7 +794,7 @@ class Additive_Cardinal_Relative_Sat(AdditiveSatisfaction):
             # Budget constraint
             mip_model += lpSum(p_vars[p] * p.cost for p in instance) <= instance.budget_limit
 
-            mip_model.solve(PULP_CBC_CMD(msg=False))
+            mip_model.solve(HiGHS(msg=False))
 
             res = value(mip_model.objective)
 

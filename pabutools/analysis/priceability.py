@@ -417,7 +417,7 @@ def priceable(
     else:
         model += 0  # No-op objective if none is specified
 
-    solver = pulp.PULP_CBC_CMD(msg=verbose, timeLimit=max_seconds)
+    solver = pulp.HiGHS(msg=verbose, timeLimit=max_seconds)
     status = model.solve(solver)
 
     if status not in [pulp.LpStatusOptimal]:
