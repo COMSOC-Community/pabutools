@@ -15,30 +15,27 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <script src="../../../../_static/documentation_options.js?v=db04a367"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../../_static/documentation_options.js?v=cc702301"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +44,6 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0" />
   </head>
   
   
@@ -63,8 +59,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../../search.html"
       method="get">
@@ -72,6 +79,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -79,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -98,8 +106,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -129,11 +136,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
@@ -243,16 +254,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -283,40 +302,40 @@
 <span class="sd">Additive satisfaction measures.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Collection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Collection</span>
 
-<span class="kn">from</span> <span class="nn">pulp</span> <span class="kn">import</span> <span class="n">LpProblem</span><span class="p">,</span> <span class="n">LpMaximize</span><span class="p">,</span> <span class="n">LpBinary</span><span class="p">,</span> <span class="n">LpVariable</span><span class="p">,</span> <span class="n">lpSum</span><span class="p">,</span> <span class="n">PULP_CBC_CMD</span><span class="p">,</span> <span class="n">value</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pulp</span><span class="w"> </span><span class="kn">import</span> <span class="n">LpProblem</span><span class="p">,</span> <span class="n">LpMaximize</span><span class="p">,</span> <span class="n">LpBinary</span><span class="p">,</span> <span class="n">LpVariable</span><span class="p">,</span> <span class="n">lpSum</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">HiGHS</span>
 
-<span class="kn">from</span> <span class="nn">pabutools.utils</span> <span class="kn">import</span> <span class="n">Numeric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Numeric</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">pabutools.election.satisfaction.satisfactionmeasure</span> <span class="kn">import</span> <span class="n">SatisfactionMeasure</span>
-<span class="kn">from</span> <span class="nn">pabutools.election.ballot</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.satisfaction.satisfactionmeasure</span><span class="w"> </span><span class="kn">import</span> <span class="n">SatisfactionMeasure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.ballot</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AbstractBallot</span><span class="p">,</span>
     <span class="n">AbstractApprovalBallot</span><span class="p">,</span>
     <span class="n">AbstractCardinalBallot</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pabutools.election.instance</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.instance</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Instance</span><span class="p">,</span>
     <span class="n">Project</span><span class="p">,</span>
     <span class="n">total_cost</span><span class="p">,</span>
     <span class="n">max_budget_allocation_cardinality</span><span class="p">,</span>
     <span class="n">max_budget_allocation_cost</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pabutools.fractions</span> <span class="kn">import</span> <span class="n">frac</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">frac</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pabutools.election.profile</span> <span class="kn">import</span> <span class="n">AbstractProfile</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pabutools.election.profile</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractProfile</span>
 
 
 <div class="viewcode-block" id="AdditiveSatisfaction">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction">[docs]</a>
-<span class="k">class</span> <span class="nc">AdditiveSatisfaction</span><span class="p">(</span><span class="n">SatisfactionMeasure</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AdditiveSatisfaction</span><span class="p">(</span><span class="n">SatisfactionMeasure</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class representing additive satisfaction measures, that is, satisfaction functions for which the total</span>
 <span class="sd">    satisfaction is exactly the sum of the satisfaction of the individual projects. To speed up computations,</span>
@@ -349,7 +368,7 @@
 <span class="sd">            A dictionary of precomputed values. Initialised via the `preprocessing` method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
         <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
@@ -365,7 +384,7 @@
 
 <div class="viewcode-block" id="AdditiveSatisfaction.preprocessing">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction.preprocessing">[docs]</a>
-    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -391,7 +410,7 @@
 
 <div class="viewcode-block" id="AdditiveSatisfaction.get_project_sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction.get_project_sat">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_project_sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_project_sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given a project, computes the corresponding satisfaction. Stores the score after computation to avoid</span>
 <span class="sd">        re-computing it.</span>
@@ -422,19 +441,19 @@
 
 <div class="viewcode-block" id="AdditiveSatisfaction.sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction.sat">[docs]</a>
-    <span class="k">def</span> <span class="nf">sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Project</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_project_sat</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proj</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AdditiveSatisfaction.sat_project">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.AdditiveSatisfaction.sat_project">[docs]</a>
-    <span class="k">def</span> <span class="nf">sat_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sat_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Numeric</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_sat</span><span class="p">(</span><span class="n">project</span><span class="p">)</span></div>
 </div>
 
 
 
-<span class="k">def</span> <span class="nf">cardinality_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cardinality_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -468,7 +487,7 @@
 
 <div class="viewcode-block" id="Cardinality_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Cardinality_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Cardinality_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cardinality_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The cardinality satisfaction for ballots. It is equal to the number of selected projects appearing in the ballot.</span>
 <span class="sd">    It applies to all ballot types that support the `in` operator.</span>
@@ -483,7 +502,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="n">AdditiveSatisfaction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -492,7 +511,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">relative_cardinality_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">relative_cardinality_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -532,7 +551,7 @@
 
 <div class="viewcode-block" id="Relative_Cardinality_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cardinality_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Relative_Cardinality_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Relative_Cardinality_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The cardinality satisfaction for ballots. If the project appears in the ballot, it is equal</span>
 <span class="sd">    to 1 divided by the largest number of projects from the ballot that can be selected in any budget allocation. If the</span>
@@ -549,7 +568,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="n">AdditiveSatisfaction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -558,7 +577,7 @@
 
 <div class="viewcode-block" id="Relative_Cardinality_Sat.preprocessing">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cardinality_Sat.preprocessing">[docs]</a>
-    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -570,7 +589,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">cost_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cost_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -604,7 +623,7 @@
 
 <div class="viewcode-block" id="Cost_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Cost_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Cost_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cost_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The cost satisfaction for ballots. It is equal to the total cost of the selected projects appearing in the ballot.</span>
 <span class="sd">    It applies to all ballot types that support the `in` operator.</span>
@@ -619,14 +638,14 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="n">AdditiveSatisfaction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">cost_sat_func</span><span class="p">)</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">relative_cost_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">relative_cost_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -666,7 +685,7 @@
 
 <div class="viewcode-block" id="Relative_Cost_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cost_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Relative_Cost_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Relative_Cost_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The relative cost satisfaction for ballots. It is equal to the total cost of the selected projects appearing in the</span>
 <span class="sd">    ballot, divided by the total cost of the most expensive subset of projects appearing in the ballot. It applies to</span>
@@ -682,7 +701,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="n">AdditiveSatisfaction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -691,7 +710,7 @@
 
 <div class="viewcode-block" id="Relative_Cost_Sat.preprocessing">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cost_Sat.preprocessing">[docs]</a>
-    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -703,7 +722,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">relative_cost_approx_normaliser_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">relative_cost_approx_normaliser_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -740,7 +759,7 @@
 
 <div class="viewcode-block" id="Relative_Cost_Approx_Normaliser_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cost_Approx_Normaliser_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Relative_Cost_Approx_Normaliser_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Relative_Cost_Approx_Normaliser_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The cost relative satisfaction for ballots, used with an approximate normaliser (since the exact version can take</span>
 <span class="sd">    long to compute). It is equal to the total cost of the selected projects appearing in the ballot,</span>
@@ -757,7 +776,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="n">AdditiveSatisfaction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -766,7 +785,7 @@
 
 <div class="viewcode-block" id="Relative_Cost_Approx_Normaliser_Sat.preprocessing">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Relative_Cost_Approx_Normaliser_Sat.preprocessing">[docs]</a>
-    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -776,7 +795,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">add_cost_sqrt_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_cost_sqrt_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -811,7 +830,7 @@
 
 <div class="viewcode-block" id="Additive_Cost_Sqrt_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cost_Sqrt_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Additive_Cost_Sqrt_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Additive_Cost_Sqrt_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additive cost square root satisfaction. It is equal to the sum over the approved and selected projects of the square</span>
 <span class="sd">    root of their costs. It can be applied to all ballot format supporting the `in` operator.</span>
@@ -826,7 +845,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ballot</span><span class="p">,</span> <span class="n">AbstractApprovalBallot</span><span class="p">):</span>
@@ -842,7 +861,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">additive_cost_log_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">additive_cost_log_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -877,7 +896,7 @@
 
 <div class="viewcode-block" id="Additive_Cost_Log_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cost_Log_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Additive_Cost_Log_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Additive_Cost_Log_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additive cost log satisfaction. It is equal to the sum over the approved and selected projects of the log of 1 plus</span>
 <span class="sd">    the cost of the projects. It can be applied to all ballot format supporting the `in` operator.</span>
@@ -892,7 +911,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ballot</span><span class="p">,</span> <span class="n">AbstractApprovalBallot</span><span class="p">):</span>
@@ -908,7 +927,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">effort_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">effort_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span><span class="p">,</span>
@@ -945,7 +964,7 @@
 
 <div class="viewcode-block" id="Effort_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Effort_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Effort_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Effort_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The effort satisfaction. It is equal to the sum over the selected projects appearing in the</span>
 <span class="sd">    ballot of the cost of the project divided by the number of voters who included the project in their ballot. It</span>
@@ -961,14 +980,14 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractBallot</span>
     <span class="p">):</span>
         <span class="n">AdditiveSatisfaction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">ballot</span><span class="p">,</span> <span class="n">effort_sat_func</span><span class="p">)</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">additive_card_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">additive_card_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractCardinalBallot</span><span class="p">,</span>
@@ -1001,7 +1020,7 @@
 
 <div class="viewcode-block" id="Additive_Cardinal_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cardinal_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Additive_Cardinal_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Additive_Cardinal_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The additive satisfaction for cardinal ballots. It is equal to the sum over the selected projects appearing in the</span>
 <span class="sd">    ballot of the score assigned to the project by the voter. It only applies to cardinal ballots.</span>
@@ -1016,7 +1035,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
         <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
@@ -1035,7 +1054,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">additive_card_relative_sat_func</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">additive_card_relative_sat_func</span><span class="p">(</span>
     <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
     <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
     <span class="n">ballot</span><span class="p">:</span> <span class="n">AbstractCardinalBallot</span><span class="p">,</span>
@@ -1073,7 +1092,7 @@
 
 <div class="viewcode-block" id="Additive_Cardinal_Relative_Sat">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cardinal_Relative_Sat">[docs]</a>
-<span class="k">class</span> <span class="nc">Additive_Cardinal_Relative_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Additive_Cardinal_Relative_Sat</span><span class="p">(</span><span class="n">AdditiveSatisfaction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The relative additive satisfaction for cardinal ballots. It is equal to the sum over the selected projects appearing</span>
 <span class="sd">    in the ballot of the score assigned to the project by the voter, divided by the highest total score achievable by</span>
@@ -1089,7 +1108,7 @@
 <span class="sd">            The ballot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
         <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
@@ -1108,7 +1127,7 @@
 
 <div class="viewcode-block" id="Additive_Cardinal_Relative_Sat.preprocessing">
 <a class="viewcode-back" href="../../../../reference/election/satisfaction.html#pabutools.election.satisfaction.additivesatisfaction.Additive_Cardinal_Relative_Sat.preprocessing">[docs]</a>
-    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">instance</span><span class="p">:</span> <span class="n">Instance</span><span class="p">,</span>
         <span class="n">profile</span><span class="p">:</span> <span class="n">AbstractProfile</span><span class="p">,</span>
@@ -1130,7 +1149,7 @@
             <span class="c1"># Budget constraint</span>
             <span class="n">mip_model</span> <span class="o">+=</span> <span class="n">lpSum</span><span class="p">(</span><span class="n">p_vars</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">cost</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">instance</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">instance</span><span class="o">.</span><span class="n">budget_limit</span>
 
-            <span class="n">mip_model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">PULP_CBC_CMD</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">mip_model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">HiGHS</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
             <span class="n">res</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">mip_model</span><span class="o">.</span><span class="n">objective</span><span class="p">)</span>
 
@@ -1199,8 +1218,8 @@ By Simon Rey, Grzegorz Pierczyński, Markus Utke and Piotr Skowron
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

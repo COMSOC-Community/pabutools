@@ -444,3 +444,19 @@ def write_pabulib(instance: Instance, profile: AbstractProfile, file_path: str) 
 
     with open(file_path, "w", encoding="utf-8-sig") as f:
         f.write(election_as_pabulib_string(instance, profile))
+
+
+def num_projects_of_pabulib_file(file_path):
+    """Reads the header of a pabulib file to find the number of projects. Useful to avoid to parse the whole file when
+    only the number of project is needed (to sort files for instances).
+
+    Parameters
+    ----------
+        file_path: str
+            The path to the pabulib file.
+    """
+    with open(file_path, encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("num_projects"):
+                return int(line.split(";")[-1].strip())
+    return 0

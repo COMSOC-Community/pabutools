@@ -31,7 +31,8 @@ dependencies = [
     "preflibtools>=2.0.33",
     "natsort",
     "pulp",
-    "highspy"
+    "highspy",
+    "networkx"
 ]
 
 [project.optional-dependencies]

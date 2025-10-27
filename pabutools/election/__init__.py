@@ -5,7 +5,7 @@ from pabutools.election.instance import (
     max_budget_allocation_cost,
     max_budget_allocation_cardinality,
 )
-from pabutools.election.pabulib import parse_pabulib, write_pabulib
+from pabutools.election.pabulib import parse_pabulib, write_pabulib, num_projects_of_pabulib_file
 
 from pabutools.election.profile import *
 from pabutools.election.ballot import *
