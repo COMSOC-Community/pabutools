@@ -1,4 +1,4 @@
-from pulp import LpProblem, LpMaximize, LpBinary, LpVariable, lpSum, PULP_CBC_CMD, value
+from pulp import LpProblem, LpMaximize, LpBinary, LpVariable, lpSum, value, HiGHS
 
 from pabutools.election import Instance, AbstractApprovalProfile
 from pabutools.fractions import frac
@@ -76,7 +76,7 @@ def min_distance_to_fair_share(instance: Instance, profile: AbstractApprovalProf
         mip_model += share_abs_vars[i] >= share_vars[i] - float(ballot_fairshare)
         mip_model += share_abs_vars[i] >= float(ballot_fairshare) - share_vars[i]
 
-    mip_model.solve(PULP_CBC_CMD(msg=False))
+    mip_model.solve(HiGHS(msg=False))
 
     return value(mip_model.objective)
 

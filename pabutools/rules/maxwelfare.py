@@ -9,7 +9,7 @@ from collections.abc import Collection, Iterable
 
 import math
 
-from pulp import LpProblem, LpMaximize, LpVariable, LpBinary, lpSum, PULP_CBC_CMD, value, LpStatusOptimal
+from pulp import LpProblem, LpMaximize, LpVariable, LpBinary, lpSum, value, LpStatusOptimal, HiGHS
 
 from pabutools.election import (
     Instance,
@@ -83,7 +83,7 @@ def max_additive_utilitarian_welfare_ilp_scheme(
     available_budget = instance.budget_limit - total_cost(initial_budget_allocation)
     mip_model += lpSum(p_vars[p] * p.cost for p in p_vars) <= available_budget
 
-    mip_model.solve(PULP_CBC_CMD(msg=False))
+    mip_model.solve(HiGHS(msg=False))
     opt_value = value(mip_model.objective)
 
     # First allocation
@@ -113,7 +113,7 @@ def max_additive_utilitarian_welfare_ilp_scheme(
                         lpSum(p_vars[p] for p in p_vars if p not in previous_partial_alloc)
                 ) <= len(previous_partial_alloc) - 1
 
-        mip_model.solve(PULP_CBC_CMD(msg=False))
+        mip_model.solve(HiGHS(msg=False))
 
         if mip_model.status != LpStatusOptimal:
             break

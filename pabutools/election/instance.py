@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Collection, Generator
 
-from pulp import LpProblem, LpMaximize, LpVariable, LpBinary, lpSum, PULP_CBC_CMD, LpStatusOptimal, value
+from pulp import LpProblem, LpMaximize, LpVariable, LpBinary, lpSum, LpStatusOptimal, value, HiGHS
 
 from pabutools.utils import Numeric
 
@@ -185,7 +185,7 @@ def max_budget_allocation_cost(
     mip_model += lpSum(p_vars[p] * p.cost for p in projects) <= budget_limit
 
     # Solve the model
-    mip_model.solve(PULP_CBC_CMD(msg=False))
+    mip_model.solve(HiGHS(msg=False))
 
     if mip_model.status == LpStatusOptimal:
         max_cost = value(mip_model.objective)

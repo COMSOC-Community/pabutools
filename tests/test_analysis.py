@@ -29,6 +29,12 @@ from pabutools.rules.mes.mes_details import MESProjectDetails
 
 
 class TestAnalysis(TestCase):
+
+    def test_gini(self):
+        self.assertEqual(gini_coefficient([100 for _ in range(100)]), 0)
+        self.assertEqual(gini_coefficient([0, 0, 0, 100, 100, 100]), frac(1, 2))
+        self.assertEqual(gini_coefficient([1] * 75 + [9] * 25), frac(1, 2))
+
     def test_satisfaction_properties(self):
         projects = [Project(str(i), 10 + i) for i in range(10)]
         instance = Instance(projects, budget_limit=90)
