@@ -253,55 +253,54 @@ class TestFunctions(unittest.TestCase):
 
             with self.subTest(combination=combination):
                 selected_projects = cstv(instance, donors, combination)
-                match combination:
-                    case CSTV_Combination.EWT | CSTV_Combination.EWTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[4], 
-                            projects[1], 
-                            projects[2], 
-                            projects[7], 
-                            projects[5], 
-                            projects[3],
-                            projects[6]
-                            })
-                    case CSTV_Combination.EWTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[4], 
-                            projects[1],  
-                            projects[6], 
-                            projects[3], 
-                            projects[5],
-                            projects[0]
-                            })
-                    case CSTV_Combination.MT:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[4], 
-                            projects[5],  
-                            projects[1], 
-                            projects[2],
-                            projects[7],
-                            projects[8],
-                            projects[3]
-                            })
-                    case CSTV_Combination.MTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[4], 
-                            projects[5],  
-                            projects[1], 
-                            projects[2],
-                            projects[6],
-                            projects[3],
-                            projects[7]
-                            })
-                    case CSTV_Combination.MTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[4], 
-                            projects[0],  
-                            projects[3],
-                            projects[6],
-                            projects[2],
-                            projects[5]
-                            })
+                if combination == CSTV_Combination.EWT or  combination == CSTV_Combination.EWTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[4], 
+                        projects[1], 
+                        projects[2], 
+                        projects[7], 
+                        projects[5], 
+                        projects[3],
+                        projects[6]
+                        })
+                elif combination == CSTV_Combination.EWTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[4], 
+                        projects[1],  
+                        projects[6], 
+                        projects[3], 
+                        projects[5],
+                        projects[0]
+                        })
+                elif combination ==  CSTV_Combination.MT:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[4], 
+                        projects[5],  
+                        projects[1], 
+                        projects[2],
+                        projects[7],
+                        projects[8],
+                        projects[3]
+                        })
+                elif combination == CSTV_Combination.MTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[4], 
+                        projects[5],  
+                        projects[1], 
+                        projects[2],
+                        projects[6],
+                        projects[3],
+                        projects[7]
+                        })
+                elif combination == CSTV_Combination.MTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[4], 
+                        projects[0],  
+                        projects[3],
+                        projects[6],
+                        projects[2],
+                        projects[5]
+                        })
 
     def test_cstv_laminal1(self):
         for combination in CSTV_Combination:
@@ -393,69 +392,68 @@ class TestFunctions(unittest.TestCase):
 
             with self.subTest(combination=combination):
                 selected_projects = cstv(instance, donors, combination)
-                match combination:
-                    case CSTV_Combination.EWT:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[6],  
-                            projects[7],
-                            projects[9],
-                            projects[10],
-                            projects[11],
-                            projects[4],
-                            projects[2],
-                            })
-                    case CSTV_Combination.EWTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[7],  
-                            projects[9],
-                            projects[6],
-                            projects[4],
-                            projects[1],
-                            projects[11],
-                            })
-                    case CSTV_Combination.EWTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[7],  
-                            projects[6],
-                            projects[1],
-                            projects[2],
-                            projects[11],
-                            })
-                    case CSTV_Combination.MT:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[6],  
-                            projects[9],
-                            projects[7],
-                            projects[10],
-                            projects[14],
-                            projects[4],
-                            projects[5],
-                            projects[13]
-                            })
-                    case CSTV_Combination.MTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[7],  
-                            projects[6],
-                            projects[9],
-                            projects[4],
-                            projects[11],
-                            projects[1],
-                            })
-                    case CSTV_Combination.MTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[1],  
-                            projects[7],
-                            projects[2],
-                            projects[13],
-                            projects[10],
-                            projects[6],
-                            })
+                if combination == CSTV_Combination.EWT:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[6],  
+                        projects[7],
+                        projects[9],
+                        projects[10],
+                        projects[11],
+                        projects[4],
+                        projects[2],
+                        })
+                elif combination == CSTV_Combination.EWTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[7],  
+                        projects[9],
+                        projects[6],
+                        projects[4],
+                        projects[1],
+                        projects[11],
+                        })
+                elif combination == CSTV_Combination.EWTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[7],  
+                        projects[6],
+                        projects[1],
+                        projects[2],
+                        projects[11],
+                        })
+                elif combination == CSTV_Combination.MT:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[6],  
+                        projects[9],
+                        projects[7],
+                        projects[10],
+                        projects[14],
+                        projects[4],
+                        projects[5],
+                        projects[13]
+                        })
+                elif combination == CSTV_Combination.MTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[7],  
+                        projects[6],
+                        projects[9],
+                        projects[4],
+                        projects[11],
+                        projects[1],
+                        })
+                elif combination == CSTV_Combination.MTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[1],  
+                        projects[7],
+                        projects[2],
+                        projects[13],
+                        projects[10],
+                        projects[6],
+                        })
     
     def test_cstv_laminal2(self):
         for combination in CSTV_Combination:
@@ -546,68 +544,67 @@ class TestFunctions(unittest.TestCase):
 
             with self.subTest(combination=combination):
                 selected_projects = cstv(instance, donors, combination)
-                match combination:
-                    case CSTV_Combination.EWT:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[12], 
-                            projects[0],  
-                            projects[8],
-                            projects[2],
-                            projects[7],
-                            projects[13],
-                            projects[11],
-                            projects[10],
-                            })
-                    case CSTV_Combination.EWTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[12], 
-                            projects[0],  
-                            projects[8],
-                            projects[2],
-                            projects[1],
-                            projects[13],
-                            projects[11],
-                            })
-                    case CSTV_Combination.EWTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[12], 
-                            projects[0],  
-                            projects[2],
-                            projects[1],
-                            projects[13],
-                            projects[4],
-                            })
-                    case CSTV_Combination.MT:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[12], 
-                            projects[0],  
-                            projects[8],
-                            projects[13],
-                            projects[11],
-                            projects[7],
-                            projects[10],
-                            projects[5],
-                            projects[14],
-                            })
-                    case CSTV_Combination.MTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[12], 
-                            projects[0],  
-                            projects[13],
-                            projects[8],
-                            projects[2],
-                            projects[1],
-                            projects[11],
-                            })
-                    case CSTV_Combination.MTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[12], 
-                            projects[0],  
-                            projects[1],
-                            projects[2],
-                            projects[13],
-                            projects[4],
-                            })
+                if combination == CSTV_Combination.EWT:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[12], 
+                        projects[0],  
+                        projects[8],
+                        projects[2],
+                        projects[7],
+                        projects[13],
+                        projects[11],
+                        projects[10],
+                        })
+                elif combination == CSTV_Combination.EWTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[12], 
+                        projects[0],  
+                        projects[8],
+                        projects[2],
+                        projects[1],
+                        projects[13],
+                        projects[11],
+                        })
+                elif combination == CSTV_Combination.EWTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[12], 
+                        projects[0],  
+                        projects[2],
+                        projects[1],
+                        projects[13],
+                        projects[4],
+                        })
+                elif combination == CSTV_Combination.MT:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[12], 
+                        projects[0],  
+                        projects[8],
+                        projects[13],
+                        projects[11],
+                        projects[7],
+                        projects[10],
+                        projects[5],
+                        projects[14],
+                        })
+                elif combination == CSTV_Combination.MTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[12], 
+                        projects[0],  
+                        projects[13],
+                        projects[8],
+                        projects[2],
+                        projects[1],
+                        projects[11],
+                        })
+                elif combination == CSTV_Combination.MTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[12], 
+                        projects[0],  
+                        projects[1],
+                        projects[2],
+                        projects[13],
+                        projects[4],
+                        })
 
     def test_cstv_EWT_v_MT(self):
         for combination in CSTV_Combination:
@@ -626,15 +623,14 @@ class TestFunctions(unittest.TestCase):
             )
             with self.subTest(combination=combination):
                 selected_projects = cstv(instance, donors, combination)
-                match combination:
-                    case CSTV_Combination.EWT | CSTV_Combination.EWTC | CSTV_Combination.EWTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[1], 
-                            })
-                    case CSTV_Combination.MT | CSTV_Combination.MTC | CSTV_Combination.MTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            })
+                if combination == CSTV_Combination.EWT or combination == CSTV_Combination.EWTC or combination == CSTV_Combination.EWTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[1], 
+                        })
+                elif combination == CSTV_Combination.MT or combination == CSTV_Combination.MTC or combination == CSTV_Combination.MTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        })
     
     def test_cstv_Greedy_difference(self):
         for combination in CSTV_Combination:
@@ -656,31 +652,30 @@ class TestFunctions(unittest.TestCase):
             )
             with self.subTest(combination=combination):
                 selected_projects = cstv(instance, donors, combination)
-                match combination:
-                    case CSTV_Combination.EWT | CSTV_Combination.MT:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[0], 
-                            projects[2], 
-                            projects[1], 
-                            projects[4],
-                            projects[5],
-                            })
-                    case CSTV_Combination.EWTC | CSTV_Combination.MTC:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[1], 
-                            projects[2], 
-                            projects[0], 
-                            projects[3],
-                            projects[5],
-                            })
-                    case CSTV_Combination.EWTS | CSTV_Combination.MTS:
-                        self.assertSetEqual(set(selected_projects), {
-                            projects[2], 
-                            projects[0], 
-                            projects[1], 
-                            projects[4],
-                            projects[3],
-                            })
+                if combination == CSTV_Combination.EWT or combination == CSTV_Combination.MT:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[0], 
+                        projects[2], 
+                        projects[1], 
+                        projects[4],
+                        projects[5],
+                        })
+                elif combination == CSTV_Combination.EWTC or combination == CSTV_Combination.MTC:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[1], 
+                        projects[2], 
+                        projects[0], 
+                        projects[3],
+                        projects[5],
+                        })
+                elif combination == CSTV_Combination.EWTS or combination == CSTV_Combination.MTS:
+                    self.assertSetEqual(set(selected_projects), {
+                        projects[2], 
+                        projects[0], 
+                        projects[1], 
+                        projects[4],
+                        projects[3],
+                        })
                         
     def test_cstv_small(self):
         for combination in CSTV_Combination:
