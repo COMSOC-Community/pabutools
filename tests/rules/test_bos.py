@@ -27,6 +27,26 @@ def test_over_budget_projects():
     assert bos_equal_shares(instance, profile) == []
 
 
+def test_large():
+    pA = Project("A", 300000)
+    pB = Project("B", 400000)
+    pC = Project("C", 300000)
+    pD = Project("D", 240000)
+    pE = Project("E", 170000)
+    pF = Project("F", 100000)
+
+    budget = 1000000
+
+    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
+
+    profile = ApprovalProfile([ApprovalBallot({pA}), ApprovalBallot({pA, pB, pC, pE}), ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}), ApprovalBallot({pA, pB, pC}), ApprovalBallot({pA, pB, pF}),
+                               ApprovalBallot({pD, pE}), ApprovalBallot({pD, pE}), ApprovalBallot({pD, pE, pF}),
+                               ApprovalBallot({pC, pD, pF})])
+
+    assert bos_equal_shares(instance, profile) == [pA, pC, pD, pF]
+
+
 def test_random():
     random.seed(42)
     budget = random.randint(5000, 50000)
