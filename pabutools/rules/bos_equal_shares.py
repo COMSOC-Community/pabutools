@@ -22,8 +22,3 @@ def bos_equal_shares(instance, profile):
         ['p1']
     """
     return []
-
-
-if __name__ == "__main__":
-
-    print(doctest.testmod())
