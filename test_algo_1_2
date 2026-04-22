@@ -1,0 +1,168 @@
+import numpy as np
+import random
+import unittest
+import  Fair_Lotteries_for_Participatory_Budgeting
+
+class TestAlgorithms(unittest.TestCase):
+    def test_raise(self):
+        N= []
+        C = ['a', 'b', 'c']
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 33000
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        
+        N = ['1', '2']
+        C = []
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 33000
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        
+        N = ['1', '2']
+        C = ['a', 'b', 'c']
+        cost = {}
+        B = 33000
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        
+        N = ['1', '2']
+        C = ['a', 'b', 'c']
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 0
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        N = ['1', '2']
+        C = ['a', 'b', 'c']
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 33000
+        ui = {}
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+
+        
+    def test_none_raise(self):
+        N = None
+        C = ['a', 'b', 'c']
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 33000
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+
+        N = ['1', '2']
+        C = None
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 33000
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        
+        N = ['1', '2']
+        C = ['a', 'b', 'c']
+        cost = None
+        B = 33000
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        
+        N = ['1', '2']
+        C = ['a', 'b', 'c']
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = None
+        ui = {
+            '1': {'a': 1, 'b': 1, 'c': 0},
+            '2': {'a': 0, 'b': 1, 'c': 1}
+        }
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        
+        N = ['1', '2']
+        C = ['a', 'b', 'c']
+        cost = {'a': 21000, 'b': 10000, 'c': 2000}
+        B = 33000
+        ui = None
+
+        with self.assertRaises(ValueError):
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+
+    def utility_of_group(self, S, chosen_projects, ui):
+        return sum(
+            max(ui[i][c] for i in S)  
+            for c in chosen_projects
+        )
+    def greedy_projects_for_group(self, S, C, cost, B, ui):
+        liked_projects = [c for c in C if any(ui[i][c] == 1 for i in S)]
+        liked_projects.sort(key=lambda c: cost[c])  # זול קודם
+
+        total = 0
+        Gs = []
+        for c in liked_projects:
+            if total + cost[c] <= B:
+                Gs.append(c)
+                total += cost[c]
+            else:
+                break
+        return Gs
+    
+    def is_unanimous(self, S, ui, C):
+        for c in C:
+            vals = [ui[i][c] for i in S]
+            if len(set(vals)) > 1:
+                return False
+        return True
+    
+    def test_Many_Projects_Many_Citizens(self):
+        N= np.arange(1, random.randint(10, 100))
+        C= np.arange(1, random.randint(10, 100))
+        cost = {c: random.randint(1, 1000) for c in C}
+        B = random.randint(1000, 20000)
+        ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
+        p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+
+        for name, projects in [("GCR", p1), ("MES", p2)]:
+            for _ in range(50):
+                S = random.sample(N, random.randint(1, len(N)))
+                if not self.is_unanimous(S, ui, C):
+                    continue
+
+                B_S = (len(S) / len(N)) * B
+
+                Gs = self.greedy_projects_for_group(S, C, cost, B_S, ui)
+                util_alg = self.utility_of_group(S, projects, ui)
+                util_gs = len(Gs)
+
+                self.assertGreaterEqual(
+                    util_alg,
+                    util_gs,
+                    msg=f"{name} failed for group {S}: alg={util_alg}, gs={util_gs}"
+                )
+
+if __name__ == '__main__':
+    unittest.main()
