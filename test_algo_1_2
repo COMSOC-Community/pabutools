@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import unittest
-import  Fair_Lotteries_for_Participatory_Budgeting
+import Fair_Lotteries_for_Participatory_Budgeting
 
 class TestAlgorithms(unittest.TestCase):
     def test_raise(self):
@@ -56,7 +56,6 @@ class TestAlgorithms(unittest.TestCase):
         with self.assertRaises(ValueError):
             Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
 
-        
     def test_none_raise(self):
         N = None
         C = ['a', 'b', 'c']
@@ -138,15 +137,15 @@ class TestAlgorithms(unittest.TestCase):
         return True
     
     def test_Many_Projects_Many_Citizens(self):
-        N= np.arange(1, random.randint(10, 100))
-        C= np.arange(1, random.randint(10, 100))
+        N= list(np.arange(1, random.randint(10, 100)))
+        C= list(np.arange(1, random.randint(10, 100)))
         cost = {c: random.randint(1, 1000) for c in C}
         B = random.randint(1000, 20000)
         ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
         p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
         p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
 
-        for name, projects in [("GCR", p1), ("MES", p2)]:
+        for name, projects in [("GCR", s1), ("MES", s2)]:
             for _ in range(50):
                 S = random.sample(N, random.randint(1, len(N)))
                 if not self.is_unanimous(S, ui, C):
@@ -162,6 +161,76 @@ class TestAlgorithms(unittest.TestCase):
                     util_alg,
                     util_gs,
                     msg=f"{name} failed for group {S}: alg={util_alg}, gs={util_gs}"
+                )
+
+    def utility_of_voter(self, i, chosen_projects, ui):
+        return sum(1 for c in chosen_projects if ui[i][c] == 1)
+
+    def can_afford_T(self, T, cost, B_S):
+        return sum(cost[c] for c in T) <= B_S
+    
+    def test_EJR_MES(self):
+        N = list(np.arange(1, random.randint(10, 40)))
+        C = list(np.arange(1, random.randint(10, 40)))
+
+        cost = {c: random.randint(1, 100) for c in C}
+        B = random.randint(500, 5000)
+
+        ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
+        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+        for _ in range(50):
+            k = random.randint(1, min(5, len(C)))
+            T = random.sample(C, k)
+            S = [i for i in N if all(ui[i][c] == 1 for c in T)]
+
+            if len(S) == 0:
+                continue
+            B_S = (len(S) / len(N)) * B
+
+            if not self.can_afford_T(T, cost, B_S):
+                continue
+
+            exists_satisfied = any(
+                self.utility_of_voter(i, s, ui) >= len(T)
+                for i in S
+            )
+            self.assertTrue(
+                exists_satisfied,
+                msg=f"EJR failed: S={S}, T={T}"
+            )
+
+    def test_FJR_GCR(self):
+            N = list(np.arange(1, random.randint(10, 40)))
+            C = list(np.arange(1, random.randint(10, 40)))
+            cost = {c: random.randint(1, 100) for c in C}
+            B = random.randint(500, 5000)
+            ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
+
+            p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+
+            for _ in range(60):
+                k = random.randint(1, min(5, len(C)))
+                T = random.sample(C, k)
+
+                beta = len(T)  
+                S = [i for i in N if all(ui[i][c] == 1 for c in T)]
+
+                if len(S) == 0:
+                    continue
+
+                B_S = (len(S) / len(N)) * B
+
+                if not self.can_afford_T(T, cost, B_S):
+                    continue
+
+                exists_satisfied = any(
+                    self.utility_of_voter(i, s, ui) >= beta
+                    for i in S
+                )
+
+                self.assertTrue(
+                    exists_satisfied,
+                    msg=f"FJR failed: S={S}, T={T}, beta={beta}"
                 )
 
 if __name__ == '__main__':

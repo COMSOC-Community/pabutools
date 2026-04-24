@@ -2,7 +2,7 @@
 An implentation of the algorithms in:
 "Fair Lotteries for Participatory Budgeting" 
 by Haris Aziz, Xinhang Lu, Mashbat Suzuki, Jeremy Vollen, Toby Walsh (2024) 
-
+https://ojs.aaai.org/index.php/AAAI/article/view/28801
 Programmers: Dotan Danino, Naama Yahav.
 Date: 19/4/2026
 """
@@ -89,9 +89,10 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, s
         >>> BW_GCR_PB(N, C, cost, B, ui)
         ([1.0, 1.0, 5/6], {'a', 'b'})
     """
+    return [[0]*len(C), set()]
 
 def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
-     """
+    """
     Algorithm 2: accepts an instance of PB and returns a probabilities vector and a set of projects that satisfy strong UFS and EJR.
     Args:
         N: A list of citizens.
@@ -158,5 +159,6 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, s
         }
         >>> BW_GCR_PB(N, C, cost, B, ui)
         ([1.0, 1.0, 1.0, 1.0, 1.0, 7/12, 1.0, 0.0, 1.0, 1.0], {'a', 'b', 'c', 'd', 'e', 'g', 'i', 'j'})
-
     """
+    return [[0]*len(C), set()]
+   
