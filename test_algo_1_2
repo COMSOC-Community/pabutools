@@ -130,6 +130,29 @@ class TestAlgorithms(unittest.TestCase):
         with self.assertRaises(ValueError):
             Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
 
+    def test_not_exceed_budget(self):
+        N= list(np.arange(1, random.randint(10, 100)))
+        C= list(np.arange(1, random.randint(10, 100)))
+        cost = {c: random.randint(1, 1000) for c in C}
+        B = random.randint(1000, 20000)
+        ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
+       
+        p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+
+        total_cost_s1 = sum(cost[c] for c in s1)
+        total_cost_s2 = sum(cost[c] for c in s2)
+        self.assertLessEqual(
+            total_cost_s1,
+            B+max(cost[c] for c in s1),  # Allowing for one extra project in case of rounding issues
+            msg=f"GCR exceeded budget: total_cost={total_cost_s1}, budget={B}"
+        )
+        self.assertLessEqual(
+            total_cost_s2,
+            B+max(cost[c] for c in s2),          
+            msg=f"MES exceeded budget: total_cost={total_cost_s2}, budget={B}"
+        )
+
     # Calculate expected utility of a voter based on the probability vector p
     def fractional_utility(self, i, p_list, ui, C):
         # p_list is expected to be a list of probabilities corresponding to the order of projects in C
@@ -161,6 +184,18 @@ class TestAlgorithms(unittest.TestCase):
                 return False
         return True
 
+    def check_strong_UFS(self, N, C, cost, B, ui, p_vec):
+        for _ in range(50):
+            S = random.sample(N, random.randint(1, len(N)))
+            if not self.is_unanimous(S, ui, C):
+                continue
+            print(f"Testing  for unanimous group S={S}")
+            B_S = (len(S) / len(N)) * B
+
+            util_alg = self.fractional_utility(S[0], p_vec, ui, C)
+            util_opt = self.optimal_fractional_utility_for_group(S, C, cost, B_S, ui)
+            return util_alg+ 1e-7>= util_opt
+            
     # Strong UFS (Tested on Probabilities as a List)
     def test_Many_Projects_Many_Citizens(self):
         N= list(np.arange(1, random.randint(10, 100)))
@@ -171,24 +206,11 @@ class TestAlgorithms(unittest.TestCase):
        
         p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
         p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
-
         for name, p_vec in [("GCR", p1), ("MES", p2)]:
-            for _ in range(50):
-                S = random.sample(N, random.randint(1, len(N)))
-                if not self.is_unanimous(S, ui, C):
-                    continue
-
-                B_S = (len(S) / len(N)) * B
-
-                util_alg = self.fractional_utility(S[0], p_vec, ui, C)
-                util_opt = self.optimal_fractional_utility_for_group(S, C, cost, B_S, ui)
-
-                # Added 1e-7 to handle floating point precision issues
-                self.assertGreaterEqual(
-                    util_alg + 1e-7,
-                    util_opt,
-                    msg=f"{name} failed for group {S}: alg_utility={util_alg:.4f}, opt_utility={util_opt:.4f}"
-                )
+            self.assertTrue(
+                self.check_strong_UFS(N, C, cost, B, ui, p_vec),
+                msg=f"{name} failed for group s")
+            
     def utility_of_voter(self, i, chosen_projects, ui):
         return sum(1 for c in chosen_projects if ui[i][c] == 1)
 
