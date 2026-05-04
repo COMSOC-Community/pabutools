@@ -515,3 +515,66 @@ def is_PJR_one_cardinal(
     return is_PJR_cardinal(
         instance, profile, budget_allocation, up_to_func=lambda x: max(x, default=0)
     )
+
+
+
+def check_FJR(self,N,cost,C,B,ui,s_vec):
+        for _ in range(60):
+            k = random.randint(1, min(5, len(C)))
+            T = random.sample(C, k)
+
+            # Test for multiple beta values instead of only beta = len(T)
+            for beta in range(1, len(T) + 1):
+                # Form group S where each voter approves AT LEAST beta projects in T
+                S = [i for i in N if sum(1 for c in T if ui[i][c] == 1) >= beta]
+
+                if len(S) == 0:
+                    continue
+
+                B_S = (len(S) / len(N)) * B
+
+                if not self.can_afford_T(T, cost, B_S):
+                    continue
+
+                exists_satisfied = any(
+                    self.utility_of_voter(i, s, ui) >= beta
+                    for i in S
+                )
+                if(not exists_satisfied):
+                    return False
+        return True
+
+
+def check_EJR(self,N,cost,C,B,ui,s_vec)
+        for _ in range(50):
+            k = random.randint(1, min(5, len(C)))
+            T = random.sample(C, k)
+            S = [i for i in N if all(ui[i][c] == 1 for c in T)]
+
+            if len(S) == 0:
+                continue
+            B_S = (len(S) / len(N)) * B
+
+            if not self.can_afford_T(T, cost, B_S):
+                continue
+
+            exists_satisfied = any(
+                self.utility_of_voter(i, s_vec, ui) >= len(T)
+                for i in S
+            )
+            if(not exists_satisfied):
+                return False
+        return True
+
+
+def check_strong_UFS(self, N, C, cost, B, ui, p_vec):
+    for _ in range(50):
+        S = random.sample(N, random.randint(1, len(N)))
+        if not self.is_unanimous(S, ui, C):
+            continue
+        print(f"Testing  for unanimous group S={S}")
+        B_S = (len(S) / len(N)) * B
+
+        util_alg = self.fractional_utility(S[0], p_vec, ui, C)
+        util_opt = self.optimal_fractional_utility_for_group(S, C, cost, B_S, ui)
+        return util_alg+ 1e-7>= util_opt

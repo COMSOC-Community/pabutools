@@ -217,16 +217,7 @@ class TestAlgorithms(unittest.TestCase):
     def can_afford_T(self, T, cost, B_S):
         return sum(cost[c] for c in T) <= B_S
    
-    def test_EJR_MES(self):
-        N = list(np.arange(1, random.randint(10, 40)))
-        C = list(np.arange(1, random.randint(10, 40)))
-
-        cost = {c: random.randint(1, 100) for c in C}
-        B = random.randint(500, 5000)
-
-        ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
-        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
-       
+    def check_EJR(self,N,cost,C,B,ui,s_vec)
         for _ in range(50):
             k = random.randint(1, min(5, len(C)))
             T = random.sample(C, k)
@@ -240,23 +231,29 @@ class TestAlgorithms(unittest.TestCase):
                 continue
 
             exists_satisfied = any(
-                self.utility_of_voter(i, s, ui) >= len(T)
+                self.utility_of_voter(i, s_vec, ui) >= len(T)
                 for i in S
             )
-            self.assertTrue(
-                exists_satisfied,
-                msg=f"EJR failed: S={S}, T={T}"
-            )
-
-    def test_FJR_GCR(self):
+            if(not exists_satisfied):
+                return False
+        return True
+    def test_EJR_MES(self):
         N = list(np.arange(1, random.randint(10, 40)))
         C = list(np.arange(1, random.randint(10, 40)))
+
         cost = {c: random.randint(1, 100) for c in C}
         B = random.randint(500, 5000)
+
         ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
+        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+       
+        self.assertTrue(
+            check_EJR(N,cost,C,B,ui,s),
+            msg=f"EJR failed"
+        )
 
-        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
 
+    def check_FJR(self,N,cost,C,B,ui,s_vec):
         for _ in range(60):
             k = random.randint(1, min(5, len(C)))
             T = random.sample(C, k)
@@ -278,11 +275,24 @@ class TestAlgorithms(unittest.TestCase):
                     self.utility_of_voter(i, s, ui) >= beta
                     for i in S
                 )
+                if(not exists_satisfied):
+                    return False
+        return True
 
-                self.assertTrue(
-                    exists_satisfied,
-                    msg=f"FJR failed: S={S}, T={T}, beta={beta}"
-                )
+
+    def test_FJR_GCR(self):
+        N = list(np.arange(1, random.randint(10, 40)))
+        C = list(np.arange(1, random.randint(10, 40)))
+        cost = {c: random.randint(1, 100) for c in C}
+        B = random.randint(500, 5000)
+        ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
+
+        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+       
+        self.assertTrue(
+            check_FJR(N,cost,C,B,ui,s),
+            msg=f"FJR failed: S={S}, T={T}, beta={beta}"
+        )
 
 if __name__ == '__main__':
     unittest.main()
