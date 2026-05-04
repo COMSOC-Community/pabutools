@@ -517,7 +517,7 @@ def is_PJR_one_cardinal(
     )
 
 
-
+import random
 def check_FJR(self,N,cost,C,B,ui,s_vec):
         for _ in range(60):
             k = random.randint(1, min(5, len(C)))
@@ -537,7 +537,7 @@ def check_FJR(self,N,cost,C,B,ui,s_vec):
                     continue
 
                 exists_satisfied = any(
-                    self.utility_of_voter(i, s, ui) >= beta
+                    self.utility_of_voter(i, s_vec, ui) >= beta
                     for i in S
                 )
                 if(not exists_satisfied):
@@ -545,7 +545,7 @@ def check_FJR(self,N,cost,C,B,ui,s_vec):
         return True
 
 
-def check_EJR(self,N,cost,C,B,ui,s_vec)
+def check_EJR(self,N,cost,C,B,ui,s_vec):
         for _ in range(50):
             k = random.randint(1, min(5, len(C)))
             T = random.sample(C, k)
