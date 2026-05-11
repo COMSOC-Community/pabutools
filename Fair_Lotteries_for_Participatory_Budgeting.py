@@ -289,10 +289,10 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     
     return p_vec_list
 
-def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> set:
+def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
     p_vec  = BW_GCR_PB(N,C,cost,B,ui)
     final_proj = dependent_rounding_bb1(p_vec,cost)
-    return final_proj
+    return p_vec,final_proj
 
 
 
@@ -479,10 +479,10 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     W_sorted = [c for c in C if c in W]
     return probabilities
 
-def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
+def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
     p_vec = BW_MES_PB(N,C,cost,B,ui)
     final_proj = dependent_rounding_bb1(p_vec,cost)
-    return final_proj
+    return p_vec,final_proj
 
 if __name__ == "__main__":
     import doctest

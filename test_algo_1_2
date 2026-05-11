@@ -14,9 +14,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
        
         N = ['1', '2']
         C = []
@@ -27,9 +27,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
        
         N = ['1', '2']
         C = ['a', 'b', 'c']
@@ -40,9 +40,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
        
         N = ['1', '2']
         C = ['a', 'b', 'c']
@@ -53,9 +53,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
            
         N = ['1', '2']
         C = ['a', 'b', 'c']
@@ -63,9 +63,9 @@ class TestAlgorithms(unittest.TestCase):
         B = 33000
         ui = {}
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
 
     def test_none_raise(self):
         N = None
@@ -77,9 +77,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
 
         N = ['1', '2']
         C = None
@@ -90,9 +90,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
 
         N = ['1', '2']
         C = ['a', 'b', 'c']
@@ -103,9 +103,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
        
         N = ['1', '2']
         C = ['a', 'b', 'c']
@@ -116,9 +116,9 @@ class TestAlgorithms(unittest.TestCase):
             '2': {'a': 0, 'b': 1, 'c': 1}
         }
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
        
         N = ['1', '2']
         C = ['a', 'b', 'c']
@@ -126,9 +126,9 @@ class TestAlgorithms(unittest.TestCase):
         B = 33000
         ui = None
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
         with self.assertRaises(ValueError):
-            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+            Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
 
     def test_not_exceed_budget(self):
         N= list(np.arange(1, random.randint(10, 100)))
@@ -137,8 +137,8 @@ class TestAlgorithms(unittest.TestCase):
         B = random.randint(1000, 20000)
         ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
        
-        p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
-        p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+        p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
+        p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
 
         total_cost_s1 = sum(cost[c] for c in s1)
         total_cost_s2 = sum(cost[c] for c in s2)
@@ -204,8 +204,8 @@ class TestAlgorithms(unittest.TestCase):
         B = random.randint(1000, 20000)
         ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
        
-        p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
-        p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+        p1, s1 = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
+        p2, s2 = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
         for name, p_vec in [("GCR", p1), ("MES", p2)]:
             self.assertTrue(
                 self.check_strong_UFS(N, C, cost, B, ui, p_vec),
@@ -246,7 +246,7 @@ class TestAlgorithms(unittest.TestCase):
         B = random.randint(500, 5000)
 
         ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
-        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB(N, C, cost, B, ui)
+        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_MES_PB_wrapped(N, C, cost, B, ui)
        
         self.assertTrue(
             self.check_EJR(N,cost,C,B,ui,s),
@@ -288,7 +288,7 @@ class TestAlgorithms(unittest.TestCase):
         B = random.randint(500, 5000)
         ui = {n: {c: random.randint(0, 1) for c in C} for n in N}
 
-        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB(N, C, cost, B, ui)
+        p, s = Fair_Lotteries_for_Participatory_Budgeting.BW_GCR_PB_wrapped(N, C, cost, B, ui)
        
         self.assertTrue(
             self.check_FJR(N,cost,C,B,ui,s),
