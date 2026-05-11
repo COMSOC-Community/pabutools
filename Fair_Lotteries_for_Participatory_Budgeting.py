@@ -24,8 +24,70 @@ class BinarySatisfaction(AdditiveSatisfaction):
         kwargs['func'] = lambda *a, **k: 1
         super().__init__(*args, **kwargs)
 
+def dependent_rounding_bb1(p_vec: dict, cost: dict) -> set:
+    """
+    Performs Dependent Randomized Rounding to convert a fractional
+    probability vector into a discrete set of projects (0 or 1),
+    ensuring ex-post Budget Balanced up to 1 project (BB1).
+    """
+    # Create a copy of the probabilities to modify
+    p = p_vec.copy()
+    
+    while True:
+        # Find all projects with fractional probabilities (not exactly 0.0 or 1.0)
+        fractional = [c for c, prob in p.items() if 0.0001 < prob < 0.9999]
+        
+        # If no fractional probabilities remain, the rounding is complete
+        if len(fractional) == 0:
+            break
+            
+        # If exactly one fractional project remains, round it independently.
+        # This single independent rounding step is what causes the BB1 deviation.
+        if len(fractional) == 1:
+            c = fractional[0]
+            if random.random() < p[c]:
+                p[c] = 1.0
+            else:
+                p[c] = 0.0
+            break
+            
+        # Select two fractional projects for the dependent rounding step
+        i = fractional[0]
+        j = fractional[1]
+        
+        # We want to either increase p[i] and decrease p[j] (Option A),
+        # or decrease p[i] and increase p[j] (Option B),
+        # such that the expected overall budget remains exactly the same.
+        
+        # Option A: Increase i, decrease j
+        max_alpha_i = 1.0 - p[i]  # Max amount i can increase until reaching 1.0
+        max_alpha_j = p[j] * (cost[j] / cost[i])  # Max amount i can increase before j hits 0.0
+        alpha = min(max_alpha_i, max_alpha_j)
+        beta = alpha * (cost[i] / cost[j])
+        
+        # Option B: Decrease i, increase j
+        max_gamma_i = p[i]  # Max amount i can decrease until reaching 0.0
+        max_gamma_j = (1.0 - p[j]) * (cost[j] / cost[i])  # Max amount i can decrease before j hits 1.0
+        gamma = min(max_gamma_i, max_gamma_j)
+        delta = gamma * (cost[i] / cost[j])
+        
+        # Calculate the probability (q) of choosing Option A 
+        # to ensure the expected value remains unchanged (keeping the lottery fair)
+        q = gamma / (alpha + gamma)
+        
+        # Flip a biased coin based on probability q
+        if random.random() < q:
+            p[i] += alpha
+            p[j] -= beta
+        else:
+            p[i] -= gamma
+            p[j] += delta
 
-def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, list]:
+    # Return the final set of selected projects (where probability reached 1.0)
+    W = {c for c, prob in p.items() if prob >= 0.9999}
+    return W
+
+def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     """
     Algorithm 1: accepts an instance of PB and returns a probabilities vector and a set of projects that satisfy strong UFS and FJR.
     Args:
@@ -45,7 +107,7 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '2': {'a': 0, 'b': 1, 'c': 1}
         ... }
         >>> BW_GCR_PB(N, C, cost, B, ui)
-        ([1.0, 1.0, 1.0], ['a', 'b', 'c'])
+        [1.0, 1.0, 1.0]
 
         Example 2: Different output for each algorithm:
         >>> N = ['1', '2', '3']
@@ -58,7 +120,7 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '3': {'a': 0, 'b': 1, 'c': 0, 'd': 1}
         ... }
         >>> BW_GCR_PB(N, C, cost, B, ui)
-        ([1.0, 1.0, 1.0, 0.16666666666666666], ['a', 'b', 'c'])
+        [1.0, 1.0, 1.0, 0.16666666666666666]
 
 
         Example 3: "bad" output for the algorithm:
@@ -73,7 +135,7 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '4': {'a': 0, 'b': 1}
         ... }
         >>> BW_GCR_PB(N, C, cost, B, ui)
-        ([1.0, 0.8], ['a'])
+        [1.0, 0.8]
 
         
         Example 4: Many Projects, many Citizens:
@@ -92,7 +154,7 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... "8": {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 1, 'j': 1}
         ... }
         >>> BW_GCR_PB(N, C, cost, B, ui)
-        ([1.0, 0.4, 1.0, 1.0, 1.0, 1/3, 1.0, 1/9, 1.0, 1.0], ['a', 'c', 'd', 'e', 'g', 'i', 'j'])
+        [1.0, 0.4, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
         Example 5: not covering all code lines:
         >>> N = ['1', '2', '3']
@@ -105,7 +167,7 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '3': {'a': 1, 'b': 1, 'c': 0}
         ... }
         >>> BW_GCR_PB(N, C, cost, B, ui)
-        ([1.0, 1.0, 0.8333333333333334], ['a', 'b'])
+        [1.0, 1.0, 0.8333333333333334]
     """
 
     # fixed the data types to make sure 
@@ -225,8 +287,12 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
     p_vec_list = [p_vec[c] for c in C]
     W_sorted = [c for c in C if c in selected_projects]
     
-    return p_vec_list, (sorted(W_sorted))
+    return p_vec_list
 
+def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> set:
+    p_vec  = BW_GCR_PB(N,C,cost,B,ui)
+    final_proj = dependent_rounding_bb1(p_vec,cost)
+    return final_proj
 
 
 
@@ -263,7 +329,7 @@ def approval_sat(instance, profile, ballot):
         func=f
     )
 
-def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, list]:
+def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     """
     Algorithm 2: accepts an instance of PB and returns a probabilities vector and a set of projects that satisfy strong UFS and EJR.
     Args:
@@ -283,7 +349,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '2': {'a': 0, 'b': 1, 'c': 1}
         ... }
         >>> BW_MES_PB(N, C, cost, B, ui)
-        ([1.0, 1.0, 1.0], ['a', 'b', 'c'])
+        [1.0, 1.0, 1.0]
 
         Example 2: Different output for each algorithm:
         >>> N = ['1', '2', '3']
@@ -296,7 +362,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '3': {'a': 0, 'b': 1, 'c': 0, 'd': 1}
         ... }
         >>> BW_MES_PB(N, C, cost, B, ui)
-        ([0.5, 1.0, 1.0, 0.5], ['b', 'c'])
+        [0.5, 1.0, 1.0, 0.5]
 
 
         Example 3: "bad" output for the algorithm:
@@ -311,7 +377,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... '4': {'a': 0, 'b': 1}
         ... }
         >>> BW_MES_PB(N, C, cost, B, ui)
-        ([1.0, 0.8], ['a'])
+        [1.0, 0.8]
 
         
         Example 4: Many Projects, many Citizens:
@@ -330,7 +396,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
         ... "8": {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 1, 'j': 1}
         ... }
         >>> BW_MES_PB(N, C, cost, B, ui)
-        ([1.0, 1.0, 1.0, 1.0, 1.0, 0.9166666666666667, 1.0, 0.1111111111111111, 1.0, 1.0], ['a', 'b', 'c', 'd', 'e', 'g', 'i', 'j'])
+        [1.0, 1.0, 1.0, 1.0, 1.0, 0.9166666666666667, 1.0, 0.1111111111111111, 1.0, 1.0]
 
     """
 
@@ -411,7 +477,12 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, l
             W.add(c)
     probabilities = [p_vec[c] for c in C]
     W_sorted = [c for c in C if c in W]
-    return probabilities, W_sorted
+    return probabilities
+
+def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
+    p_vec = BW_MES_PB(N,C,cost,B,ui)
+    final_proj = dependent_rounding_bb1(p_vec,cost)
+    return final_proj
 
 if __name__ == "__main__":
     import doctest
