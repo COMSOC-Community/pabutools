@@ -290,10 +290,36 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     return p_vec_list
 
 def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
-    p_vec  = BW_GCR_PB(N,C,cost,B,ui)
+    # Check whether one of the parameters is None, and raise a ValueError
+    if(N is None or C is None or cost is None or B is None or ui is None):
+        raise ValueError("One or more of the patameters is null")
+    # Check whether one of the parameters is empty, and raise a ValueError
+    if(len(N)==0 or len(C)==0 or len(cost)==0 or B==0 or len(ui)==0):
+        raise ValueError("One or more of the patameters is empty")
+    
+    # Check whether the parameters are the same as the annotations 
+    annotations= BW_GCR_PB_wrapped.__annotations__
+    local_vars= locals()
+    for x in annotations.keys():
+        if x == "return":
+            continue
+        if(type(local_vars[x]) != annotations[x]):
+            raise ValueError(f"Parameter {x} is not of the expected type {annotations[x]}")
+    
+    p_vec = BW_GCR_PB(N,C,cost,B,ui)
     final_proj = dependent_rounding_bb1(p_vec,C,cost)
     return p_vec,final_proj
 
+def clean_number(x):
+    """
+    Convert numpy/int-like/float-like values into regular Python int or float.
+    """
+    x = float(x)
+
+    if x.is_integer():
+        return int(x)
+
+    return x
 
 def build_instance(C, cost, B):
     projects = []
@@ -301,7 +327,7 @@ def build_instance(C, cost, B):
     for c in C:
         projects.append(Project(c, cost[c]))
 
-    return Instance(projects, budget_limit=B)
+    return Instance(projects, budget_limit=clean_number(B))
 
 def build_profile(N, ui, instance):
 
@@ -480,6 +506,22 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     return probabilities
 
 def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
+    # Check whether one of the parameters is None, and raise a ValueError
+    if(N is None or C is None or cost is None or B is None or ui is None):
+        raise ValueError("One or more of the patameters is null")
+    # Check whether one of the parameters is empty, and raise a ValueError
+    if(len(N)==0 or len(C)==0 or len(cost)==0 or B==0 or len(ui)==0):
+        raise ValueError("One or more of the patameters is empty")
+    
+    # Check whether the parameters are the same as the annotations 
+    annotations= BW_MES_PB_wrapped.__annotations__
+    local_vars= locals()
+    for x in annotations.keys():
+        if x == "return":
+            continue
+        if(type(local_vars[x]) != annotations[x]):
+            raise ValueError(f"Parameter {x} is not of the expected type {annotations[x]}")
+    
     p_vec = BW_MES_PB(N,C,cost,B,ui)
     final_proj = dependent_rounding_bb1(p_vec,C,cost)
     return p_vec,final_proj
