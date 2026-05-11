@@ -24,14 +24,14 @@ class BinarySatisfaction(AdditiveSatisfaction):
         kwargs['func'] = lambda *a, **k: 1
         super().__init__(*args, **kwargs)
 
-def dependent_rounding_bb1(p_vec: dict, cost: dict) -> set:
+def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> set:
     """
     Performs Dependent Randomized Rounding to convert a fractional
     probability vector into a discrete set of projects (0 or 1),
     ensuring ex-post Budget Balanced up to 1 project (BB1).
     """
-    # Create a copy of the probabilities to modify
-    p = p_vec.copy()
+    # Create a dictionary internally for easier tracking by project name
+    p = {C[i]: p_vec_list[i] for i in range(len(C))}
     
     while True:
         # Find all projects with fractional probabilities (not exactly 0.0 or 1.0)
@@ -42,7 +42,6 @@ def dependent_rounding_bb1(p_vec: dict, cost: dict) -> set:
             break
             
         # If exactly one fractional project remains, round it independently.
-        # This single independent rounding step is what causes the BB1 deviation.
         if len(fractional) == 1:
             c = fractional[0]
             if random.random() < p[c]:
@@ -55,26 +54,25 @@ def dependent_rounding_bb1(p_vec: dict, cost: dict) -> set:
         i = fractional[0]
         j = fractional[1]
         
-        # We want to either increase p[i] and decrease p[j] (Option A),
-        # or decrease p[i] and increase p[j] (Option B),
-        # such that the expected overall budget remains exactly the same.
-        
         # Option A: Increase i, decrease j
-        max_alpha_i = 1.0 - p[i]  # Max amount i can increase until reaching 1.0
-        max_alpha_j = p[j] * (cost[j] / cost[i])  # Max amount i can increase before j hits 0.0
+        max_alpha_i = 1.0 - p[i]  
+        max_alpha_j = p[j] * (cost[j] / cost[i])  
         alpha = min(max_alpha_i, max_alpha_j)
         beta = alpha * (cost[i] / cost[j])
         
         # Option B: Decrease i, increase j
-        max_gamma_i = p[i]  # Max amount i can decrease until reaching 0.0
-        max_gamma_j = (1.0 - p[j]) * (cost[j] / cost[i])  # Max amount i can decrease before j hits 1.0
+        max_gamma_i = p[i]  
+        max_gamma_j = (1.0 - p[j]) * (cost[j] / cost[i])  
         gamma = min(max_gamma_i, max_gamma_j)
         delta = gamma * (cost[i] / cost[j])
         
         # Calculate the probability (q) of choosing Option A 
-        # to ensure the expected value remains unchanged (keeping the lottery fair)
-        q = gamma / (alpha + gamma)
-        
+        # (added a small safety check for zero division)
+        if (alpha + gamma) > 0:
+            q = gamma / (alpha + gamma)
+        else:
+            q = 0.0
+            
         # Flip a biased coin based on probability q
         if random.random() < q:
             p[i] += alpha
@@ -83,7 +81,7 @@ def dependent_rounding_bb1(p_vec: dict, cost: dict) -> set:
             p[i] -= gamma
             p[j] += delta
 
-    # Return the final set of selected projects (where probability reached 1.0)
+    # Return the final set of selected projects
     W = {c for c, prob in p.items() if prob >= 0.9999}
     return W
 
@@ -218,7 +216,8 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
         voter_str = str(i)
         # The key will be the project they want, if 2 or more wants the same projects
         # they will have the same key
-        approved = tuple(sorted([c for c, val in ui[voter_str].items() if val == 1]))
+        v_ui = ui.get(voter_str, {})
+        approved = tuple(sorted([c for c, val in v_ui.items() if val == 1]))
         if approved not in groups_dict:
             groups_dict[approved] = []
         groups_dict[approved].append(voter_str)
@@ -229,7 +228,8 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     # Line 6: foreach unanimous group z do
     for Nz in unanimous_groups:
         # they all want the same projects
-        A_Nz = [c for c, val in ui[Nz[0]].items() if val == 1]
+        ui_NZ = ui.get(Nz[0], {})
+        A_Nz = [c for c, val in v_ui.items() if val == 1]
         
         # sort py price to see how mant they can buy.   
         A_Nz_sorted = sorted(A_Nz, key=lambda x: cost[x])
@@ -291,9 +291,8 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
 
 def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
     p_vec  = BW_GCR_PB(N,C,cost,B,ui)
-    final_proj = dependent_rounding_bb1(p_vec,cost)
+    final_proj = dependent_rounding_bb1(p_vec,C,cost)
     return p_vec,final_proj
-
 
 
 def build_instance(C, cost, B):
@@ -319,6 +318,7 @@ def build_profile(N, ui, instance):
         ballots.append(ballot)
 
     return Profile(ballots, instance=instance)
+
 def approval_sat(instance, profile, ballot):
     def f(instance2, profile2, ballot2, project, *rest):
         return 1 if project in ballot else 0
@@ -481,8 +481,10 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
 
 def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
     p_vec = BW_MES_PB(N,C,cost,B,ui)
-    final_proj = dependent_rounding_bb1(p_vec,cost)
+    final_proj = dependent_rounding_bb1(p_vec,C,cost)
     return p_vec,final_proj
+
+
 
 if __name__ == "__main__":
     import doctest
