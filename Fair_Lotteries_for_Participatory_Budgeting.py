@@ -311,7 +311,8 @@ def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple
     return p_vec,final_proj
 
 
-# ==== Helper functions to convert the input into the relevant classes in pabutools, to be able to use the method_of_equal_shares function= MES implementation in pabutools. ====
+# ==== Helper functions to convert the input into the relevant classes in pabutools,
+# to be able to use the method_of_equal_shares function= MES implementation in pabutools. ====
 
 def clean_number(x):
     """
@@ -336,6 +337,21 @@ def clean_number(x):
     return x
 
 def build_instance(C, cost, B):
+    """
+    Build a pabutools Instance object from the PB input.
+
+    Each project name in C is converted into a pabutools Project object
+    with its corresponding cost. The total budget B is stored as the
+    budget limit of the instance.
+
+    Args:
+        C: A list of project identifiers.
+        cost: A dictionary mapping each project to its cost.
+        B: The total available budget.
+
+    Returns:
+        Instance: A pabutools instance containing the projects and budget limit.
+    """
     projects = []
 
     for c in C:
@@ -344,7 +360,22 @@ def build_instance(C, cost, B):
     return Instance(projects, budget_limit=clean_number(B))
 
 def build_profile(N, ui, instance):
+    """
+    Build a pabutools approval profile from the citizens' utility matrix.
 
+    For each citizen, an ApprovalBallot is created containing exactly the
+    projects that the citizen approves, meaning projects with utility 1.
+    Project names are converted into pabutools Project objects using the
+    given instance.
+
+    Args:
+        N: A list of citizens.
+        ui: A dictionary mapping each citizen to utilities over projects.
+        instance: The pabutools Instance containing the project objects.
+
+    Returns:
+        Profile: A pabutools approval profile.
+    """
     ballots = []
 
     for n in N:
@@ -359,7 +390,23 @@ def build_profile(N, ui, instance):
 
     return Profile(ballots, instance=instance)
 
+
 def approval_sat(instance, profile, ballot):
+    """
+    Define the approval-based satisfaction function used by MES.
+
+    A citizen receives satisfaction 1 from a project if the project appears
+    in their approval ballot, and 0 otherwise. This function is passed to
+    pabutools' method_of_equal_shares as the satisfaction class.
+
+    Args:
+        instance: The pabutools Instance.
+        profile: The pabutools Profile.
+        ballot: The current citizen's approval ballot.
+
+    Returns:
+        AdditiveSatisfaction: The satisfaction measure for the given ballot.
+    """
     def f(instance2, profile2, ballot2, project, *rest):
         return 1 if project in ballot else 0
     return AdditiveSatisfaction(
@@ -371,7 +418,7 @@ def approval_sat(instance, profile, ballot):
 
 def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     """
-    Algorithm 2: accepts an instance of PB and returns a probabilities vector and a set of projects that satisfy strong UFS and EJR.
+    Algorithm 2: accepts an instance of PB and returns a probabilities vector that satisfy strong UFS and EJR.
     Args:
         N: A list of citizens.
         C: A list of projects.
@@ -440,7 +487,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
 
     """
 
-    # Step 1:
+    # Line 1:
     # Convert the input into pabutools objects and run MES.
     # The result of MES is the initial winning set W.
     instance = build_instance(C, cost, B)
@@ -452,13 +499,13 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     )
     W = {p.name for p in allocation}
 
-    # Step 2:
+    # Line 2:
     # Initialize the probability vector.
     # Projects selected by MES get probability 1.
     # All other projects start with probability 0.
     p_vec = {c: (1.0 if c in W else 0.0) for c in C}
 
-    # Step 3:
+    # Line 3:
     # Compute how much each citizen paid for the projects in W.
     # For each selected project, its cost is divided equally among its supporters.
     spent = {i: 0 for i in N}
@@ -471,13 +518,13 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
         for i in supporters:
             spent[i] += share
     
-    # Step 4:
+    # Line 4:
     # Compute the remaining budget of each citizen after paying for the MES projects.
     # Initially, each citizen receives an equal share of the total budget B / |N|.
     budget_per_voter = B / len(N)
     remaining = {i: budget_per_voter - spent[i] for i in N}
 
-    # Step 5:
+    # Line 5:
     # Build N_prime:
     # the set of citizens who still have remaining budget and still approve
     # at least one project that was not selected by MES.
@@ -486,7 +533,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
         if remaining[i] > 0 and any(ui[i][c] == 1 for c in C if c not in W)
     ]
 
-    # Steps 6-8:
+    # Lines 6-8:
     # Each citizen in N_prime spends their remaining budget only on projects
     # they approve and that are not already in W.
     # The projects are considered from cheapest to most expensive.
@@ -507,7 +554,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
             remaining[i] -= payment
             p_vec[c] += payment / cost[c]
 
-    # Steps 9-10:
+    # Lines 9-10:
     # Handle citizens that are not in N_prime.
     # These citizens either have no remaining approved projects or cannot
     # contribute to the previous step. Their remaining budget is assigned
@@ -530,7 +577,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
                 for i in N_minus:
                     remaining[i] = 0
 
-    # Step 11:
+    # Line 11:
     # Normalize probabilities that are numerically close to 1.
     # If a project reaches probability 1, it is treated as fully funded.
     EPS = 1e-9
@@ -543,8 +590,8 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     return probabilities
 
 def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
-    
     """
+    Final wrapper for Algorithm 2:
     Validate the input, run BW_MES_PB, and apply dependent rounding.
 
     This wrapper checks that the input is not None, not empty, and has the
@@ -585,7 +632,12 @@ def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple
             raise ValueError(f"Parameter {x} is not of the expected type {annotations[x]}")
     
     p_vec = BW_MES_PB(N,C,cost,B,ui)
+    # Line 12:
+    # Send the probability vector to the BB1 dependent rounding mechanism.
+    # BB1 converts the fractional probabilities into a final feasible set of selected projects.
     final_proj = dependent_rounding_bb1(p_vec,C,cost)
+
+    #Line 13: Return the probability vector and the final set of selected projects.
     return p_vec,final_proj
 
 
