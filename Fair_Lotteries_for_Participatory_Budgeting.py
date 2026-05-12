@@ -310,9 +310,23 @@ def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple
     final_proj = dependent_rounding_bb1(p_vec,C,cost)
     return p_vec,final_proj
 
+
+# ==== Helper functions to convert the input into the relevant classes in pabutools, to be able to use the method_of_equal_shares function= MES implementation in pabutools. ====
+
 def clean_number(x):
     """
-    Convert numpy/int-like/float-like values into regular Python int or float.
+    Convert a numeric value into a regular Python int or float.
+
+    This helper is used because some numeric types, such as numpy numeric
+    types, may not be accepted by pabutools' internal fraction utilities.
+    If the value represents a whole number, it is converted to int.
+    Otherwise, it is kept as float.
+
+    Args:
+        x: A numeric value.
+
+    Returns:
+        int | float: The cleaned numeric value.
     """
     x = float(x)
 
@@ -426,8 +440,9 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
 
     """
 
-    # Casting the input to the relevant classes in pabutools, to be able to use the method_of_equal_shares function= MES implementation in pabutools.
-    # ===== 1 =====
+    # Step 1:
+    # Convert the input into pabutools objects and run MES.
+    # The result of MES is the initial winning set W.
     instance = build_instance(C, cost, B)
     profile = build_profile(N, ui, instance)
     allocation = method_of_equal_shares(
@@ -437,10 +452,15 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     )
     W = {p.name for p in allocation}
 
-    # ===== 2 =====
+    # Step 2:
+    # Initialize the probability vector.
+    # Projects selected by MES get probability 1.
+    # All other projects start with probability 0.
     p_vec = {c: (1.0 if c in W else 0.0) for c in C}
 
-    # ===== 3 =====
+    # Step 3:
+    # Compute how much each citizen paid for the projects in W.
+    # For each selected project, its cost is divided equally among its supporters.
     spent = {i: 0 for i in N}
     
     for c in W:
@@ -451,17 +471,27 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
         for i in supporters:
             spent[i] += share
     
-    # ===== 4 =====
+    # Step 4:
+    # Compute the remaining budget of each citizen after paying for the MES projects.
+    # Initially, each citizen receives an equal share of the total budget B / |N|.
     budget_per_voter = B / len(N)
     remaining = {i: budget_per_voter - spent[i] for i in N}
 
-    # ===== 5 =====
+    # Step 5:
+    # Build N_prime:
+    # the set of citizens who still have remaining budget and still approve
+    # at least one project that was not selected by MES.
     N_prime = [
         i for i in N
         if remaining[i] > 0 and any(ui[i][c] == 1 for c in C if c not in W)
     ]
 
-    # ===== 6-8 =====
+    # Steps 6-8:
+    # Each citizen in N_prime spends their remaining budget only on projects
+    # they approve and that are not already in W.
+    # The projects are considered from cheapest to most expensive.
+    # The citizen contributes as much as possible to each project until either
+    # the project reaches probability 1 or the citizen has no money left.
     for i in N_prime:
         liked_projects = sorted(
             [c for c in C if c not in W and ui[i][c] == 1],
@@ -477,12 +507,16 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
             remaining[i] -= payment
             p_vec[c] += payment / cost[c]
 
-    # ===== 9-10 =====
+    # Steps 9-10:
+    # Handle citizens that are not in N_prime.
+    # These citizens either have no remaining approved projects or cannot
+    # contribute to the previous step. Their remaining budget is assigned
+    # to unselected projects according to the deterministic project order.
     N_minus = [i for i in N if i not in N_prime]
     remaining_projects = [c for c in C if c not in W]
 
     if remaining_projects:
-        c = remaining_projects[0]   # deterministic במקום random
+        c = remaining_projects[0]   # deterministic instead of random
 
         total_available = sum(remaining[i] for i in N_minus)
 
@@ -495,17 +529,45 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
 
                 for i in N_minus:
                     remaining[i] = 0
-    # ===== 11 =====
+
+    # Step 11:
+    # Normalize probabilities that are numerically close to 1.
+    # If a project reaches probability 1, it is treated as fully funded.
     EPS = 1e-9
     for c in C:
         if p_vec[c] >= 1 - EPS:
             p_vec[c] = 1.0
             W.add(c)
     probabilities = [p_vec[c] for c in C]
-    W_sorted = [c for c in C if c in W]
+    
     return probabilities
 
 def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
+    
+    """
+    Validate the input, run BW_MES_PB, and apply dependent rounding.
+
+    This wrapper checks that the input is not None, not empty, and has the
+    expected basic types. It then computes the probability vector using
+    BW_MES_PB and applies dependent_rounding_bb1 in order to obtain a final
+    feasible set of selected projects.
+
+    Args:
+        N: A list of citizens.
+        C: A list of projects.
+        cost: A dictionary mapping each project to its cost.
+        B: The total available budget.
+        ui: A dictionary mapping each citizen to binary utilities over projects.
+
+    Returns:
+        tuple[list, set]:
+            The probability vector returned by BW_MES_PB and the final set
+            of selected projects returned by dependent rounding.
+
+    Raises:
+        ValueError: If one of the parameters is None, empty, or has an
+        unexpected type.
+    """
     # Check whether one of the parameters is None, and raise a ValueError
     if(N is None or C is None or cost is None or B is None or ui is None):
         raise ValueError("One or more of the patameters is null")
