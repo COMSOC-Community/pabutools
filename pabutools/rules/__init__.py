@@ -40,6 +40,7 @@ from pabutools.rules.budgetallocation import (
 )
 from pabutools.rules.cstv import cstv, CSTV_Combination
 from pabutools.rules.maximin_support import maximin_support
+from pabutools.rules.ordered_relax import ordered_relax
 
 __all__ = [
     "completion_by_rule_combination",
