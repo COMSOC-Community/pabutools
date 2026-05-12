@@ -57,7 +57,8 @@ def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> set:
         if len(fractional) == 1:
             c = fractional[0]
             logger.info("Only 1 fractional project left (%s) with prob %.4f. Rounding independently.", c, p[c])
-            if random.random() < p[c]:
+            rand_val = random.random()
+            if rand_val < p[c]:
                 p[c] = 1.0
                 logger.debug("Independent flip: Project %s rounded UP to 1.0.", c)
             else:
@@ -91,7 +92,8 @@ def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> set:
             q = 0.0
             
         # Flip a biased coin based on probability q
-        if random.random() < q:
+        rand_val = random.random()
+        if rand_val < q:
             p[i] += alpha
             p[j] -= beta
             logger.debug("Coin flip (%.4f < %.4f): Option A. %s increased by %.4f, %s decreased by %.4f.", rand_val, q, i, alpha, j, beta)
@@ -627,7 +629,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
             payment = min(remaining[i], needed)
             remaining[i] -= payment
             p_vec[c] += payment / cost[c]
-            logger.debug("Citizen %s contributed %f to project %s. Probability increased by %f.", i, payment, c, increase)
+            logger.debug("Citizen %s contributed %f to project %s. Probability increased by %f.", i, payment, c, payment / cost[c])
 
     # Lines 9-10:
     # Handle citizens that are not in N_prime.
@@ -649,7 +651,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
             if needed > 0:
                 payment = min(total_available, needed)
                 p_vec[c] += payment / cost[c]
-                logger.debug("Aggregated leftover budget (%f) used to increase project %s probability by %f.", payment, c, increase)
+                logger.debug("Aggregated leftover budget (%f) used to increase project %s probability by %f.", payment, c, payment / cost[c])
 
                 for i in N_minus:
                     remaining[i] = 0
