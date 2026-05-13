@@ -12,13 +12,23 @@ from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfil
 
 def bos_equal_shares(instance, profile):
     """
-       Algorithm "BOS Equal Shares" - The algorithm selects a subset of projects such that the resulting subset is both
-           affordable under the budget while also exhausting it and guaranteeing fairness
-        Example:
+    Algorithm "BOS Equal Shares" - The algorithm selects a subset of projects such that the resulting subset is both
+    affordable under the budget while also exhausting it and guaranteeing fairness
+    Example:
         >>> p1, p2 = Project("p1", 1000), Project("p2", 100)
         >>> instance = Instance([p1, p2], 1000)
         >>> profile = ApprovalProfile([ApprovalBallot({p1}), ApprovalBallot({p2}), ApprovalBallot({p1})])
         >>> print(bos_equal_shares(instance, profile))
         ['p1']
+    """
+    return []
+
+
+def fractional_equal_shares(instance, profile):
+    """
+    Algorithm "fractional equal shares" - The algorithm works much like equal shares with the exception that it
+    allows players to purchase fractional shares in the projects they support for fractional cost. This Algorithm is
+    used as a part of the BOS algorithm in order to select the projects before making the players paying the full
+    price, thus leading to the overspending feature of BOS.
     """
     return []

@@ -1,5 +1,6 @@
 import random
-from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, Cost_Sat
+from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, Cost_Sat, CardinalBallot, \
+    CardinalProfile
 from pabutools.rules.bos_equal_shares import bos_equal_shares
 from pabutools.rules import method_of_equal_shares
 
@@ -45,6 +46,73 @@ def test_large():
                                ApprovalBallot({pC, pD, pF})])
 
     assert bos_equal_shares(instance, profile) == [pA, pC, pD, pF]
+
+
+def test_fairness_ejr_up_to_t():
+    num_majority = 403
+    num_minority = 11
+    total_voters = num_majority + num_minority
+
+    cost_project_a = 310000
+    cost_project_b = 6000
+    budget_limit = 310000
+
+    pA = Project("A", cost_project_a)
+    pB = Project("B", cost_project_b)
+    instance = Instance([pA, pB], budget_limit)
+
+    ballots = ([ApprovalBallot({pA})] * num_majority) + \
+              ([ApprovalBallot({pB})] * num_minority)
+    profile = ApprovalProfile(ballots)
+
+    result = bos_equal_shares(instance, profile)
+
+    assert pA in result
+    assert pB not in result
+
+    c_max = max(p.cost for p in instance)
+    t_bound = ((total_voters - num_majority) / (2 * num_majority)) * c_max
+
+    required_min_utility = cost_project_a - t_bound
+
+    actual_utility = sum(p.cost for p in result if p == pA)
+
+    assert actual_utility >= required_min_utility
+
+    t_b = ((total_voters - num_minority) / (2 * num_minority)) * c_max
+    required_util_b = cost_project_b - t_b
+    actual_util_b = sum(p.cost for p in result if p == pB)
+
+    assert actual_util_b >= required_util_b
+
+def test_budget_constraint():
+    p1 = Project("p1", 600)
+    p2 = Project("p2", 600)
+    instance = Instance([p1, p2], 1000)
+
+    ballot = ApprovalBallot({p1, p2})
+    profile = ApprovalProfile([ballot, ballot])
+
+    result = bos_equal_shares(instance, profile)
+    total_cost = sum(p.cost for p in result)
+
+    assert total_cost <= instance.budget_limit
+
+
+def test_tail_utilities():
+    pA = Project("A", 1)
+    pB = Project("B", 1)
+    instance = Instance([pA, pB], 1)
+
+    ballots = [CardinalBallot({pA: 100, pB: 2}) for _ in range(99)]
+    ballots.append(CardinalBallot({pA: 1, pB: 2}))
+
+    profile = CardinalProfile(ballots)
+
+    result = bos_equal_shares(instance, profile)
+
+    assert pA in result
+    assert pB not in result
 
 
 def test_random():
