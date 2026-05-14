@@ -649,7 +649,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
             needed = cost[c] * (1 - p_vec[c])
 
             if needed > 0:
-                payment = min(total_available, needed)
+                payment = min(total_available, needed)``
                 p_vec[c] += payment / cost[c]
                 logger.debug("Aggregated leftover budget (%f) used to increase project %s probability by %f.", payment, c, payment / cost[c])
 
