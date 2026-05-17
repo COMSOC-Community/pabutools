@@ -6,6 +6,7 @@ https://ojs.aaai.org/index.php/AAAI/article/view/28801
 Programmers: Dotan Danino, Naama Yahav.
 Date: 19/4/2026
 """
+import sys
 import logging
 import random
 from pabutools.rules.mes import method_of_equal_shares
@@ -25,7 +26,7 @@ class BinarySatisfaction(AdditiveSatisfaction):
         kwargs['func'] = lambda *a, **k: 1
         super().__init__(*args, **kwargs)
 
-def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> set:
+def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> list:
     """
     Performs Dependent Randomized Rounding to convert a fractional
     probability vector into a discrete set of projects (0 or 1).
@@ -38,6 +39,30 @@ def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> set:
         
     Returns:
         set: The final selected discrete set of projects (W).
+
+    (All the example below will be with probailities of 1.0 or 0.0 because we cant do doctet with probability)
+    Example 1: mix of 1.0 and 0.0
+    >>> p_vec_list = [1.0,1.0,1.0,0.0]
+    >>> C = ['a', 'b', 'c', 'd']
+    >>> cost = {'a': 12000, 'b': 12000, 'c': 8000, 'd': 8000}
+    >>> dependent_rounding_bb1(p_vec_list, C, cost)
+    ['a', 'b', 'c']
+
+    Example 2: only probability of 1.0
+    >>> p_vec_list = [1.0,1.0,1.0]
+    >>> C = ['a', 'b', 'c']
+    >>> cost = {'a': 21000, 'b': 10000, 'c': 2000}
+    >>> dependent_rounding_bb1(p_vec_list, C, cost)
+    ['a', 'b', 'c']
+
+
+    Example 3: only probability of 0.0
+    >>> p_vec_list = [0.0,0.0,0.0]
+    >>> C = ['a', 'b', 'c']
+    >>> cost = {'a': 21000, 'b': 10000, 'c': 2000}
+    >>> dependent_rounding_bb1(p_vec_list, C, cost)
+    []
+
     """
     logger.info("Starting dependent_rounding_bb1 (BB1) with %d projects.", len(C))
     # Create a dictionary internally for easier tracking by project name
@@ -105,9 +130,26 @@ def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> set:
         round_iteration += 1
 
     # Return the final set of selected projects
-    W = {c for c, prob in p.items() if prob >= 0.9999}
+    W = [c for c, prob in p.items() if prob >= 0.9999]
     logger.info("BB1 dependent rounding finished. Final set contains %d projects.", len(W))
     return W
+
+
+def GNZ_calc( A_Nz_sorted,cost,B,n,Nz):
+   
+    
+    # sort py price to see how mant they can buy.(G_NZ)
+    group_budget_limit = len(Nz) * (B / n)
+    # calculate G_Nz
+    G_Nz = []
+    current_cost = 0.0
+    for c in A_Nz_sorted:
+        if current_cost + cost[c] <= group_budget_limit:
+            G_Nz.append(c)
+            current_cost += cost[c]
+        else:
+            break
+    return G_Nz
 
 def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     """
@@ -268,24 +310,12 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
 
     # Line 6: foreach unanimous group z do
     for idx, Nz in enumerate(unanimous_groups):
-        logger.debug("Processing unanimous group %d (size: %d).", idx + 1, len(Nz))
-        # Since everyone in Nz wants the same projects,
+        logger.debug("Processing unanimous group %d (size: %d). Members: %s", idx + 1, len(Nz), str(Nz))        # Since everyone in Nz wants the same projects,
         # we just look at the first citizen's preferences 
         ui_NZ = ui.get(Nz[0], {})
         A_Nz = [c for c, val in ui_NZ.items() if val == 1]
-        
-        # sort py price to see how mant they can buy.(G_NZ)
         A_Nz_sorted = sorted(A_Nz, key=lambda x: cost[x])
-        group_budget_limit = len(Nz) * (B / len(N))
-        # calculate G_Nz
-        G_Nz = []
-        current_cost = 0.0
-        for c in A_Nz_sorted:
-            if current_cost + cost[c] <= group_budget_limit:
-                G_Nz.append(c)
-                current_cost += cost[c]
-            else:
-                break
+        G_Nz = GNZ_calc(A_Nz_sorted,cost,B,n,Nz)
                 
         # Line 7: if |A_Nz \cap W_GCR| == |G_Nz|
         A_Nz_intersect_W_GCR = [c for c in A_Nz if c in selected_projects]
@@ -342,38 +372,6 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     logger.info("BW_GCR_PB execution completed successfully.")
     
     return p_vec_list
-
-def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
-    logger.info("Starting BW_GCR_PB_wrapped. Validating input parameters.")
-    # Check whether one of the parameters is None, and raise a ValueError
-    if(N is None or C is None or cost is None or B is None or ui is None):
-        logger.critical("Critical Validation Failure: One or more parameters are None.")
-        raise ValueError("One or more of the parameters is null")
-    # Check whether one of the parameters is empty, and raise a ValueError
-    if(len(N)==0 or len(C)==0 or len(cost)==0 or B==0 or len(ui)==0):
-        logger.critical("Critical Validation Failure: One or more parameters are empty.")
-        raise ValueError("One or more of the parameters is empty")
-    
-    # Check whether the parameters are the same as the annotations 
-    logger.debug("Validating parameter types against function annotations.")
-    annotations= BW_GCR_PB_wrapped.__annotations__
-    local_vars= locals()
-    for x in annotations.keys():
-        if x == "return":
-            continue
-        if(type(local_vars[x]) != annotations[x]):
-            logger.error("Type mismatch: Parameter %s expected %s but got %s.", x, annotations[x], type(local_vars[x]))
-            raise ValueError(f"Parameter {x} is not of the expected type {annotations[x]}")
-    #lines 1-11 the explanation is in the function
-    p_vec = BW_GCR_PB(N,C,cost,B,ui)
-    # line 12: ObtainanoutcomeWsampledfromthelottery
-    # implementingpbyapplyingTheorem3.2.
-    logger.info("Applying BB1 dependent rounding to generate the final discrete set of projects.")
-    final_proj = dependent_rounding_bb1(p_vec,C,cost)
-    # line 13: return P and W
-    logger.info("BW_GCR_PB_wrapped finished. Returning probability vector and %d selected projects.", len(final_proj))
-    return p_vec,final_proj
-
 
 # ==== Helper functions to convert the input into the relevant classes in pabutools,
 # to be able to use the method_of_equal_shares function= MES implementation in pabutools. ====
@@ -563,7 +561,8 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
         allocation = method_of_equal_shares(
             instance,
             profile,
-            sat_class=approval_sat
+            sat_class=approval_sat,
+            analytics=True
         )
         W = {p.name for p in allocation}
         logger.info("MES algorithm successfully selected %d projects deterministically.", len(W))
@@ -581,16 +580,21 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     # Line 3:
     # Compute how much each citizen paid for the projects in W.
     # For each selected project, its cost is divided equally among its supporters.
-    logger.debug("Calculating how much budget each citizen spent on the MES selected projects.")
-    spent = {i: 0 for i in N}
+    logger.debug("Extracting actual budget spent by each citizen from MES analytics.")
+    spent = {i: 0.0 for i in N}
     
-    for c in W:
-        supporters = [i for i in N if ui[i][c] == 1]
-        if not supporters:
-            continue
-        share = cost[c] / len(supporters)
-        for i in supporters:
-            spent[i] += share
+    # נוודא שהנתונים קיימים
+    if allocation.details and allocation.details.iterations:
+        for iteration in allocation.details.iterations:
+            # מעניין אותנו רק שלב שבו באמת נבחר פרויקט
+            if iteration.selected_project is not None:
+                # עוברים על כל המצביעים לפי האינדקס שלהם ברשימה N
+                for idx, voter_id in enumerate(N):
+                    # התשלום הוא הפער בין התקציב לפני בחירת הפרויקט לאחריו
+                    budget_before = iteration.voters_budget[idx]
+                    budget_after = iteration.voters_budget_after_selection[idx]
+                    payment = budget_before - budget_after
+                    spent[voter_id] += payment
     
     # Line 4:
     # Compute the remaining budget of each citizen after paying for the MES projects.
@@ -665,69 +669,157 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
         if p_vec[c] >= 1 - EPS:
             p_vec[c] = 1.0
             W.add(c)
-    probabilities = [p_vec[c] for c in C]
+    probabilities = [float(p_vec[c]) for c in C]
     logger.info("BW_MES_PB execution completed successfully.")
     return probabilities
 
-def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, set]:
+def _generic_pb_wrapper(algo_func, N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, list]:
     """
-    Final wrapper for Algorithm 2:
-    Validate the input, run BW_MES_PB, and apply dependent rounding.
-
-    This wrapper checks that the input is not None, not empty, and has the
-    expected basic types. It then computes the probability vector using
-    BW_MES_PB and applies dependent_rounding_bb1 in order to obtain a final
-    feasible set of selected projects.
-
-    Args:
-        N: A list of citizens.
-        C: A list of projects.
-        cost: A dictionary mapping each project to its cost.
-        B: The total available budget.
-        ui: A dictionary mapping each citizen to binary utilities over projects.
-
-    Returns:
-        tuple[list, set]:
-            The probability vector returned by BW_MES_PB and the final set
-            of selected projects returned by dependent rounding.
-
-    Raises:
-        ValueError: If one of the parameters is None, empty, or has an
-        unexpected type.
+    A generic helper function that unifies input validation, type checking,
+    core algorithm execution, and BB1 dependent rounding for participatory budgeting.
     """
-    # Check whether one of the parameters is None, and raise a ValueError
-    if(N is None or C is None or cost is None or B is None or ui is None):
+    logger.info("Starting wrapped execution for algorithm: %s.", algo_func.__name__)
+
+    # Validation: Check for None values
+    if N is None or C is None or cost is None or B is None or ui is None:
         logger.critical("Critical Validation Failure: One or more parameters are None.")
         raise ValueError("One or more of the parameters is null")
-    # Check whether one of the parameters is empty, and raise a ValueError
-    if(len(N)==0 or len(C)==0 or len(cost)==0 or B==0 or len(ui)==0):
+        
+    # Validation: Check for empty values
+    if len(N) == 0 or len(C) == 0 or len(cost) == 0 or B == 0 or len(ui) == 0:
         logger.critical("Critical Validation Failure: One or more parameters are empty.")
         raise ValueError("One or more of the parameters is empty")
     
-    # Check whether the parameters are the same as the annotations
-    logger.debug("Validating parameter types against function annotations.") 
-    annotations= BW_MES_PB_wrapped.__annotations__
-    local_vars= locals()
-    for x in annotations.keys():
-        if x == "return":
-            continue
-        if(type(local_vars[x]) != annotations[x]):
-            logger.error("Type mismatch: Parameter %s expected %s but got %s.", x, annotations[x], type(local_vars[x]))
-            raise ValueError(f"Parameter {x} is not of the expected type {annotations[x]}")
+    # Validation: Type checking against expected types
+    logger.debug("Validating parameter types for %s wrapper.", algo_func.__name__)
     
-    p_vec = BW_MES_PB(N,C,cost,B,ui)
-    # Line 12:
-    # Send the probability vector to the BB1 dependent rounding mechanism.
-    # BB1 converts the fractional probabilities into a final feasible set of selected projects.
+    # We allow B to be either float or int for flexibility in tests
+    expected_types = {'N': list, 'C': list, 'cost': dict, 'B': (float, int), 'ui': dict}
+    local_vars = {'N': N, 'C': C, 'cost': cost, 'B': B, 'ui': ui}
+    
+    for param_name, expected_type in expected_types.items():
+        if not isinstance(local_vars[param_name], expected_type):
+            logger.error("Type mismatch: Parameter %s expected %s but got %s.", 
+                         param_name, expected_type, type(local_vars[param_name]))
+            raise ValueError("Parameter %s is not of the expected type" % param_name)
+            
+    # Execute the core algorithm passed as a reference (BW_GCR_PB or BW_MES_PB)
+    p_vec = algo_func(N, C, cost, B, ui)
+    
+    # Apply BB1 dependent rounding to get the final discrete outcome
     logger.info("Applying BB1 dependent rounding to generate the final discrete set of projects.")
-    final_proj = dependent_rounding_bb1(p_vec,C,cost)
+    final_proj = dependent_rounding_bb1(p_vec, C, cost)
+    
+    logger.info("Wrapped execution for %s finished successfully. Selected %d projects.", 
+                algo_func.__name__, len(final_proj))
+    
+    return p_vec, final_proj
 
-    logger.info("BW_MES_PB_wrapped finished. Returning probability vector and %d selected projects.", len(final_proj))#Line 13: Return the probability vector and the final set of selected projects.
-    return p_vec,final_proj
+def BW_GCR_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, list]:
+    """
+    Wrapper function for Algorithm 1 (GCR) using the unified generic wrapper.
+    """
+    return _generic_pb_wrapper(BW_GCR_PB, N, C, cost, B, ui)
 
 
-
+def BW_MES_PB_wrapped(N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, list]:
+    """
+    Wrapper function for Algorithm 2 (MES) using the unified generic wrapper.
+    """
+    return _generic_pb_wrapper(BW_MES_PB, N, C, cost, B, ui)
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-   
+    import logging
+    import sys
+
+    # 1. Logger Configuration: All debug logs are routed to a file to keep the console clean
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
+        handlers=[
+            logging.FileHandler("algorithms_run.log", mode='w', encoding='utf-8')
+        ]
+    )
+
+    print("=" * 60)
+    print("1. RUNNING INTERNAL DOCTESTS")
+    print("=" * 60)
+    
+    test_results = doctest.testmod()
+    if test_results.failed == 0:
+        print("All internal doctests passed successfully!\n")
+    else:
+        print("Warning: %d out of %d doctests failed.\n" % (test_results.failed, test_results.attempted))
+
+    print("=" * 60)
+    print("2. RUNNING LIVE EXECUTION EXAMPLES")
+    print("=" * 60)
+
+    # -----------------------------------------------------------------
+    # EXAMPLE A: Standard Balanced Scenario
+    # -----------------------------------------------------------------
+    print("\n--- EXAMPLE A: Standard Balanced Scenario ---")
+    N_A = ['1', '2', '3', '4']
+    C_A = ['Park', 'Library', 'Roads']
+    cost_A = {'Park': 10000, 'Library': 15000, 'Roads': 5000}
+    B_A = 20000
+    ui_A = {
+        '1': {'Park': 1, 'Library': 1, 'Roads': 0},
+        '2': {'Park': 1, 'Library': 0, 'Roads': 1},
+        '3': {'Park': 0, 'Library': 1, 'Roads': 1},
+        '4': {'Park': 0, 'Library': 1, 'Roads': 0}
+    }
+    print("Budget: %d | Projects: %s" % (B_A, str(C_A)))
+    
+    gcr_p, gcr_w = BW_GCR_PB_wrapped(N_A, C_A, cost_A, B_A, ui_A)
+    print("GCR Probabilities: %s -> Selected: %s" % (str(gcr_p), str(list(gcr_w))))
+    
+    mes_p, mes_w = BW_MES_PB_wrapped(N_A, C_A, cost_A, B_A, ui_A)
+    print("MES Probabilities: %s -> Selected: %s" % (str(mes_p), str(list(mes_w))))
+
+    # -----------------------------------------------------------------
+    # EXAMPLE B: Tight Budget & High Costs (Triggers Fractional Splits)
+    # -----------------------------------------------------------------
+    print("\n--- EXAMPLE B: Extreme Tight Budget & High Costs ---")
+    N_B = ['1', '2', '3']
+    C_B = ['Subway', 'Hospital', 'School']
+    cost_B = {'Subway': 50000, 'Hospital': 40000, 'School': 20000}
+    B_B = 30000 
+    ui_B = {
+        '1': {'Subway': 1, 'Hospital': 0, 'School': 1},
+        '2': {'Subway': 0, 'Hospital': 1, 'School': 1},
+        '3': {'Subway': 1, 'Hospital': 1, 'School': 0}
+    }
+    print("Budget: %d | Projects: %s" % (B_B, str(C_B)))
+    
+    gcr_p, gcr_w = BW_GCR_PB_wrapped(N_B, C_B, cost_B, B_B, ui_B)
+    print("GCR Probabilities: %s -> Selected: %s" % (str(gcr_p), str(list(gcr_w))))
+    
+    mes_p, mes_w = BW_MES_PB_wrapped(N_B, C_B, cost_B, B_B, ui_B)
+    print("MES Probabilities: %s -> Selected: %s" % (str(mes_p), str(list(mes_w))))
+
+    # -----------------------------------------------------------------
+    # EXAMPLE C: Completely Disjoint Preferences (Tests Unanimous Groups)
+    # -----------------------------------------------------------------
+    print("\n--- EXAMPLE C: Disjoint Voter Preferences ---")
+    N_C = ['1', '2', '3']
+    C_C = ['North_Pool', 'South_Bridge']
+    cost_C = {'North_Pool': 12000, 'South_Bridge': 12000}
+    B_C = 12000
+    ui_C = {
+        '1': {'North_Pool': 1, 'South_Bridge': 0},
+        '2': {'North_Pool': 1, 'South_Bridge': 0},
+        '3': {'North_Pool': 0, 'South_Bridge': 1}
+    }
+    print("Budget: %d | Projects: %s" % (B_C, str(C_C)))
+    
+    gcr_p, gcr_w = BW_GCR_PB_wrapped(N_C, C_C, cost_C, B_C, ui_C)
+    print("GCR Probabilities: %s -> Selected: %s" % (str(gcr_p), str(list(gcr_w))))
+    
+    mes_p, mes_w = BW_MES_PB_wrapped(N_C, C_C, cost_C, B_C, ui_C)
+    print("MES Probabilities: %s -> Selected: %s" % (str(mes_p), str(list(mes_w))))
+
+    print("\n" + "=" * 60)
+    print("EXECUTION FINISHED COMPLETED")
+    print("Please open 'algorithms_run.log' to view the detailed structural inner steps.")
+    print("=" * 60)
