@@ -583,6 +583,10 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     logger.debug("Extracting actual budget spent by each citizen from MES analytics.")
     spent = {i: 0.0 for i in N}
     
+    
+    # Line 4:
+    # Compute the remaining budget of each citizen after paying for the MES projects.
+    # Initially, each citizen receives an equal share of the total budget B / |N|.
     budget_per_voter = B / len(N)
     remaining = {i: budget_per_voter for i in N} 
     
