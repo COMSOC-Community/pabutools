@@ -583,24 +583,16 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     logger.debug("Extracting actual budget spent by each citizen from MES analytics.")
     spent = {i: 0.0 for i in N}
     
-    # נוודא שהנתונים קיימים
-    if allocation.details and allocation.details.iterations:
-        for iteration in allocation.details.iterations:
-            # מעניין אותנו רק שלב שבו באמת נבחר פרויקט
-            if iteration.selected_project is not None:
-                # עוברים על כל המצביעים לפי האינדקס שלהם ברשימה N
-                for idx, voter_id in enumerate(N):
-                    # התשלום הוא הפער בין התקציב לפני בחירת הפרויקט לאחריו
-                    budget_before = iteration.voters_budget[idx]
-                    budget_after = iteration.voters_budget_after_selection[idx]
-                    payment = budget_before - budget_after
-                    spent[voter_id] += payment
-    
-    # Line 4:
-    # Compute the remaining budget of each citizen after paying for the MES projects.
-    # Initially, each citizen receives an equal share of the total budget B / |N|.
     budget_per_voter = B / len(N)
-    remaining = {i: budget_per_voter - spent[i] for i in N}
+    remaining = {i: budget_per_voter for i in N} 
+    
+    if allocation.details and allocation.details.iterations:
+        # reverse order because we want the budget at the end
+        for iteration in reversed(allocation.details.iterations):
+            if iteration.selected_project is not None:
+                for idx, voter_id in enumerate(N):
+                    remaining[voter_id] = iteration.voters_budget_after_selection[idx]
+                break # we dont need to continue the for if we already check the last iteration
 
     # Line 5:
     # Build N_prime:
