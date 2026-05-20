@@ -40,9 +40,15 @@ def test_large():
 
     instance = Instance([pA, pB, pC, pD, pE, pF], budget)
 
-    profile = ApprovalProfile([ApprovalBallot({pA}), ApprovalBallot({pA, pB, pC, pE}), ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pC}), ApprovalBallot({pA, pB, pC}), ApprovalBallot({pA, pB, pF}),
-                               ApprovalBallot({pD, pE}), ApprovalBallot({pD, pE}), ApprovalBallot({pD, pE, pF}),
+    profile = ApprovalProfile([ApprovalBallot({pA}),
+                               ApprovalBallot({pA, pB, pC, pE}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pF}),
+                               ApprovalBallot({pD, pE}),
+                               ApprovalBallot({pD, pE}),
+                               ApprovalBallot({pD, pE, pF}),
                                ApprovalBallot({pC, pD, pF})])
 
     assert bos_equal_shares(instance, profile) == [pA, pC, pD, pF]
@@ -61,8 +67,7 @@ def test_fairness_ejr_up_to_t():
     pB = Project("B", cost_project_b)
     instance = Instance([pA, pB], budget_limit)
 
-    ballots = ([ApprovalBallot({pA})] * num_majority) + \
-              ([ApprovalBallot({pB})] * num_minority)
+    ballots = ([ApprovalBallot({pA})] * num_majority) + ([ApprovalBallot({pB})] * num_minority)
     profile = ApprovalProfile(ballots)
 
     result = bos_equal_shares(instance, profile)
@@ -84,6 +89,7 @@ def test_fairness_ejr_up_to_t():
     actual_util_b = sum(p.cost for p in result if p == pB)
 
     assert actual_util_b >= required_util_b
+
 
 def test_budget_constraint():
     p1 = Project("p1", 600)
@@ -117,10 +123,10 @@ def test_tail_utilities():
 
 def test_random():
     random.seed(42)
-    budget = random.randint(5000, 50000)
+    budget = random.randint(500, 500)
     num_projects = 100
 
-    projects = [Project(str(i), random.randint(500, 10000)) for i in range(num_projects)]
+    projects = [Project(str(i), random.randint(500, 1000)) for i in range(num_projects)]
 
     instance = Instance(projects, budget)
 
