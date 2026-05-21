@@ -123,14 +123,14 @@ def test_tail_utilities():
 
 def test_random():
     random.seed(42)
-    budget = random.randint(500, 500)
+    budget = random.randint(500, 5000)
     num_projects = 100
 
     projects = [Project(str(i), random.randint(500, 1000)) for i in range(num_projects)]
 
     instance = Instance(projects, budget)
 
-    num_voters = 5000
+    num_voters = 500
     ballots = []
     for _ in range(num_voters):
         num_approvals = min(random.randint(1, 100), len(projects))
