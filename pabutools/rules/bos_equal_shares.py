@@ -11,7 +11,13 @@ import math
 
 from scipy.optimize import root_scalar
 
-from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile
+from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, CardinalBallot
+
+
+def get_utility(voter, project):
+    if type(voter) == CardinalBallot:
+        return voter.utility(project)
+    return 1 if project in voter else 0
 
 
 def bos_equal_shares(instance, profile):
@@ -35,8 +41,10 @@ def bos_equal_shares(instance, profile):
     virtual_budgets = [budget / num_voters for _ in voters]
 
     all_projects = list(instance)
-    budget_for_project = {project: sum(virtual_budgets[i] for i, voter in enumerate(voters) if project in voter) for
-                          project in all_projects}
+
+    budget_for_project = {
+        project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters)) for
+        project in all_projects}
 
     available_projects = [project for project in all_projects if cost_selected_projects + project.cost <= budget and
                           budget_for_project[project] > 0 and project not in selected_projects]
@@ -47,24 +55,27 @@ def bos_equal_shares(instance, profile):
         best_rho = math.inf
         best_project = None
         for project in available_projects:
-            supporters = [(i, voter) for i, voter in enumerate(voters) if project in voter]
+            supporters = [(i, voter) for i, voter in enumerate(voters) if get_utility(voter, project) > 0]
             if not supporters:
                 continue
             supporters_budgets = [virtual_budgets[i] for i, voter in supporters]
+            supporters_utils = [get_utility(voter, project) for i, voter in supporters]
             if sum(supporters_budgets) < project.cost:
                 lambda_prime = math.inf
             else:
                 res = root_scalar(
-                    lambda lmbda: sum(min(b, lmbda * project.cost) for b in supporters_budgets) - project.cost,
+                    lambda lmbda: sum(min(b, lmbda * project.cost * u) for b, u in
+                                      zip(supporters_budgets, supporters_utils)) - project.cost,
                     bracket=[0, 1.0]
                 )
                 lambda_prime = res.root
-            lambdas = [virtual_budgets[i] / project.cost for i, voter in supporters]
+            lambdas = [virtual_budgets[i] / (project.cost * u) for i, u in
+                       zip([s[0] for s in supporters], supporters_utils)]
             lambdas.append(lambda_prime)
             for lamb in lambdas:
                 total_collected = (sum(
-                    min(virtual_budgets[i], lamb * project.cost) for i, voter in supporters))
-
+                    min(virtual_budgets[i], lamb * project.cost * u) for i, u in
+                    zip([s[0] for s in supporters], supporters_utils)))
                 alpha = min(total_collected / project.cost, 1)
                 if alpha <= 0:
                     continue
@@ -84,17 +95,19 @@ def bos_equal_shares(instance, profile):
         cost_selected_projects = sum(project.cost for project in selected_projects)
 
         for i, voter in enumerate(voters):
-            if best_project in voter:
-                virtual_budgets[i] = max(0, virtual_budgets[i] - best_rho * best_project.cost)
+            u = get_utility(voter, best_project)
+            if u > 0:
+                virtual_budgets[i] = max(0, virtual_budgets[i] - best_rho * best_project.cost * u)
 
-        budget_for_project = {project: sum(virtual_budgets[i] for i, voter in enumerate(voters) if project in voter) for
-                              project in all_projects}
+        budget_for_project = {
+            project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters)) for
+            project in all_projects}
 
         available_projects = [project for project in all_projects if
                               cost_selected_projects + project.cost <= budget and budget_for_project[
                                   project] > 0 and project not in selected_projects]
         print(budget_for_project)
-        print(budget-cost_selected_projects)
+        print(budget - cost_selected_projects)
         print(virtual_budgets)
     print(cost_selected_projects)
     return selected_projects
