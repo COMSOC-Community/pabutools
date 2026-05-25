@@ -1,7 +1,8 @@
 import random
+
 from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, Cost_Sat, CardinalBallot, \
     CardinalProfile
-from pabutools.rules.bos_equal_shares import bos_equal_shares
+from pabutools.rules.bos_equal_shares import bos_equal_shares, fractional_equal_shares
 from pabutools.rules import method_of_equal_shares
 
 
@@ -30,8 +31,8 @@ def test_over_budget_projects():
 
 def test_large():
     pA = Project("A", 300000)
-    pB = Project("B", 400000)
-    pC = Project("C", 300000)
+    pB = Project("C", 400000)
+    pC = Project("B", 300000)
     pD = Project("D", 240000)
     pE = Project("E", 170000)
     pF = Project("F", 100000)
@@ -51,7 +52,9 @@ def test_large():
                                ApprovalBallot({pD, pE, pF}),
                                ApprovalBallot({pC, pD, pF})])
 
-    assert bos_equal_shares(instance, profile) == [pA, pC, pD, pF]
+    assert sorted(bos_equal_shares(instance, profile)) == [pA, pC, pD, pF]
+    assert fractional_equal_shares(instance, profile) == {pA: 1, pB: 0, pC: 0.8333333333333334, pD: 1.0,
+                                                          pE: 0.6470588235294119, pF: 0.5}
 
 
 def test_fairness_ejr_up_to_t():
@@ -141,7 +144,11 @@ def test_random():
 
     mes_result = method_of_equal_shares(instance, profile, sat_class=Cost_Sat)
     bos_result = bos_equal_shares(instance, profile)
+    fres_result = fractional_equal_shares(instance, profile)
 
     mes_spending = sum(p.cost for p in mes_result)
     bos_spending = sum(p.cost for p in bos_result)
+    fres_spending = sum(p.cost * fres_result[p] for p in fres_result)
+
     assert bos_spending >= mes_spending
+    assert fres_spending >= mes_spending

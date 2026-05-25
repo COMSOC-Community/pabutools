@@ -29,7 +29,7 @@ def bos_equal_shares(instance, profile):
         >>> instance = Instance([p1, p2], 1000)
         >>> profile = ApprovalProfile([ApprovalBallot({p1}), ApprovalBallot({p2}), ApprovalBallot({p1})])
         >>> print(bos_equal_shares(instance, profile))
-        ['p1']
+        [p1]
     """
     voters = list(profile)
     selected_projects = list()
@@ -48,9 +48,8 @@ def bos_equal_shares(instance, profile):
 
     available_projects = [project for project in all_projects if cost_selected_projects + project.cost <= budget and
                           budget_for_project[project] > 0 and project not in selected_projects]
-    print(virtual_budgets)
-    print(budget_for_project)
-    while available_projects and cost_selected_projects <= budget:
+
+    while available_projects and cost_selected_projects < budget:
         best_alpha = 1
         best_rho = math.inf
         best_project = None
@@ -80,7 +79,6 @@ def bos_equal_shares(instance, profile):
                 if alpha <= 0:
                     continue
                 rho = lamb / alpha
-                print(project, alpha, rho)
                 if rho / alpha < best_rho / best_alpha:
                     best_rho = rho
                     best_alpha = alpha
@@ -88,7 +86,6 @@ def bos_equal_shares(instance, profile):
 
         if best_project is None:
             break
-        print("selected", best_project)
         if best_project.cost + cost_selected_projects <= budget and best_project not in selected_projects:
             selected_projects.append(best_project)
 
@@ -106,10 +103,6 @@ def bos_equal_shares(instance, profile):
         available_projects = [project for project in all_projects if
                               cost_selected_projects + project.cost <= budget and budget_for_project[
                                   project] > 0 and project not in selected_projects]
-        print(budget_for_project)
-        print(budget - cost_selected_projects)
-        print(virtual_budgets)
-    print(cost_selected_projects)
     return selected_projects
 
 
@@ -119,31 +112,79 @@ def fractional_equal_shares(instance, profile):
     allows players to purchase fractional shares in the projects they support for fractional cost. This Algorithm is
     used as a part of the BOS algorithm in order to select the projects before making the players paying the full
     price, thus leading to the overspending feature of BOS.
+        >>> pA = Project("A", 1000)
+        >>> pB = Project("B", 500)
+        >>> budget = 1100
+        >>> instance = Instance([pA, pB], budget)
+        >>> profile = ApprovalProfile([ApprovalBallot({pA}), ApprovalBallot({pB})])
+        >>> print(fractional_equal_shares(instance, profile))
+        {A: 0.55, B: 1}
     """
-    return []
+    # Initialize variables
+    voters = sorted(list(profile), key=lambda v: str(v))
+    cost_selected_projects = 0
+    budget = instance.budget_limit
+    num_voters = profile.num_ballots()
+    virtual_budgets = [budget / num_voters for _ in voters]
+    all_projects = sorted(list(instance), key=lambda p: str(p))
+
+    budget_for_project = {
+        project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters))
+        for project in all_projects
+    }
+
+    project_part = {project: 0 for project in all_projects}
+
+    available_projects = [
+        project for project in all_projects
+        if cost_selected_projects + project.cost * (1 - project_part[project]) <= budget and
+           budget_for_project[project] > 0 and
+           project_part[project] != 1
+    ]
+
+    while available_projects and cost_selected_projects < budget:
+
+        project_utilities = {c: sum(get_utility(voter, c) * c.cost for voter in voters) for c in available_projects}
+        valid_projects = [c for c in available_projects if project_utilities[c] > 0]
+
+        if not valid_projects:
+            break
+
+        c = min(valid_projects, key=lambda project: project.cost / project_utilities[project])
+        p = c.cost / project_utilities[c]
+
+        fractions = [1 - project_part[c]]
+        for i, voter in enumerate(voters):
+            denom = p * get_utility(voter, c) * c.cost
+            if denom > 0:
+                fractions.append(virtual_budgets[i] / denom)
+
+        a = min(fractions)
+
+        project_part[c] += a
+        for i, voter in enumerate(voters):
+            virtual_budgets[i] = max(0, virtual_budgets[i] - a * p * get_utility(voter, c) * c.cost)
+
+        voters = [v for i, v in enumerate(voters) if virtual_budgets[i] > 0]
+        virtual_budgets = [b for b in virtual_budgets if b > 0]
+        budget_for_project = {
+            project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters))
+            for project in all_projects
+        }
+        cost_selected_projects = sum(project.cost * project_part[project] for project in all_projects)
+
+        available_projects = [
+            project for project in all_projects
+            if cost_selected_projects + project.cost * (1 - project_part[project]) <= budget and
+               budget_for_project[project] > 0 and
+               project_part[project] != 1
+        ]
+        #print(c,p,a)
+        #print(project_part)
+
+    return dict(sorted(project_part.items(), key=lambda item: str(item[0])))
 
 
 if __name__ == '__main__':
-    pA = Project("A", 300000)
-    pB = Project("B", 400000)
-    pC = Project("C", 300000)
-    pD = Project("D", 240000)
-    pE = Project("E", 170000)
-    pF = Project("F", 100000)
-
-    budget = 1000000
-
-    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
-
-    profile = ApprovalProfile([ApprovalBallot({pA}),
-                               ApprovalBallot({pA, pB, pC, pE}),
-                               ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pF}),
-                               ApprovalBallot({pD, pE}),
-                               ApprovalBallot({pD, pE}),
-                               ApprovalBallot({pD, pE, pF}),
-                               ApprovalBallot({pC, pD, pF})])
-
-    print(bos_equal_shares(instance, profile))
+    import doctest
+    print(doctest.testmod())
