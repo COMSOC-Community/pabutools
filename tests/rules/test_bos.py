@@ -4,6 +4,70 @@ from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfil
     CardinalProfile
 from pabutools.rules.bos_equal_shares import bos_equal_shares, fractional_equal_shares
 from pabutools.rules import method_of_equal_shares
+from pabutools.analysis.cohesiveness import cohesive_groups
+
+
+def check_bos_ejr_up_to_t(instance, profile, result):
+    if not instance or not list(profile):
+        return True
+
+    c_max = max((p.cost for p in instance), default=0)
+    n = profile.num_ballots()
+
+    if not isinstance(list(profile)[0], ApprovalBallot):
+        return True
+
+    for group, project_set in cohesive_groups(instance, profile):
+        S_len = len(group)
+        if S_len == 0:
+            continue
+
+        t = ((n - S_len) / (2 * S_len)) * c_max
+        cost_T = sum(p.cost for p in project_set)
+
+        T_minus_W = [p for p in project_set if p not in result]
+        condition_met = False
+
+        for voter in group:
+            u_i_W = sum(p.cost for p in result if p in voter)
+
+            if not T_minus_W:
+                if u_i_W >= cost_T - t - 1e-9:
+                    condition_met = True
+                    break
+            else:
+                if all(u_i_W >= cost_T - t - c.cost - 1e-9 for c in T_minus_W):
+                    condition_met = True
+                    break
+
+        assert condition_met
+    return True
+
+
+def check_fres_fractional_ejr(instance, profile, fres_result):
+
+    if not instance or not list(profile):
+        return True
+
+    if not isinstance(list(profile)[0], ApprovalBallot):
+        return True
+
+    for group, project_set in cohesive_groups(instance, profile):
+        S_len = len(group)
+        if S_len == 0:
+            continue
+
+        cost_T = sum(p.cost for p in project_set)
+        condition_met = False
+
+        for voter in group:
+            u_i_W_frac = sum(p.cost * fres_result.get(p, 0) for p in instance if p in voter)
+            if u_i_W_frac >= cost_T - 1e-9:
+                condition_met = True
+                break
+
+        assert condition_met
+    return True
 
 
 def test_bos_basic_logic():
@@ -136,7 +200,7 @@ def test_random():
     num_voters = 500
     ballots = []
     for _ in range(num_voters):
-        num_approvals = min(random.randint(1, 100), len(projects))
+        num_approvals = min(random.randint(1, num_projects), len(projects))
         voter_selection = set(random.sample(projects, num_approvals))
         ballots.append(ApprovalBallot(voter_selection))
 
@@ -152,3 +216,27 @@ def test_random():
 
     assert bos_spending >= mes_spending
     assert fres_spending >= mes_spending
+
+def test_random_with_EJR():
+    random.seed(42)
+    budget = random.randint(500, 5000)
+    num_projects = 15
+
+    projects = [Project(str(i), random.randint(500, 1000)) for i in range(num_projects)]
+
+    instance = Instance(projects, budget)
+
+    num_voters = 10
+    ballots = []
+    for _ in range(num_voters):
+        num_approvals = min(random.randint(1, num_projects), len(projects))
+        voter_selection = set(random.sample(projects, num_approvals))
+        ballots.append(ApprovalBallot(voter_selection))
+
+    profile = ApprovalProfile(ballots)
+
+    bos_result = bos_equal_shares(instance, profile)
+    fres_result = fractional_equal_shares(instance, profile)
+
+    check_bos_ejr_up_to_t(instance,profile,bos_result)
+    check_fres_fractional_ejr(instance, profile,fres_result)
