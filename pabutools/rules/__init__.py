@@ -40,6 +40,12 @@ from pabutools.rules.budgetallocation import (
 )
 from pabutools.rules.cstv import cstv, CSTV_Combination
 from pabutools.rules.maximin_support import maximin_support
+from pabutools.rules.ees_addopt import (
+    exact_equal_shares,
+    greedy_project_change,
+    add_opt,
+    EESAllocationDetails,
+)
 
 __all__ = [
     "completion_by_rule_combination",
@@ -57,5 +63,9 @@ __all__ = [
     "MESIteration",
     "cstv",
     "CSTV_Combination",
-    "maximin_support"
+    "maximin_support",
+    "exact_equal_shares",
+    "greedy_project_change",
+    "add_opt",
+    "EESAllocationDetails",
 ]
