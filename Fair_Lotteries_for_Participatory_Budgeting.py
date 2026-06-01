@@ -10,21 +10,15 @@ import sys
 import logging
 import random
 from pabutools.rules.mes import method_of_equal_shares
+from pabutools.rules.gcr import greedy_cohesive_rule
 from pabutools.election.instance import Instance, Project
 from pabutools.election.profile import Profile
 from pabutools.election.ballot.approvalballot import ApprovalBallot
 from pabutools.election.ballot import ApprovalBallot
 from pabutools.election.satisfaction import AdditiveSatisfaction
 from pabutools.election.profile.approvalprofile import ApprovalProfile
-from pabutools.rules.greedywelfare.greedywelfare_rule import greedy_utilitarian_welfare
-from pabutools.election.satisfaction import AdditiveSatisfaction
 
 logger = logging.getLogger("Algos")
-
-class BinarySatisfaction(AdditiveSatisfaction):
-    def __init__(self, *args, **kwargs):
-        kwargs['func'] = lambda *a, **k: 1
-        super().__init__(*args, **kwargs)
 
 def dependent_rounding_bb1(p_vec_list: list, C: list, cost: dict) -> list:
     """
@@ -218,7 +212,7 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
         ... "8": {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 1, 'j': 1}
         ... }
         >>> BW_GCR_PB(N, C, cost, B, ui)
-        [1.0, 0.4, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        [1.0, 1.0, 1.0, 1.0, 1.0, 0.9166666666666667, 1.0, 0.1111111111111111, 1.0, 1.0]
 
         Example 5: not covering all code lines:
         >>> N = ['1', '2', '3']
@@ -237,41 +231,18 @@ def BW_GCR_PB(N: list, C: list, cost: dict, B: float, ui: dict) -> list:
     n = len(N)
     logger.info("Starting BW_GCR_PB (Algorithm 1) with %d citizens and %d projects.", len(N), len(C))
     logger.debug("Total budget available: %f", B)
-    # fixed the data types to make sure 
-    # its will match the GCR algorithm.
     logger.debug("Converting basic types into pabutools Project and Instance objects.")
-    projects_objects = [Project(name=c, cost=cost[c]) for c in C]
-    
-    instance = Instance(projects_objects)
-    instance.budget_limit = B
-
-    profile = ApprovalProfile()
-    
-    for voter_id in N:
-        prefs = ui.get(str(voter_id), {}) 
-        approved_projects = [proj for proj, val in prefs.items() if val == 1]
-        ballot = ApprovalBallot(approved_projects)
-        
-        try:
-            profile.add_voter(voter_id, ballot)
-        except AttributeError:
-            profile.append(ballot)
+    instance = build_instance(C, cost, B)
+    profile = build_profile(N, ui, instance)
 
     try:
-        logger.info("Calling the greedy_utilitarian_welfare algorithm from pabutools.")
-        # calling for the GCR algo.
-        gcr_allocation = greedy_utilitarian_welfare(
-            instance=instance, 
-            profile=profile,
-            sat_class=BinarySatisfaction
-        )
-        
+        logger.info("Calling the Greedy Cohesive Rule (GCR) from pabutools.")
+        gcr_allocation = greedy_cohesive_rule(instance=instance, profile=profile)
         selected_projects = {proj.name for proj in gcr_allocation}
         logger.info("GCR algorithm successfully selected %d projects.", len(selected_projects))
         logger.debug("Projects selected by GCR: %s", selected_projects)
-
     except Exception as e:
-        logger.error("Error running Greedy rule from library: %s", e)
+        logger.error("Error running GCR from library: %s", e)
         selected_projects = set()
 
     """
