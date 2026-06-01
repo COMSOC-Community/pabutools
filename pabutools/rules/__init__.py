@@ -41,6 +41,17 @@ from pabutools.rules.budgetallocation import (
 from pabutools.rules.cstv import cstv, CSTV_Combination
 from pabutools.rules.maximin_support import maximin_support
 from pabutools.rules.gcr import greedy_cohesive_rule, GCRAllocationDetails, GCRIteration
+from pabutools.rules.lottery import (
+    dependent_rounding_bb1,
+    BW_GCR_PB,
+    BW_GCR_PB_from_lists,
+    BW_GCR_PB_wrapped,
+    BW_MES_PB,
+    BW_MES_PB_from_lists,
+    BW_MES_PB_wrapped,
+    build_instance,
+    build_profile,
+)
 
 __all__ = [
     "completion_by_rule_combination",
@@ -62,4 +73,13 @@ __all__ = [
     "greedy_cohesive_rule",
     "GCRAllocationDetails",
     "GCRIteration",
+    "dependent_rounding_bb1",
+    "BW_GCR_PB",
+    "BW_GCR_PB_from_lists",
+    "BW_GCR_PB_wrapped",
+    "BW_MES_PB",
+    "BW_MES_PB_from_lists",
+    "BW_MES_PB_wrapped",
+    "build_instance",
+    "build_profile",
 ]
