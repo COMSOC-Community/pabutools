@@ -551,24 +551,24 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     # Line 3:
     # Compute how much each citizen paid for the projects in W.
     # For each selected project, its cost is divided equally among its supporters.
-    logger.debug("Extracting actual budget spent by each citizen from MES analytics.")
-    spent = {i: 0.0 for i in N}
-    
-    
-    # Line 4:
+     # Line 4:
     # Compute the remaining budget of each citizen after paying for the MES projects.
     # Initially, each citizen receives an equal share of the total budget B / |N|.
-    budget_per_voter = B / len(N)
-    remaining = {i: budget_per_voter for i in N} 
     
+    logger.debug("Extracting actual budget spent by each citizen from MES analytics.")
+    budget_per_voter = B / len(N)
+    spent = {i: budget_per_voter for i in N}
+    remaining = {i: budget_per_voter for i in N} 
+
     if allocation.details and allocation.details.iterations:
         # reverse order because we want the budget at the end
         for iteration in reversed(allocation.details.iterations):
             if iteration.selected_project is not None:
                 for idx, voter_id in enumerate(N):
+                    spent[voter_id] -= iteration.voters_budget_after_selection[idx]
                     remaining[voter_id] = iteration.voters_budget_after_selection[idx]
                 break # we dont need to continue the for if we already check the last iteration
-
+    
     # Line 5:
     # Build N_prime:
     # the set of citizens who still have remaining budget and still approve
@@ -639,6 +639,7 @@ def BW_MES_PB(N: list, C: list, cost: dict, B: float, ui: dict) ->  list:
     probabilities = [float(p_vec[c]) for c in C]
     logger.info("BW_MES_PB execution completed successfully.")
     return probabilities
+
 
 def _generic_pb_wrapper(algo_func, N: list, C: list, cost: dict, B: float, ui: dict) -> tuple[list, list]:
     """
