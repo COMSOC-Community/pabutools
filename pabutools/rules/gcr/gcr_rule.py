@@ -26,6 +26,11 @@ from itertools import combinations
 
 from pabutools.election.instance import Instance, total_cost
 from pabutools.election.profile import AbstractProfile, AbstractApprovalProfile
+from pabutools.election.satisfaction import (
+    SatisfactionMeasure,
+    GroupSatisfactionMeasure,
+    Cardinality_Sat,
+)
 from pabutools.rules.budgetallocation import BudgetAllocation
 from pabutools.rules.gcr.gcr_details import GCRAllocationDetails, GCRIteration
 
@@ -33,6 +38,8 @@ from pabutools.rules.gcr.gcr_details import GCRAllocationDetails, GCRIteration
 def greedy_cohesive_rule(
     instance: Instance,
     profile: AbstractProfile,
+    sat_class: type[SatisfactionMeasure] | None = None,
+    sat_profile: GroupSatisfactionMeasure | None = None,
     analytics: bool = False,
     max_subset_size: int | None = None,
 ) -> BudgetAllocation:
@@ -42,8 +49,8 @@ def greedy_cohesive_rule(
     Per Definition 5.3 of Aziz et al. (2024), a group S of active voters is
     weakly (β,T)-cohesive for a project set T if:
 
-        |S| · B/n  ≥  cost(T)               [size condition — once, no β factor]
-        |Aᵢ ∩ T|   ≥  β  for all i ∈ S      [β = how many projects of T each voter approves]
+        |S| · B/n  ≥  cost(T)               [size condition]
+        |{p ∈ T : satᵢ(p) > 0}|  ≥  β       [β = positive-satisfaction count]
 
     In each iteration GCR finds the (S, T) pair maximising β, breaking ties
     by smaller cost(T) then larger |S|.  T is added to W and S is deactivated.
@@ -54,7 +61,16 @@ def greedy_cohesive_rule(
     instance : Instance
         The PB instance (projects + budget limit).
     profile : AbstractProfile
-        The voters' approval ballots.
+        The voters' ballots (approval, cardinal, ordinal, or any other type
+        supported by the chosen satisfaction measure).
+    sat_class : type[SatisfactionMeasure], optional
+        Class defining how voter satisfaction is measured.  Defaults to
+        :class:`~pabutools.election.satisfaction.Cardinality_Sat` when
+        *profile* is an approval profile.  Must be provided for non-approval
+        profiles.
+    sat_profile : GroupSatisfactionMeasure, optional
+        A pre-computed satisfaction profile.  If given, *sat_class* is ignored
+        for conversion (but the profile type check still applies).
     analytics : bool, optional
         If True, attaches a :class:`GCRAllocationDetails` object to the result.
     max_subset_size : int or None, optional
@@ -83,11 +99,20 @@ def greedy_cohesive_rule(
     >>> sorted(p.name for p in result)
     ['p1', 'p2']
     """
-    if not isinstance(profile, AbstractApprovalProfile):
-        raise TypeError(
-            "greedy_cohesive_rule only supports approval profiles; "
-            f"got {type(profile).__name__}."
-        )
+    # Resolve satisfaction: default to Cardinality_Sat for approval profiles.
+    if sat_class is None and sat_profile is None:
+        if isinstance(profile, AbstractApprovalProfile):
+            sat_class = Cardinality_Sat
+        else:
+            raise ValueError(
+                "sat_class and sat_profile cannot both be None for non-approval profiles. "
+                "Please provide a sat_class (e.g. Additive_Cardinal_Sat for cardinal profiles)."
+            )
+
+    if sat_profile is None:
+        sat_profile = profile.as_sat_profile(sat_class)
+
+    sat_measures = list(sat_profile)  # one SatisfactionMeasure per voter
 
     n = profile.num_ballots()
     B = instance.budget_limit
@@ -95,7 +120,6 @@ def greedy_cohesive_rule(
     W: set = set()
     selected: list = []
     active: list[int] = list(range(n))
-    ballots: list = list(profile)
     details = GCRAllocationDetails() if analytics else None
 
     while active:
@@ -115,17 +139,15 @@ def greedy_cohesive_rule(
                 if cost_T <= 0 or cost_T > B:
                     continue
 
-                # For each active voter, count how many projects in T they approve.
-                # β = min across S of |Aᵢ ∩ T|.  We try the largest feasible β first:
-                # start with k = r (everyone approves all of T) and decrease until
-                # the size condition is met.
+                # For each active voter, count projects in T with positive satisfaction.
+                # This generalises "p in approval_ballot" to any satisfaction measure.
                 approval_counts = [
-                    sum(1 for p in T if p in ballots[i])
+                    sum(1 for p in T if sat_measures[i].sat_project(p) > 0)
                     for i in active
                 ]
 
                 for k in range(r, 0, -1):
-                    # S = active voters who approve ≥ k projects from T
+                    # S = active voters who have positive satisfaction for ≥ k projects in T
                     N_prime = [
                         active[idx]
                         for idx, cnt in enumerate(approval_counts)
