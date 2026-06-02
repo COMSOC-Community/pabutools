@@ -14,6 +14,10 @@ Per Definition 5.3 of the AAAI 2024 paper, a group S is weakly (β,T)-cohesive i
   (2) |Aᵢ ∩ T|  ≥  β  for all i ∈ S  [β = min approvals of T across S]
 
 GCR maximises β, breaks ties by smaller cost(T), then by larger |S|.
+
+Programmers: Dotan Danino, Naama Yahav.
+Date: 1/6/2026
+
 """
 
 from __future__ import annotations

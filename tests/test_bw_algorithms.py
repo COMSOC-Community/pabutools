@@ -1,3 +1,14 @@
+"""
+test for the algorithms in:
+"lottery_rule"
+by Haris Aziz, Xinhang Lu, Mashbat Suzuki, Jeremy Vollen, Toby Walsh (2024)
+https://ojs.aaai.org/index.php/AAAI/article/view/28801
+
+Programmers: Dotan Danino, Naama Yahav.
+Date: 19/4/2026
+
+"""
+
 import numpy as np
 import random
 import unittest
