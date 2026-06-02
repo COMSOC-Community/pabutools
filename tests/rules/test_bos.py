@@ -45,7 +45,6 @@ def check_bos_ejr_up_to_t(instance, profile, result):
 
 
 def check_fres_fractional_ejr(instance, profile, fres_result):
-
     if not instance or not list(profile):
         return True
 
@@ -78,6 +77,14 @@ def test_bos_basic_logic():
     out = bos_equal_shares(instance, profile)
     assert p1 in out
     assert p2 not in out
+
+
+def test_fres_basic_logic():
+    p1, p2 = Project("p1", 1000), Project("p2", 500)
+    instance = Instance([p1, p2], 1100)
+    profile = ApprovalProfile([ApprovalBallot({p1}), ApprovalBallot({p2})])
+
+    assert fractional_equal_shares(instance, profile) == {p1: 0.55, p2: 1}
 
 
 def test_empty_instance():
@@ -217,6 +224,7 @@ def test_random():
     assert bos_spending >= mes_spending
     assert fres_spending >= mes_spending
 
+
 def test_random_with_EJR():
     random.seed(42)
     budget = random.randint(500, 5000)
@@ -238,5 +246,84 @@ def test_random_with_EJR():
     bos_result = bos_equal_shares(instance, profile)
     fres_result = fractional_equal_shares(instance, profile)
 
-    check_bos_ejr_up_to_t(instance,profile,bos_result)
-    check_fres_fractional_ejr(instance, profile,fres_result)
+    check_bos_ejr_up_to_t(instance, profile, bos_result)
+    check_fres_fractional_ejr(instance, profile, fres_result)
+
+
+def test_budget_constraint_with_EJR():
+    p1 = Project("p1", 600)
+    p2 = Project("p2", 600)
+    instance = Instance([p1, p2], 1000)
+
+    ballot = ApprovalBallot({p1, p2})
+    profile = ApprovalProfile([ballot, ballot])
+
+    bos_out = bos_equal_shares(instance, profile)
+    fres_out = fractional_equal_shares(instance, profile)
+
+    check_bos_ejr_up_to_t(instance, profile, bos_out)
+    check_fres_fractional_ejr(instance, profile, fres_out)
+
+
+def test_large_with_EJR():
+    pA = Project("A", 300000)
+    pB = Project("C", 400000)
+    pC = Project("B", 300000)
+    pD = Project("D", 240000)
+    pE = Project("E", 170000)
+    pF = Project("F", 100000)
+
+    budget = 1000000
+    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
+
+    profile = ApprovalProfile([ApprovalBallot({pA}),
+                               ApprovalBallot({pA, pB, pC, pE}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pF}),
+                               ApprovalBallot({pD, pE}),
+                               ApprovalBallot({pD, pE}),
+                               ApprovalBallot({pD, pE, pF}),
+                               ApprovalBallot({pC, pD, pF})])
+
+    bos_out = bos_equal_shares(instance, profile)
+    fres_out = fractional_equal_shares(instance, profile)
+
+    check_bos_ejr_up_to_t(instance, profile, bos_out)
+    check_fres_fractional_ejr(instance, profile, fres_out)
+
+
+def test_bos_basic_logic_with_EJR():
+    p1, p2 = Project("p1", 1000), Project("p2", 100)
+    instance = Instance([p1, p2], 1000)
+    profile = ApprovalProfile([ApprovalBallot({p1}), ApprovalBallot({p2}), ApprovalBallot({p1})])
+
+    bos_out = bos_equal_shares(instance, profile)
+    fres_out = fractional_equal_shares(instance, profile)
+
+    check_bos_ejr_up_to_t(instance, profile, bos_out)
+    check_fres_fractional_ejr(instance, profile, fres_out)
+
+
+def test_empty_instance_with_EJR():
+    instance = Instance([], 1000)
+    profile = ApprovalProfile([])
+
+    bos_out = bos_equal_shares(instance, profile)
+    fres_out = fractional_equal_shares(instance, profile)
+
+    check_bos_ejr_up_to_t(instance, profile, bos_out)
+    check_fres_fractional_ejr(instance, profile, fres_out)
+
+
+def test_over_budget_projects_with_EJR():
+    p1 = Project("Overpriced", 2000)
+    instance = Instance([p1], 1000)
+    profile = ApprovalProfile([ApprovalBallot({p1})])
+
+    bos_out = bos_equal_shares(instance, profile)
+    fres_out = fractional_equal_shares(instance, profile)
+
+    check_bos_ejr_up_to_t(instance, profile, bos_out)
+    check_fres_fractional_ejr(instance, profile, fres_out)

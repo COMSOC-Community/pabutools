@@ -6,7 +6,6 @@ https://www.ac.tuwien.ac.at/comsoc2025/comsoc2025-papers/50.pdf
 Programmer: Ivan Gorbachev
 Date: 17/04/2026
 """
-import doctest
 import math
 
 from scipy.optimize import root_scalar
@@ -120,7 +119,6 @@ def fractional_equal_shares(instance, profile):
         >>> print(fractional_equal_shares(instance, profile))
         {A: 0.55, B: 1}
     """
-    # Initialize variables
     voters = sorted(list(profile), key=lambda v: str(v))
     cost_selected_projects = 0
     budget = instance.budget_limit
@@ -179,12 +177,11 @@ def fractional_equal_shares(instance, profile):
                budget_for_project[project] > 0 and
                project_part[project] != 1
         ]
-        #print(c,p,a)
-        #print(project_part)
 
     return dict(sorted(project_part.items(), key=lambda item: str(item[0])))
 
 
 if __name__ == '__main__':
     import doctest
+
     print(doctest.testmod())
