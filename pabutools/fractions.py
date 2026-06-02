@@ -43,6 +43,17 @@ def frac(*arg: Numeric) -> Numeric:
         Numeric
             The fraction.
     """
+    # Normalize numpy scalars (and similar) to plain Python ints/floats so that
+    # gmpy2.mpq and arithmetic operators accept them without errors.
+    normalized = []
+    for a in arg:
+        try:
+            a = a.item()
+        except AttributeError:
+            pass
+        normalized.append(a)
+    arg = tuple(normalized)
+
     if len(arg) == 1:
         if FRACTION == GMPY_FRAC:
             return mpq(arg[0])

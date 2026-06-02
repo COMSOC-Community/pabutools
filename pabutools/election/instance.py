@@ -544,3 +544,24 @@ def get_random_instance(num_projects: int, min_cost: int, max_cost: int) -> Inst
         ceil(min(p.cost for p in inst)), ceil(sum(p.cost for p in inst))
     )
     return inst
+
+
+def instance_from_project_costs(project_costs: dict, budget_limit: Numeric) -> Instance:
+    """
+    Create an :class:`Instance` from a ``{project_name: cost}`` mapping and a budget limit.
+
+    Parameters
+    ----------
+    project_costs : dict
+        Maps each project name (str) to its cost (int or float).
+    budget_limit : Numeric
+        The total available budget.
+
+    Returns
+    -------
+    Instance
+    """
+    return Instance(
+        [Project(name, cost) for name, cost in project_costs.items()],
+        budget_limit=budget_limit,
+    )

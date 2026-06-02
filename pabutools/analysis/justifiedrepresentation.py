@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from collections.abc import Collection, Callable, Iterable
 import gurobipy as gp
 
@@ -517,8 +518,7 @@ def is_PJR_one_cardinal(
     )
 
 
-import random
-def check_FJR(self,N,cost,C,B,ui,s_vec):
+def check_FJR(self, N: list, cost: dict, C: list, B: float, ui: dict, s_vec: list) -> bool:
         for _ in range(60):
             k = random.randint(1, min(5, len(C)))
             T = random.sample(C, k)
@@ -545,7 +545,7 @@ def check_FJR(self,N,cost,C,B,ui,s_vec):
         return True
 
 
-def check_EJR(self,N,cost,C,B,ui,s_vec):
+def check_EJR(self, N: list, cost: dict, C: list, B: float, ui: dict, s_vec: list) -> bool:
         for _ in range(50):
             k = random.randint(1, min(5, len(C)))
             T = random.sample(C, k)
@@ -567,7 +567,7 @@ def check_EJR(self,N,cost,C,B,ui,s_vec):
         return True
 
 
-def check_strong_UFS(self, N, C, cost, B, ui, p_vec):
+def check_strong_UFS(self, N: list, C: list, cost: dict, B: float, ui: dict, p_vec: list) -> bool:
     for _ in range(50):
         S = random.sample(N, random.randint(1, len(N)))
         if not self.is_unanimous(S, ui, C):

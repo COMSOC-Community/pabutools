@@ -357,6 +357,41 @@ def get_all_approval_profiles(
         yield ApprovalProfile([ApprovalBallot(b) for b in p], instance=instance)
 
 
+def approval_profile_from_matrix(
+    voters: list,
+    approvals: dict,
+    instance: Instance,
+) -> ApprovalProfile:
+    """
+    Create an :class:`ApprovalProfile` from a utility matrix.
+
+    Parameters
+    ----------
+    voters : list
+        Ordered list of voter identifiers.
+    approvals : dict
+        Maps each voter identifier to a ``{project_name: 0_or_1}`` dict where
+        1 means the voter approves that project and 0 means they do not.
+    instance : Instance
+        The pabutools :class:`~pabutools.election.instance.Instance` whose
+        :class:`~pabutools.election.instance.Project` objects will be referenced
+        in the ballots.
+
+    Returns
+    -------
+    ApprovalProfile
+    """
+    project_by_name = {p.name: p for p in instance}
+    ballots = []
+    for voter in voters:
+        voter_approvals = approvals[voter]
+        ballot = ApprovalBallot(
+            p for name, p in project_by_name.items() if voter_approvals.get(name, 0) == 1
+        )
+        ballots.append(ballot)
+    return ApprovalProfile(ballots, instance=instance)
+
+
 class ApprovalMultiProfile(MultiProfile, AbstractApprovalProfile):
     """
     A multiprofile of approval ballots, that is, a multiset of approval ballots together with their multiplicity.

@@ -25,7 +25,7 @@ from __future__ import annotations
 from itertools import combinations
 
 from pabutools.election.instance import Instance, total_cost
-from pabutools.election.profile import AbstractProfile
+from pabutools.election.profile import AbstractProfile, AbstractApprovalProfile
 from pabutools.rules.budgetallocation import BudgetAllocation
 from pabutools.rules.gcr.gcr_details import GCRAllocationDetails, GCRIteration
 
@@ -83,6 +83,12 @@ def greedy_cohesive_rule(
     >>> sorted(p.name for p in result)
     ['p1', 'p2']
     """
+    if not isinstance(profile, AbstractApprovalProfile):
+        raise TypeError(
+            "greedy_cohesive_rule only supports approval profiles; "
+            f"got {type(profile).__name__}."
+        )
+
     n = profile.num_ballots()
     B = instance.budget_limit
 

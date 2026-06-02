@@ -21,8 +21,8 @@ import logging
 import random
 
 from pabutools.election.ballot import ApprovalBallot
-from pabutools.election.instance import Instance, Project
-from pabutools.election.profile import AbstractProfile, Profile
+from pabutools.election.instance import Instance, Project, instance_from_project_costs
+from pabutools.election.profile import AbstractProfile, Profile, approval_profile_from_matrix
 from pabutools.election.satisfaction import AdditiveSatisfaction
 from pabutools.rules.gcr import greedy_cohesive_rule
 from pabutools.rules.mes import method_of_equal_shares
@@ -31,63 +31,17 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Conversion helpers
+# Convenience aliases kept for backward compatibility
 # ---------------------------------------------------------------------------
 
-def clean_number(x) -> int | float:
-    """
-    Convert a numeric value to a plain Python int or float.
-
-    Useful when values come from numpy, which may not be accepted by
-    pabutools' internal fraction utilities.
-    """
-    x = float(x)
-    return int(x) if x.is_integer() else x
-
-
 def build_instance(C: list, cost: dict, B: float) -> Instance:
-    """
-    Build a pabutools :class:`~pabutools.election.instance.Instance` from raw lists.
-
-    Parameters
-    ----------
-    C : list
-        Project identifiers (any hashable type).
-    cost : dict
-        Maps each project identifier to its cost.
-    B : float
-        Total available budget.
-
-    Returns
-    -------
-    Instance
-    """
-    return Instance([Project(c, cost[c]) for c in C], budget_limit=clean_number(B))
+    """Alias for :func:`~pabutools.election.instance.instance_from_project_costs`."""
+    return instance_from_project_costs({c: cost[c] for c in C}, B)
 
 
 def build_profile(N: list, ui: dict, instance: Instance) -> Profile:
-    """
-    Build a pabutools :class:`~pabutools.election.profile.Profile` from a utility matrix.
-
-    Parameters
-    ----------
-    N : list
-        Voter identifiers.
-    ui : dict
-        Maps each voter to a dict ``{project_id: utility}`` where utility is 1
-        (approve) or 0 (disapprove).
-    instance : Instance
-        The pabutools Instance whose Project objects will be referenced.
-
-    Returns
-    -------
-    Profile
-    """
-    ballots = []
-    for n in N:
-        approved = [instance.get_project(c) for c in ui[n] if ui[n][c] == 1]
-        ballots.append(ApprovalBallot(approved))
-    return Profile(ballots, instance=instance)
+    """Alias for :func:`~pabutools.election.profile.approval_profile_from_matrix`."""
+    return approval_profile_from_matrix(N, ui, instance)
 
 
 def approval_sat(instance: Instance, profile: Profile, ballot: ApprovalBallot):
@@ -453,6 +407,7 @@ def BW_MES_PB(instance: Instance, profile: AbstractProfile, analytics: bool = Fa
     logger.info("BW_MES_PB: %d voters, %d projects, budget %f.", n, len(projects), B)
 
     # Line 1: run MES
+    allocation = None
     try:
         allocation = method_of_equal_shares(
             instance, profile, sat_class=approval_sat, analytics=True
@@ -470,7 +425,7 @@ def BW_MES_PB(instance: Instance, profile: AbstractProfile, analytics: bool = Fa
     budget_per_voter = B / n
     remaining = {i: budget_per_voter for i in range(n)}
 
-    if allocation.details and allocation.details.iterations:
+    if allocation is not None and allocation.details and allocation.details.iterations:
         for iteration in reversed(allocation.details.iterations):
             if iteration.selected_project is not None:
                 for idx in range(n):

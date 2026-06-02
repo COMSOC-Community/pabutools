@@ -11,6 +11,8 @@ The two main entry points are:
 * :func:`~pabutools.rules.lottery.BW_MES_PB_wrapped` — MES-backed lottery (EJR)
 """
 
+from pabutools.election.instance import instance_from_project_costs
+from pabutools.election.profile import approval_profile_from_matrix
 from pabutools.rules.lottery.lottery_rule import (
     # BB1 rounding
     dependent_rounding_bb1,
@@ -22,10 +24,9 @@ from pabutools.rules.lottery.lottery_rule import (
     BW_MES_PB,
     BW_MES_PB_from_lists,
     BW_MES_PB_wrapped,
-    # Conversion utilities
+    # Backward-compatible aliases
     build_instance,
     build_profile,
-    clean_number,
     approval_sat,
 )
 
@@ -37,8 +38,11 @@ __all__ = [
     "BW_MES_PB",
     "BW_MES_PB_from_lists",
     "BW_MES_PB_wrapped",
+    # Preferred names
+    "instance_from_project_costs",
+    "approval_profile_from_matrix",
+    # Backward-compatible aliases
     "build_instance",
     "build_profile",
-    "clean_number",
     "approval_sat",
 ]
