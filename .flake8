@@ -1,0 +1,9 @@
+[flake8]
+exclude =
+    flask_app,
+    .venv,
+    venv,
+    .git,
+    __pycache__,
+    build,
+    dist

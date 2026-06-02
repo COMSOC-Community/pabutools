@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import random
 from collections.abc import Collection, Callable, Iterable
-import gurobipy as gp
+try:
+    import gurobipy as gp
+    _GUROBI_AVAILABLE = True
+except ImportError:
+    gp = None
+    _GUROBI_AVAILABLE = False
 
 from pabutools.utils import Numeric
 
