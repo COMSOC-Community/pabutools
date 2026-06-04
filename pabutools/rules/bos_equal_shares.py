@@ -32,7 +32,7 @@ def bos_equal_shares(instance, profile):
         [p1]
     """
     logger = logging.getLogger(__name__)
-    logger.info("BOS equal shares")
+    logger.info("\nBOS equal shares")
 
     voters = list(profile)
     selected_projects = list()
@@ -115,7 +115,7 @@ def bos_equal_shares(instance, profile):
         available_projects = [project for project in all_projects if
                               cost_selected_projects + project.cost <= budget and budget_for_project[
                                   project] > 0 and project not in selected_projects]
-        logger.info(f"Selected Project: {selected_projects}\n")
+        logger.info(f"Selected projects: {selected_projects}\n")
     return selected_projects
 
 
@@ -134,7 +134,7 @@ def fractional_equal_shares(instance, profile):
         {A: 0.55, B: 1}
     """
     logger = logging.getLogger(__name__)
-    logger.info("Fractional equal shares")
+    logger.info("\nFractional equal shares")
 
     voters = sorted(list(profile), key=lambda v: str(v))
     cost_selected_projects = 0
@@ -207,9 +207,9 @@ def fractional_equal_shares(instance, profile):
 
 
 if __name__ == '__main__':
-    #import doctest
+    import doctest
 
-    #print(doctest.testmod())
+    print(doctest.testmod())
     logging.basicConfig(level=logging.INFO, format='%(message)s')
 
     pA = Project("A", 300000)
