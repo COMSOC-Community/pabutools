@@ -15,6 +15,7 @@ from pabutools.rules.ees_addopt import (
     exact_equal_shares,
     greedy_project_change,
     add_opt,
+    ees_add_opt_completion,
     EESAllocationDetails,
     get_leftover_budgets,
     get_leximax_payment,
@@ -41,24 +42,56 @@ def _make_instance_profile(project_costs, budget, approval_sets):
     tuple[Instance, ApprovalProfile, dict[str, Project]]
         The instance, profile, and a name→Project lookup dict.
     """
-    projects = {name: Project(name, cost) for name, cost in project_costs.items()}
+    projects = {}
+    for name, cost in project_costs.items():
+        projects[name] = Project(name, cost)
     inst = Instance(projects.values(), budget_limit=budget)
-    ballots = [
-        ApprovalBallot([projects[pname] for pname in approved])
-        for approved in approval_sets
-    ]
+    ballots = []
+    for approved in approval_sets:
+        ballot_projects = []
+        for pname in approved:
+            ballot_projects.append(projects[pname])
+        ballots.append(ApprovalBallot(ballot_projects))
     prof = ApprovalProfile(ballots, instance=inst)
     return inst, prof, projects
 
 
 def _selected_names(result):
     """Return project names from a BudgetAllocation."""
-    return [p.name for p in result]
+    names = []
+    for p in result:
+        names.append(p.name)
+    return names
 
 
 def _get_payments(result):
     """Return the payments dict from a BudgetAllocation's EESAllocationDetails."""
     return result.details.payments
+
+
+def _make_solution(selected_names, payments_by_voter, projects):
+    """
+    Build a BudgetAllocation with EESAllocationDetails from simple descriptions.
+
+    Parameters
+    ----------
+    selected_names : list[str]
+        Names of selected projects.
+    payments_by_voter : dict[int, dict[str, float]]
+        payments_by_voter[voter_index][project_name] = payment.
+    projects : dict[str, Project]
+        Name→Project lookup.
+    """
+    selected = []
+    for name in selected_names:
+        selected.append(projects[name])
+    pay = {}
+    for voter_idx, voter_payments in payments_by_voter.items():
+        voter_pay = {}
+        for pname, amount in voter_payments.items():
+            voter_pay[projects[pname]] = amount
+        pay[voter_idx] = voter_pay
+    return BudgetAllocation(selected, details=EESAllocationDetails(pay))
 
 
 ####### EES tests
@@ -132,43 +165,119 @@ def test_ees_budget_feasibility():
     result = exact_equal_shares(inst, prof)
     payments = _get_payments(result)
 
-    total_paid = sum(
-        payments.get(i, {}).get(p, 0)
-        for i in range(len(prof))
-        for p in result
-    )
+    total_paid = 0
+    for i in range(len(prof)):
+        for p in result:
+            total_paid += payments.get(i, {}).get(p, 0)
     assert total_paid <= inst.budget_limit
 
     # Each funded project is fully covered
     for proj in result:
-        paid_for_proj = sum(
-            payments.get(i, {}).get(proj, 0)
-            for i in range(len(prof))
-        )
+        paid_for_proj = 0
+        for i in range(len(prof)):
+            paid_for_proj += payments.get(i, {}).get(proj, 0)
         assert paid_for_proj == pytest.approx(proj.cost)
 
 
+####### get_leftover_budgets tests
+
+
+# no payments means full leftover for each voter
+def test_leftover_no_payments():
+    inst, prof, projects = _make_instance_profile({"p1": 10}, 20, [{"p1"}, {"p1"}])
+    solution = _make_solution([], {0: {}, 1: {}}, projects)
+    leftover = get_leftover_budgets(inst, prof, solution)
+    # b/n = 20/2 = 10 per voter
+    assert leftover[0] == pytest.approx(10)
+    assert leftover[1] == pytest.approx(10)
+
+
+# leftover should equal b/n minus total payments
+def test_leftover_after_payments():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3.2}, 10, [{"p1", "p2"}, {"p1", "p2"}])
+    solution = _make_solution(["p1", "p2"],{0: {"p1": 1, "p2": 1.6}, 1: {"p1": 1, "p2": 1.6}},projects,)
+    leftover = get_leftover_budgets(inst, prof, solution)
+    # b/n = 10/2 = 5, each voter paid 2.6
+    assert leftover[0] == pytest.approx(2.4)
+    assert leftover[1] == pytest.approx(2.4)
+
+
+# voter who paid nothing has full leftover; voter who paid has less
+def test_leftover_uneven_payments():
+    inst, prof, projects = _make_instance_profile({"p1": 5}, 10, [{"p1"}, {"p1"}])
+    solution = _make_solution(["p1"],{0: {"p1": 5.0}, 1: {}},projects,)
+    leftover = get_leftover_budgets(inst, prof, solution)
+    # b/n = 5
+    assert leftover[0] == pytest.approx(0)
+    assert leftover[1] == pytest.approx(5)
+
+
+# paper example
+def test_leftover_paper_example():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3.2, "p3": 6},10,[{"p1"}, {"p1", "p3"}, {"p2", "p3"}, {"p2", "p3"}, {"p3"}],)
+    solution = _make_solution(["p1", "p2"],{0: {"p1": 1}, 1: {"p1": 1}, 2: {"p2": 1.6}, 3: {"p2": 1.6}, 4: {}},projects,)
+    leftover = get_leftover_budgets(inst, prof, solution)
+    # b/n = 10/5 = 2
+    assert leftover[0] == pytest.approx(1)
+    assert leftover[1] == pytest.approx(1)
+    assert leftover[2] == pytest.approx(0.4)
+    assert leftover[3] == pytest.approx(0.4)
+    assert leftover[4] == pytest.approx(2)
+
+
+####### get_leximax_payment tests
+
+
+# non-paying voter gets [(0, smallest_project_name)]
+def test_leximax_no_payments():
+    inst, prof, projects = _make_instance_profile({"p1": 10, "p2": 5}, 20, [{"p1"}, {"p2"}])
+    solution = _make_solution([], {0: {}, 1: {}}, projects)
+    leximax = get_leximax_payment(solution, len(prof), inst)
+    # smallest project name is "p1"
+    assert leximax[0] == [(0, "p1")]
+    assert leximax[1] == [(0, "p1")]
+
+
+# single payment produces a one-element vector
+def test_leximax_single_payment():
+    inst, prof, projects = _make_instance_profile({"p1": 10}, 10, [{"p1"}, {"p1"}])
+    solution = _make_solution(["p1"],{0: {"p1": 5}, 1: {"p1": 5}},projects,)
+    leximax = get_leximax_payment(solution, len(prof), inst)
+    assert leximax[0] == [(5, "p1")]
+    assert leximax[1] == [(5, "p1")]
+
+
+# multiple payments sorted descending by amount, then ascending by name
+def test_leximax_multiple_payments_sorted():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 6}, 10, [{"p1", "p2"}])
+    solution = _make_solution(["p1", "p2"],{0: {"p1": 2, "p2": 6}},projects,)
+    leximax = get_leximax_payment(solution, len(prof), inst)
+    # descending by amount: 6 before 2
+    assert leximax[0] == [(6, "p2"), (2, "p1")]
+
+
+# equal amounts should be sorted ascending by project name
+def test_leximax_tiebreak_by_name():
+    inst, prof, projects = _make_instance_profile({"a": 4, "b": 4}, 10, [{"a", "b"}])
+    solution = _make_solution(["a", "b"], {0: {"a": 4, "b": 4}}, projects,)
+    leximax = get_leximax_payment(solution, len(prof), inst)
+    # same amount, ascending by name: "a" before "b"
+    assert leximax[0] == [(4, "a"), (4, "b")]
+
+
+# paper example
+def test_leximax_paper_example():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3.2, "p3": 6}, 10, [{"p1"}, {"p1", "p3"}, {"p2", "p3"}, {"p2", "p3"}, {"p3"}],)
+    solution = _make_solution(["p1", "p2"], {0: {"p1": 1}, 1: {"p1": 1}, 2: {"p2": 1.6}, 3: {"p2": 1.6}, 4: {}}, projects,)
+    leximax = get_leximax_payment(solution, len(prof), inst)
+    assert leximax[0] == [(1, "p1")]
+    assert leximax[1] == [(1, "p1")]
+    assert leximax[2] == [(1.6, "p2")]
+    assert leximax[3] == [(1.6, "p2")]
+    assert leximax[4] == [(0, "p1")]  # non-payer gets smallest name
+
+
 ####### GPC tests
-
-
-def _make_solution(selected_names, payments_by_voter, projects):
-    """
-    Build a BudgetAllocation with EESAllocationDetails from simple descriptions.
-
-    Parameters
-    ----------
-    selected_names : list[str]
-        Names of selected projects.
-    payments_by_voter : dict[int, dict[str, float]]
-        payments_by_voter[voter_index][project_name] = payment.
-    projects : dict[str, Project]
-        Name→Project lookup.
-    """
-    selected = [projects[n] for n in selected_names]
-    pay = {}
-    for voter_idx, voter_payments in payments_by_voter.items():
-        pay[voter_idx] = {projects[pname]: amount for pname, amount in voter_payments.items()}
-    return BudgetAllocation(selected, details=EESAllocationDetails(pay))
 
 
 # zero-cost project should return zero delta
@@ -178,7 +287,7 @@ def test_gpc_free_project_needs_zero_increase():
     )
     solution = _make_solution([], {}, projects)
     leftover = get_leftover_budgets(inst, prof, solution)
-    leximax = {i: get_leximax_payment(solution, i, inst) for i in range(len(prof))}
+    leximax = get_leximax_payment(solution, len(prof), inst)
     delta = greedy_project_change(inst, prof, solution, projects["p1"], leftover, leximax)
     assert delta == pytest.approx(0)
 
@@ -190,7 +299,7 @@ def test_gpc_leftover_covers_cost_exactly():
     )
     solution = _make_solution([], {}, projects)
     leftover = get_leftover_budgets(inst, prof, solution)
-    leximax = {i: get_leximax_payment(solution, i, inst) for i in range(len(prof))}
+    leximax = get_leximax_payment(solution, len(prof), inst)
     delta = greedy_project_change(inst, prof, solution, projects["p1"], leftover, leximax)
     assert delta == pytest.approx(0)
 
@@ -202,7 +311,7 @@ def test_gpc_not_enough_leftover():
     )
     solution = _make_solution([], {}, projects)
     leftover = get_leftover_budgets(inst, prof, solution)
-    leximax = {i: get_leximax_payment(solution, i, inst) for i in range(len(prof))}
+    leximax = get_leximax_payment(solution, len(prof), inst)
     delta = greedy_project_change(inst, prof, solution, projects["p1"], leftover, leximax)
     assert delta > 0
 
@@ -220,7 +329,7 @@ def test_gpc_paper_example():
         projects,
     )
     leftover = get_leftover_budgets(inst, prof, solution)
-    leximax = {i: get_leximax_payment(solution, i, inst) for i in range(len(prof))}
+    leximax = get_leximax_payment(solution, len(prof), inst)
     delta = greedy_project_change(inst, prof, solution, projects["p3"], leftover, leximax)
     assert delta == pytest.approx(0.5)
 
@@ -238,7 +347,7 @@ def test_gpc_with_existing_selection():
         projects,
     )
     leftover = get_leftover_budgets(inst, prof, solution)
-    leximax = {i: get_leximax_payment(solution, i, inst) for i in range(len(prof))}
+    leximax = get_leximax_payment(solution, len(prof), inst)
     delta = greedy_project_change(inst, prof, solution, projects["p2"], leftover, leximax)
     assert delta >= 0
 
@@ -287,7 +396,7 @@ def test_addopt_finds_improvement():
 
 @pytest.mark.parametrize("num_voters, num_projects", [
     (3, 20),
-    (20, 2),
+    (20, 3),
     (20, 20),
 ])
 # random instances should stay valid after EES, GPC, and rerun EES
@@ -307,9 +416,15 @@ def test_random_ees_gpc_rerun(num_voters, num_projects, test_times=5, approval_p
     for seed in range(test_times):
         rng.seed(seed)
 
-        project_names = [f"p{i}" for i in range(num_projects)]
-        costs = {name: rng.randint(0, 100) for name in project_names}
-        projects_map = {name: Project(name, c) for name, c in costs.items()}
+        project_names = []
+        for i in range(num_projects):
+            project_names.append(f"p{i}")
+        costs = {}
+        for name in project_names:
+            costs[name] = rng.randint(0, 100)
+        projects_map = {}
+        for name, c in costs.items():
+            projects_map[name] = Project(name, c)
         all_projects = list(projects_map.values())
 
         total_cost = sum(costs.values())
@@ -320,7 +435,10 @@ def test_random_ees_gpc_rerun(num_voters, num_projects, test_times=5, approval_p
         # build approval ballots
         ballots = []
         for _ in range(num_voters):
-            approved = [projects_map[name] for name in project_names if rng.random() < approval_prob]
+            approved = []
+            for name in project_names:
+                if rng.random() < approval_prob:
+                    approved.append(projects_map[name])
             ballots.append(ApprovalBallot(approved))
         prof = ApprovalProfile(ballots, instance=inst)
 
@@ -329,14 +447,15 @@ def test_random_ees_gpc_rerun(num_voters, num_projects, test_times=5, approval_p
         payments = _get_payments(result)
 
         # validate EES result
-        total = sum(
-            payments.get(i, {}).get(p, 0)
-            for i in range(num_voters)
-            for p in result
-        )
+        total = 0
+        for i in range(num_voters):
+            for p in result:
+                total += payments.get(i, {}).get(p, 0)
         assert total <= budget, f"seed={seed}: EES exceeded budget"
         for p in result:
-            paid = sum(payments.get(i, {}).get(p, 0) for i in range(num_voters))
+            paid = 0
+            for i in range(num_voters):
+                paid += payments.get(i, {}).get(p, 0)
             assert paid == pytest.approx(p.cost), f"seed={seed}: project {p.name} not covered"
 
         # find unselected project that has support
@@ -354,7 +473,7 @@ def test_random_ees_gpc_rerun(num_voters, num_projects, test_times=5, approval_p
 
         # run GPC
         leftover = get_leftover_budgets(inst, prof, result)
-        leximax = {i: get_leximax_payment(result, i, inst) for i in range(num_voters)}
+        leximax = get_leximax_payment(result, num_voters, inst)
         delta = greedy_project_change(inst, prof, result, target_project, leftover, leximax)
         assert delta >= 0, f"seed={seed}: GPC returned negative delta"
 
@@ -365,14 +484,15 @@ def test_random_ees_gpc_rerun(num_voters, num_projects, test_times=5, approval_p
         new_payments = _get_payments(new_result)
 
         # validate new EES result
-        new_total = sum(
-            new_payments.get(i, {}).get(p, 0)
-            for i in range(num_voters)
-            for p in new_result
-        )
+        new_total = 0
+        for i in range(num_voters):
+            for p in new_result:
+                new_total += new_payments.get(i, {}).get(p, 0)
         assert new_total <= new_budget, f"seed={seed}: new EES exceeded budget"
         for p in new_result:
-            paid = sum(new_payments.get(i, {}).get(p, 0) for i in range(num_voters))
+            paid = 0
+            for i in range(num_voters):
+                paid += new_payments.get(i, {}).get(p, 0)
             assert paid == pytest.approx(p.cost), f"seed={seed}: project {p.name} not covered after increase"
 
         # Per Remark 1 in the paper, GPC for a single project
@@ -382,6 +502,105 @@ def test_random_ees_gpc_rerun(num_voters, num_projects, test_times=5, approval_p
             f"seed={seed}: GPC said delta={delta} for '{target_project.name}' "
             f"but EES returned the same result with budget={new_budget}"
         )
+
+
+####### ees_add_opt_completion tests
+
+
+# empty profile returns empty result
+def test_completion_empty_profile():
+    inst = Instance([], budget_limit=10)
+    prof = ApprovalProfile([], instance=inst)
+    result = ees_add_opt_completion(inst, prof)
+    assert len(result) == 0
+
+
+# paper example from §4.1 Example 4.3
+# 5 voters, 3 projects: p1(2), p2(3.2), p3(6), budget=10
+# EES alone picks {p1,p2} (cost 5.2), completion should pick {p1,p3} (cost 8)
+def test_completion_paper_example():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3.2, "p3": 6},
+                                                  10,
+                                                  [{"p1"}, {"p1", "p3"}, {"p2", "p3"}, {"p2", "p3"}, {"p3"}],)
+    result = ees_add_opt_completion(inst, prof)
+    names = sorted(_selected_names(result))
+    assert names == ["p1", "p3"]
+
+
+# result should always be budget-feasible
+def test_completion_budget_feasible():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3.2, "p3": 6},
+                                                  10,
+                                                  [{"p1"}, {"p1", "p3"}, {"p2", "p3"}, {"p2", "p3"}, {"p3"}],)
+    result = ees_add_opt_completion(inst, prof)
+    total = 0
+    for p in result:
+        total += p.cost
+    assert total <= inst.budget_limit
+
+
+# single voter, single affordable project
+def test_completion_single_voter_single_project():
+    inst, prof, projects = _make_instance_profile({"p1": 5},
+                                                  10,
+                                                  [{"p1"}],)
+    result = ees_add_opt_completion(inst, prof)
+    assert _selected_names(result) == ["p1"]
+
+
+# all projects are affordable from the start
+def test_completion_all_projects_selected():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3},
+                                                  10,
+                                                  [{"p1", "p2"}, {"p1", "p2"}],)
+    result = ees_add_opt_completion(inst, prof)
+    names = sorted(_selected_names(result))
+    assert names == ["p1", "p2"]
+
+
+# no project is affordable (cost exceeds budget)
+def test_completion_no_affordable_project():
+    inst, prof, projects = _make_instance_profile({"p1": 100},
+                                                  10,
+                                                  [{"p1"}],)
+    result = ees_add_opt_completion(inst, prof)
+    assert len(result) == 0
+
+
+# Remark 1 example: p1(2),p2(98),p3(100),p4(51), budget=150, 3 voters
+# A1={p1,p2}, A2={p2,p3}, A3={p3,p4}. EES selects {p1,p3}.
+# Completion should produce a feasible result with total cost <= 150.
+def test_completion_remark1_example():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 98, "p3": 100, "p4": 51},
+                                                  150,
+                                                  [{"p1", "p2"}, {"p2", "p3"}, {"p3", "p4"}],)
+    result = ees_add_opt_completion(inst, prof)
+    total = 0
+    for p in result:
+        total += p.cost
+    assert total <= 150
+    # should at least select the base EES result {p1, p3}
+    names = sorted(_selected_names(result))
+    assert "p1" in names
+    assert "p3" in names
+
+
+# completion should spend at least as much as base EES
+def test_completion_spends_at_least_as_much_as_ees():
+    inst, prof, projects = _make_instance_profile({"p1": 2, "p2": 3.2, "p3": 6},
+                                                  10,
+                                                  [{"p1"}, {"p1", "p3"}, {"p2", "p3"}, {"p2", "p3"}, {"p3"}],)
+    ees_result = exact_equal_shares(inst, prof)
+    ees_cost = 0
+    for p in ees_result:
+        ees_cost += p.cost
+
+    completion_result = ees_add_opt_completion(inst, prof)
+    completion_cost = 0
+    for p in completion_result:
+        completion_cost += p.cost
+
+    assert completion_cost >= ees_cost
 
 
 if __name__ == "__main__":
