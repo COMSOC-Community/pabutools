@@ -32,11 +32,11 @@ def check_bos_ejr_up_to_t(instance, profile, result):
             u_i_W = sum(p.cost for p in result if p in voter)
 
             if not T_minus_W:
-                if u_i_W >= cost_T - t - 1e-9:
+                if u_i_W >= cost_T - t:
                     condition_met = True
                     break
             else:
-                if all(u_i_W >= cost_T - t - c.cost - 1e-9 for c in T_minus_W):
+                if all(u_i_W >= cost_T - t - c.cost for c in T_minus_W):
                     condition_met = True
                     break
 
@@ -61,7 +61,7 @@ def check_fres_fractional_ejr(instance, profile, fres_result):
 
         for voter in group:
             u_i_W_frac = sum(p.cost * fres_result.get(p, 0) for p in instance if p in voter)
-            if u_i_W_frac >= cost_T - 1e-9:
+            if u_i_W_frac >= cost_T:
                 condition_met = True
                 break
 
@@ -122,7 +122,6 @@ def test_large():
                                ApprovalBallot({pD, pE}),
                                ApprovalBallot({pD, pE, pF}),
                                ApprovalBallot({pC, pD, pF})])
-
     assert sorted(bos_equal_shares(instance, profile)) == [pA, pC, pD, pF]
     assert fractional_equal_shares(instance, profile) == {pA: 1, pB: 0, pC: 0.8333333333333334, pD: 1.0,
                                                           pE: 0.6470588235294119, pF: 0.5}

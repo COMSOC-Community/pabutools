@@ -6,6 +6,7 @@ https://www.ac.tuwien.ac.at/comsoc2025/comsoc2025-papers/50.pdf
 Programmer: Ivan Gorbachev
 Date: 17/04/2026
 """
+import logging
 import math
 
 from scipy.optimize import root_scalar
@@ -30,6 +31,9 @@ def bos_equal_shares(instance, profile):
         >>> print(bos_equal_shares(instance, profile))
         [p1]
     """
+    logger = logging.getLogger(__name__)
+    logger.info("BOS equal shares")
+
     voters = list(profile)
     selected_projects = list()
     cost_selected_projects = 0
@@ -41,6 +45,9 @@ def bos_equal_shares(instance, profile):
 
     all_projects = list(instance)
 
+    logger.info(f"Budget: {budget}")
+    logger.info(f"Virtual budgets: {[{str(v): round(b, 2)} for v, b in zip(voters, virtual_budgets)]}")
+
     budget_for_project = {
         project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters)) for
         project in all_projects}
@@ -49,6 +56,7 @@ def bos_equal_shares(instance, profile):
                           budget_for_project[project] > 0 and project not in selected_projects]
 
     while available_projects and cost_selected_projects < budget:
+        logger.info(f"Remaining budget: {budget - cost_selected_projects}")
         best_alpha = 1
         best_rho = math.inf
         best_project = None
@@ -85,6 +93,10 @@ def bos_equal_shares(instance, profile):
 
         if best_project is None:
             break
+
+        logger.info(f"Selected project: {best_project}")
+        logger.info(f"alpha = {best_alpha:.4f}, rho = {best_rho:.4f}, rho/alpha = {best_rho / best_alpha:.4f}")
+
         if best_project.cost + cost_selected_projects <= budget and best_project not in selected_projects:
             selected_projects.append(best_project)
 
@@ -94,6 +106,7 @@ def bos_equal_shares(instance, profile):
             u = get_utility(voter, best_project)
             if u > 0:
                 virtual_budgets[i] = max(0, virtual_budgets[i] - best_rho * best_project.cost * u)
+        logger.info(f"Updated virtual budgets: {[{str(v): round(b, 2)} for v, b in zip(voters, virtual_budgets)]}")
 
         budget_for_project = {
             project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters)) for
@@ -102,6 +115,7 @@ def bos_equal_shares(instance, profile):
         available_projects = [project for project in all_projects if
                               cost_selected_projects + project.cost <= budget and budget_for_project[
                                   project] > 0 and project not in selected_projects]
+        logger.info(f"Selected Project: {selected_projects}\n")
     return selected_projects
 
 
@@ -119,12 +133,17 @@ def fractional_equal_shares(instance, profile):
         >>> print(fractional_equal_shares(instance, profile))
         {A: 0.55, B: 1}
     """
+    logger = logging.getLogger(__name__)
+    logger.info("Fractional equal shares")
+
     voters = sorted(list(profile), key=lambda v: str(v))
     cost_selected_projects = 0
     budget = instance.budget_limit
     num_voters = profile.num_ballots()
     virtual_budgets = [budget / num_voters for _ in voters]
     all_projects = sorted(list(instance), key=lambda p: str(p))
+    logger.info(f"Budget: {budget}")
+    logger.info(f"Virtual budgets: {[{str(v): round(b, 2)} for v, b in zip(voters, virtual_budgets)]}")
 
     budget_for_project = {
         project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters))
@@ -142,6 +161,7 @@ def fractional_equal_shares(instance, profile):
 
     while available_projects and cost_selected_projects < budget:
 
+        logger.info(f"Remaining budget: {budget - cost_selected_projects}")
         project_utilities = {c: sum(get_utility(voter, c) * c.cost for voter in voters) for c in available_projects}
         valid_projects = [c for c in available_projects if project_utilities[c] > 0]
 
@@ -158,6 +178,8 @@ def fractional_equal_shares(instance, profile):
                 fractions.append(virtual_budgets[i] / denom)
 
         a = min(fractions)
+        logger.info(f"Selected project: {c}")
+        logger.info(f"alpha = {a:.4f}, rho = {p:.4f}")
 
         project_part[c] += a
         for i, voter in enumerate(voters):
@@ -165,6 +187,7 @@ def fractional_equal_shares(instance, profile):
 
         voters = [v for i, v in enumerate(voters) if virtual_budgets[i] > 0]
         virtual_budgets = [b for b in virtual_budgets if b > 0]
+        logger.info(f"Updated virtual budgets: {[{str(v): round(b, 2)} for v, b in zip(voters, virtual_budgets)]}")
         budget_for_project = {
             project: sum(virtual_budgets[i] * get_utility(voter, project) for i, voter in enumerate(voters))
             for project in all_projects
@@ -177,11 +200,43 @@ def fractional_equal_shares(instance, profile):
                budget_for_project[project] > 0 and
                project_part[project] != 1
         ]
+        logger.info(f"Selected project parts: {project_part}\n")
+
 
     return dict(sorted(project_part.items(), key=lambda item: str(item[0])))
 
 
 if __name__ == '__main__':
-    import doctest
+    #import doctest
 
-    print(doctest.testmod())
+    #print(doctest.testmod())
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+
+    pA = Project("A", 300000)
+    pB = Project("C", 400000)
+    pC = Project("B", 300000)
+    pD = Project("D", 240000)
+    pE = Project("E", 170000)
+    pF = Project("F", 100000)
+
+    budget = 1000000
+
+    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
+
+    profile = ApprovalProfile([ApprovalBallot({pA}),
+                               ApprovalBallot({pA, pB, pC, pE}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pC}),
+                               ApprovalBallot({pA, pB, pF}),
+                               ApprovalBallot({pD, pE}),
+                               ApprovalBallot({pD, pE}),
+                               ApprovalBallot({pD, pE, pF}),
+                               ApprovalBallot({pC, pD, pF})])
+
+    fractional_equal_shares(instance, profile)
+
+    pB = Project("B", 400000)
+    pC = Project("C", 300000)
+    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
+    bos_equal_shares(instance, profile)
