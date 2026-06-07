@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}How it works{% endblock %}
+
+{% block content %}
+<section class="band about">
+  <div>
+    <p class="eyebrow">How it works</p>
+    <h1>Sharing a budget so everyone is treated equally</h1>
+    <p class="lead">
+      When a community has money to spend on shared projects, how do you choose which projects win
+      without letting the majority decide everything? This demo shows one fair answer:
+      the <strong>Method of Equal Shares</strong>.
+    </p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>The simple idea</h2>
+  <p>Think of it as giving everyone an equal wallet:</p>
+  <ol class="explainer-list">
+    <li><strong>Split the money equally.</strong> If there is a budget of 10 and 5 voters, each voter gets 2 to spend.</li>
+    <li><strong>Vote for what you like.</strong> Each voter ticks the projects they support.</li>
+    <li><strong>Projects pay for themselves.</strong> A project is funded when the people who voted for it can cover its cost from their own wallets, split as evenly as possible.</li>
+    <li><strong>Use the leftover money.</strong> If money is left over, the tool adds more projects while staying within the budget.</li>
+  </ol>
+  <p>
+    Because each voter has the same wallet, no group can be ignored: any large enough group of voters
+    can always fund a project they care about. That is what makes the outcome fair.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>What the results page shows</h2>
+  <ul class="explainer-list">
+    <li><strong>Funded projects</strong> &mdash; the final list of projects the budget will pay for.</li>
+    <li><strong>Why this is fair</strong> &mdash; a plain explanation of the equal-share idea.</li>
+    <li><strong>The numbers</strong> &mdash; exactly what each voter started with, spent, and kept, so you can check the fairness yourself.</li>
+    <li><strong>Technical details</strong> &mdash; the raw values and log, hidden away unless you want them.</li>
+  </ul>
+</section>
+
+<section class="panel about-us">
+  <h2>About us</h2>
+  <p>This demo was built by:</p>
+  <ul class="team-list">
+    <li>
+      <span class="team-name">Yonatan Gabay</span>
+      <span class="team-links">
+        <a href="https://github.com/yonatang8675" rel="noreferrer" target="_blank">GitHub</a> &middot;
+        <a href="https://www.linkedin.com/in/yonatan-gabay-415b0b231/" rel="noreferrer" target="_blank">LinkedIn</a>
+      </span>
+    </li>
+  </ul>
+  <p class="muted">I built this project to make the Method of Equal Shares easy to see and understand.</p>
+</section>
+
+<section class="panel">
+  <h2>Where this comes from</h2>
+  <p>
+    The method and the completion step are from the paper
+    <a href="https://arxiv.org/abs/2502.11797" rel="noreferrer" target="_blank">Streamlining Equal Shares</a>
+    by Sonja Kraiczy, Isaac Robinson, and Edith Elkind. This site is a small, friendly front end built on top of
+    the <code>pabutools</code> library; it does not change the algorithm in any way.
+  </p>
+  <a class="button-link" href="{{ url_for('index') }}">Build an election</a>
+</section>
+{% endblock %}

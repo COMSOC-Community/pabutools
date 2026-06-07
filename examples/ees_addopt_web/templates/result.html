@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}The fair result{% endblock %}
+
+{% block content %}
+<section class="result-hero band">
+  <div>
+    <p class="eyebrow">The fair result</p>
+    {% if result.completed.is_empty %}
+      <h1>No projects could be funded</h1>
+      <p class="lead">With this budget and these votes, no project could be fully paid for. Try a bigger budget or cheaper projects.</p>
+    {% else %}
+      <h1>{{ result.completed.count }} project{{ "" if result.completed.count == 1 else "s" }} funded</h1>
+      <p class="lead">These are the projects the community will pay for. Below you can follow every step the tool took to get here.</p>
+    {% endif %}
+  </div>
+  <div class="hero-side">
+    <div class="budget-meter" role="img" aria-label="Budget used: {{ result.completed.total_cost }} of {{ result.budget }}">
+      <div class="budget-fill" style="width: {{ result.completed_used_percent }}%;"></div>
+    </div>
+    <div class="meter-legend">
+      <span><strong>{{ result.completed.total_cost }}</strong> spent</span>
+      <span><strong>{{ result.completed_leftover }}</strong> left of {{ result.budget }}</span>
+    </div>
+    <a class="button-link" href="{{ url_for('index') }}">Try another election</a>
+  </div>
+</section>
+
+{% if not result.completed.is_empty %}
+<section class="panel">
+  <h2>Funded projects</h2>
+  <ul class="funded-list">
+    {% for project in result.completed.project_payments %}
+      <li>
+        <span class="check" aria-hidden="true">&#10003;</span>
+        <span class="f-name">{{ project.name }}</span>
+        <span class="f-cost">costs {{ project.cost }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="panel input-recap">
+  <h2>Your input</h2>
+  <p class="muted">This is exactly what was entered, so you can check the result against it.</p>
+  <div class="recap-grid">
+    <div class="recap-card">
+      <h3>Budget</h3>
+      <p class="recap-budget">{{ result.budget }}</p>
+    </div>
+    <div class="recap-card">
+      <h3>Projects ({{ result.project_count }})</h3>
+      <ul class="recap-list">
+        {% for project in result.project_rows %}
+          <li><span class="recap-item">{{ project.name }}</span><span class="muted">costs {{ project.cost }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="recap-card">
+      <h3>Votes ({{ result.voter_count }} voter{{ "" if result.voter_count == 1 else "s" }})</h3>
+      <ul class="recap-list">
+        {% for voter in result.base.voter_rows %}
+          <li><span class="recap-item">Voter {{ voter.number }}</span><span class="muted">{{ voter.approvals }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="panel steps-intro">
+  <h2>How the result was reached, step by step</h2>
+  <p class="muted">Nothing is hidden. Follow the four steps below, and open the log at the end to see every single decision.</p>
+</section>
+
+<!-- Step 1 -->
+<section class="panel step-block">
+  <div class="step-head"><span class="step-badge">1</span><h2>Give everyone an equal share</h2></div>
+  <p>
+    The budget of <strong>{{ result.budget }}</strong> is split equally among the
+    <strong>{{ result.voter_count }}</strong> voter{{ "" if result.voter_count == 1 else "s" }}.
+    So each voter gets <strong>{{ result.share_per_voter }}</strong> to spend on the projects they like.
+  </p>
+  <p class="muted">Because everyone gets the same amount, no group can be ignored &mdash; that is what keeps the result fair.</p>
+</section>
+
+<!-- Step 2 -->
+<section class="panel step-block">
+  <div class="step-head"><span class="step-badge">2</span><h2>Fund projects with the Method of Equal Shares</h2></div>
+  <p>
+    Using each voter's <strong>{{ result.share_per_voter }}</strong>, projects are picked one at a time, always choosing
+    the project that gives the most people the best value for money. Each chosen project is paid for by the voters who support it.
+  </p>
+
+  {% if result.base.project_payments %}
+  <h3>Projects picked, in order</h3>
+  <ol class="pick-list">
+    {% for project in result.base.project_payments %}
+      <li>
+        <span class="pick-name">{{ project.name }}</span>
+        <span class="pick-cost">costs {{ project.cost }}</span>
+        <span class="pick-pay">
+          paid by
+          {% for payer in project.payers %}Voter {{ payer.voter }} ({{ payer.amount }}){% if not loop.last %}, {% endif %}{% endfor %}
+        </span>
+      </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p>No project could be fully paid for in this first round.</p>
+  {% endif %}
+
+  <h3>What each voter spent and kept</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Voter</th><th>Voted for</th><th>Equal share</th><th>Spent</th><th>Kept</th></tr></thead>
+      <tbody>
+      {% for voter in result.base.voter_rows %}
+        <tr>
+          <td>Voter {{ voter.number }}</td>
+          <td>{{ voter.approvals }}</td>
+          <td>{{ result.share_per_voter }}</td>
+          <td>{{ voter.paid_total }}</td>
+          <td>{{ voter.leftover }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="note good">Everyone started with the same {{ result.share_per_voter }}, and nobody spent more than their share. This first round funded <strong>{{ result.base.selected_display }}</strong> and left <strong>{{ result.base_leftover }}</strong> unspent.</p>
+</section>
+
+<!-- Step 3 -->
+<section class="panel step-block">
+  <div class="step-head"><span class="step-badge">3</span><h2>Use the leftover money</h2></div>
+  {% if result.completion_multistep %}
+  <p>
+    To make better use of the <strong>{{ result.base_leftover }}</strong> left over, the tool pretends each voter has a
+    slightly bigger share and checks what the Method of Equal Shares would fund. It tries larger and larger shares,
+    and keeps the <strong>most expensive result that still fits the real {{ result.budget }} budget</strong>.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Round</th><th>Pretend share each</th><th>Would fund</th><th>Total cost</th><th>Fits budget?</th><th>Outcome</th></tr>
+      </thead>
+      <tbody>
+      {% for round in result.completion_rounds %}
+        <tr class="{{ 'is-final' if round.is_chosen else '' }}">
+          <td>Round {{ round.number }}</td>
+          <td>{{ round.share }}</td>
+          <td>{{ round.selected_display }}</td>
+          <td>{{ round.total_cost }}</td>
+          <td>{{ "Yes" if round.fits else "No" }}</td>
+          <td>
+            {% if round.is_chosen %}
+              <span class="tag yes">&#10003; Chosen</span>
+            {% elif not round.fits %}
+              <span class="tag no">Too expensive</span>
+            {% else %}
+              <span class="tag muted-tag">Tried</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Round 1 is the first round from Step 2. The tool stops once a bigger share would only add projects that go over the budget.</p>
+  {% else %}
+  <p>The first round already used the budget as well as possible, so no extra projects could be added. The final result is the same as Step 2.</p>
+  {% endif %}
+</section>
+
+<!-- Step 4 -->
+<section class="panel step-block">
+  <div class="step-head"><span class="step-badge">4</span><h2>The final decision</h2></div>
+  {% if result.completed.is_empty %}
+    <p>No project could be funded within the budget.</p>
+  {% else %}
+    <p>
+      The funded projects are <strong>{{ result.completed.selected_display }}</strong>, costing
+      <strong>{{ result.completed.total_cost }}</strong> of the <strong>{{ result.budget }}</strong> budget, with
+      <strong>{{ result.completed_leftover }}</strong> left over.
+    </p>
+  {% endif %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Project</th><th>Cost</th><th>Votes</th><th>Funded</th></tr></thead>
+      <tbody>
+      {% for project in result.project_rows %}
+        <tr class="{{ 'is-final' if project.in_completed else '' }}">
+          <td>{{ project.name }}</td>
+          <td>{{ project.cost }}</td>
+          <td>{{ project.supporters }}</td>
+          <td>
+            {% if project.in_completed %}
+              <span class="tag yes">&#10003; Funded</span>
+            {% else %}
+              <span class="tag no">Not funded</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Logs -->
+<section class="panel log-panel">
+  <h2>See every step in the log</h2>
+  <p class="muted">This is the algorithm's own record of what it did, in order ({{ result.logs | length }} message{{ "" if result.logs | length == 1 else "s" }}).</p>
+  <button type="button" class="secondary" id="toggle-logs" aria-expanded="false" aria-controls="log-list">Show the log</button>
+  <ol class="logs-list" id="log-list" dir="ltr" hidden>
+    {% for line in result.logs %}
+      <li>{{ line }}</li>
+    {% else %}
+      <li>No log messages were produced.</li>
+    {% endfor %}
+  </ol>
+</section>
+
+<details class="panel advanced">
+  <summary>Extra technical values (for the curious)</summary>
+  <div class="advanced-body">
+    <p class="muted">
+      Raw values behind the algorithm from the paper
+      <a href="https://arxiv.org/abs/2502.11797" rel="noreferrer" target="_blank">Streamlining Equal Shares</a>.
+      The smallest share increase that would change the first-round result was <strong>{{ result.next_delta }}</strong>.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Voter</th><th>Leftover budget</th><th>Leximax payment vector</th></tr></thead>
+        <tbody>
+        {% for row in result.leftover_rows %}
+          <tr><td>Voter {{ row.voter }}</td><td>{{ row.leftover }}</td><td dir="ltr">{{ row.leximax }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</details>
+
+<section class="panel cta">
+  <div>
+    <h2>Want to experiment?</h2>
+    <p class="muted">Change the budget, projects, or votes and watch how the steps and the result change.</p>
+  </div>
+  <a class="button-link" href="{{ url_for('index') }}">Build another election</a>
+</section>
+
+<script>
+  (function () {
+    var button = document.getElementById("toggle-logs");
+    var list = document.getElementById("log-list");
+    if (!button || !list) {
+      return;
+    }
+    button.addEventListener("click", function () {
+      var willOpen = list.hidden;
+      list.hidden = !willOpen;
+      button.setAttribute("aria-expanded", String(willOpen));
+      button.textContent = willOpen ? "Hide the log" : "Show the log";
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Build an election{% endblock %}
+
+{% block content %}
+<section class="hero band">
+  <div>
+    <p class="eyebrow">Share a budget fairly</p>
+    <h1>Which projects should the money pay for?</h1>
+    <p class="lead">
+      Imagine a community has some money to spend and a list of possible projects.
+      People vote for the projects they like. This tool decides which projects to fund
+      so that <strong>everyone's vote counts equally</strong> &mdash; and it shows you the numbers
+      that prove it is fair.
+    </p>
+  </div>
+  <ol class="steps" aria-label="How to use this page">
+    <li><span>1</span> Set the budget</li>
+    <li><span>2</span> List the projects</li>
+    <li><span>3</span> Add the votes</li>
+    <li><span>4</span> See the fair result</li>
+  </ol>
+  <p class="muted source-note">
+    Powered by the <strong>Method of Equal Shares</strong> from the paper
+    <a href="https://arxiv.org/abs/2502.11797" rel="noreferrer" target="_blank">Streamlining Equal Shares</a>.
+    <a href="{{ url_for('about') }}">Read how it works &rarr;</a>
+  </p>
+</section>
+
+{% if error %}
+<div class="alert" role="alert">{{ error }}</div>
+{% endif %}
+
+<section class="panel quick-start">
+  <h2>Quick start</h2>
+  <p class="muted">
+    Don't want to type everything by hand? Choose how many projects and voters you want, and we'll
+    fill the form below with a ready-to-run example. You can change any value afterwards.
+  </p>
+  <div class="quick-grid">
+    <label>
+      Projects
+      <input type="number" id="gen-projects" min="1" max="20" step="1" value="4">
+    </label>
+    <label>
+      Voters
+      <input type="number" id="gen-voters" min="1" max="50" step="1" value="6">
+    </label>
+    <button type="button" class="secondary" id="generate">Generate a sample election</button>
+  </div>
+</section>
+
+<form id="builder" method="post" action="{{ url_for('run_algorithm') }}">
+  <section class="panel builder-step">
+    <h2><span class="step-number">1</span> Set the budget</h2>
+    <p class="muted">How much money is there to share between all the projects?</p>
+    <label class="budget-field">
+      Total budget
+      <input type="number" id="budget" min="0" step="any" inputmode="decimal" value="10">
+    </label>
+  </section>
+
+  <section class="panel builder-step">
+    <h2><span class="step-number">2</span> List the projects</h2>
+    <p class="muted">Give each project a name and how much it costs.</p>
+    <div class="row-head projects-head">
+      <span>#</span><span>Project name</span><span>Cost</span><span></span>
+    </div>
+    <div id="projects"></div>
+    <button type="button" class="secondary add-button" id="add-project">+ Add project</button>
+  </section>
+
+  <section class="panel builder-step">
+    <h2><span class="step-number">3</span> Add the votes</h2>
+    <p class="muted">For each voter, tick every project they support. Leave all boxes empty if they support none.</p>
+    <div id="voters"></div>
+    <button type="button" class="secondary add-button" id="add-voter">+ Add voter</button>
+  </section>
+
+  <input type="hidden" name="payload" id="payload">
+
+  <section class="panel run-panel">
+    <h2><span class="step-number">4</span> See the fair result</h2>
+    <p class="muted">We will fund as many projects as the budget allows, keeping everyone's influence equal.</p>
+    <p class="field-error" id="form-error" role="alert" hidden></p>
+    <div class="actions">
+      <button type="submit" id="run-button" class="primary-big">See the fair result</button>
+      <button type="button" class="secondary" id="load-example">Load example</button>
+      <button type="button" class="ghost" id="clear-all">Start from scratch</button>
+    </div>
+  </section>
+</form>
+
+<script>
+  window.INITIAL_DATA = {{ initial_data | tojson }};
+  window.EXAMPLE_DATA = {{ example_data | tojson }};
+</script>
+<script src="{{ url_for('static', filename='builder.js') }}"></script>
+{% endblock %}
