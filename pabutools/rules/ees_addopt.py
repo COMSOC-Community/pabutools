@@ -9,12 +9,16 @@ Date: 20-04-2026
 
 from __future__ import annotations
 
+import logging
+
 from pabutools.election.instance import Instance, Project
 from pabutools.election.profile import AbstractApprovalProfile
 from pabutools.fractions import frac
 from pabutools.rules.budgetallocation import BudgetAllocation, AllocationDetails
 from pabutools.tiebreaking import lexico_tie_breaking
 from pabutools.utils import Numeric
+
+logger = logging.getLogger(__name__)
 
 
 class EESAllocationDetails(AllocationDetails):
@@ -82,8 +86,11 @@ def exact_equal_shares(
     >>> [p.name for p in result]
     ['p1', 'p2']
     """
+    logger.info("exact_equal_shares: starting with %d projects, budget_limit=%s, %d voters",
+                 len(instance), instance.budget_limit, len(profile))
     n = len(profile)
     if n == 0:
+        logger.info("exact_equal_shares: no voters, returning empty allocation")
         return BudgetAllocation(details=EESAllocationDetails())
 
     b = instance.budget_limit
@@ -147,6 +154,8 @@ def exact_equal_shares(
 
         # Line 4-5: Return the current allocation if no feasible project remains.
         if not best_candidates:
+            logger.info("exact_equal_shares: no feasible project remains, returning %d selected projects",
+                        len(selected_projects))
             return BudgetAllocation(selected_projects, details=EESAllocationDetails(payments))
 
         # Line 9: Break ties among the best feasible projects.
@@ -165,6 +174,8 @@ def exact_equal_shares(
                     break
 
         # Line 10: Add the chosen project to the allocation.
+        logger.debug("exact_equal_shares: selected project '%s' (cost=%s, score=%s, supporters=%d)",
+                     chosen_project.name, chosen_project.cost, best_score, len(chosen_supporters))
         selected_projects.append(chosen_project)
 
         # Line 11: Charge each chosen supporter an equal share of the project cost.
@@ -208,6 +219,7 @@ def get_leftover_budgets(
 
     leftover[i] = b/n - sum of payments by voter i across all selected projects.
     """
+    logger.debug("get_leftover_budgets: computing for %d voters", len(profile))
     num_voters = len(profile)
     budget_limit = instance.budget_limit
     allocation_details = current_solution.details
@@ -236,6 +248,7 @@ def get_leximax_payment(
     When a voter made no payments, their entry is ``[(0, smallest_name)]``
     so that non-paying voters never certify instability.
     """
+    logger.debug("get_leximax_payment: computing for %d voters", num_voters)
     allocation_details = current_solution.details
     smallest_project_name = ""
     for project in instance:
@@ -327,6 +340,8 @@ def greedy_project_change(
     >>> greedy_project_change(inst, prof, solution, p3, leftover, leximax)
     mpq(1,2)
     """
+    logger.debug("greedy_project_change: computing d for project '%s' (cost=%s)",
+                 project.name, project.cost)
     n = len(profile)
 
     # All voters who approve project.
@@ -420,7 +435,9 @@ def greedy_project_change(
             leftover_index += 1
 
     # Line 20: Return the best budget increase found.
-    return max(0, d)
+    result = max(0, d)
+    logger.debug("greedy_project_change: project '%s' => d=%s", project.name, result)
+    return result
 
 
 def add_opt(
@@ -471,6 +488,8 @@ def add_opt(
     >>> add_opt(inst, prof, solution)
     mpq(1,2)
     """
+    logger.info("add_opt: computing minimum d over %d projects, %d voters",
+                len(instance), len(profile))
     n = len(profile)
 
     # Precompute leftover budgets and leximax payments for all voters
@@ -493,6 +512,7 @@ def add_opt(
         d = min(d, gpc_result)
 
     # Line 7: Return the minimum change over all projects.
+    logger.info("add_opt: minimum d=%s", d)
     return d
 
 
@@ -540,8 +560,11 @@ def ees_add_opt_completion(
     >>> sorted(p.name for p in result)
     ['p1', 'p3']
     """
+    logger.info("ees_add_opt_completion: starting with %d projects, budget_limit=%s, %d voters",
+                len(instance), instance.budget_limit, len(profile))
     n = len(profile)
     if n == 0:
+        logger.info("ees_add_opt_completion: no voters, delegating to exact_equal_shares")
         return exact_equal_shares(instance, profile, utilities)
 
     original_budget = instance.budget_limit
@@ -557,17 +580,23 @@ def ees_add_opt_completion(
         total_cost = 0
         for project in result:
             total_cost += frac(project.cost)
+        logger.debug("ees_add_opt_completion: virtual_budget=%s, EES selected %d projects, total_cost=%s",
+                     virtual_budget, len(result), total_cost)
         if total_cost <= original_budget and total_cost > best_result_cost:
             best_result = result
             best_result_cost = total_cost
 
         d = add_opt(virtual_inst, profile, result)
         if d == float('inf') or d <= 0:
+            logger.debug("ees_add_opt_completion: stopping (d=%s)", d)
             break
 
         virtual_budget = virtual_budget + n * frac(d)
+        logger.debug("ees_add_opt_completion: increasing virtual_budget to %s (d=%s)", virtual_budget, d)
 
     if best_result is None:
         best_result = exact_equal_shares(instance, profile, utilities)
     
+    logger.info("ees_add_opt_completion: returning %d projects, total_cost=%s",
+                len(best_result), best_result_cost)
     return best_result
