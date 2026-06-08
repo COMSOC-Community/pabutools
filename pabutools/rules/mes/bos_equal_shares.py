@@ -11,7 +11,7 @@ import math
 
 from scipy.optimize import root_scalar
 
-from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, CardinalBallot
+from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, CardinalBallot, CardinalProfile
 
 
 def get_utility(voter, project):
@@ -24,6 +24,12 @@ def bos_equal_shares(instance, profile):
     """
     Algorithm "BOS Equal Shares" - The algorithm selects a subset of projects such that the resulting subset is both
     affordable under the budget while also exhausting it and guaranteeing fairness
+    Parameters:
+        instance - a public budgeting instance
+        profile - a profile (ApprovalProfile/CardinalProfile) of voters (ApprovalBallot/CardinalBallot)
+    Returns:
+        selected_projects - a list of all selected projects
+
     Example:
         >>> p1, p2 = Project("p1", 1000), Project("p2", 100)
         >>> instance = Instance([p1, p2], 1000)
@@ -31,6 +37,11 @@ def bos_equal_shares(instance, profile):
         >>> print(bos_equal_shares(instance, profile))
         [p1]
     """
+    if not isinstance(profile, (ApprovalProfile, CardinalProfile)):
+        raise TypeError("profile must be an instance of ApprovalProfile or CardinalProfile")
+    if any(not isinstance(voter, (ApprovalBallot, CardinalBallot)) for voter in profile):
+        raise TypeError("All items inside the profile must be ApprovalBallot or CardinalBallot instances")
+
     logger = logging.getLogger(__name__)
     logger.info("\nBOS equal shares")
 
@@ -125,6 +136,13 @@ def fractional_equal_shares(instance, profile):
     allows players to purchase fractional shares in the projects they support for fractional cost. This Algorithm is
     used as a part of the BOS algorithm in order to select the projects before making the players paying the full
     price, thus leading to the overspending feature of BOS.
+    Parameters:
+        instance - a public budgeting instance
+        profile - a profile (ApprovalProfile/CardinalProfile) of voters (ApprovalBallot/CardinalBallot)
+    Returns:
+        dict(sorted(project_part.items(), key=lambda item: str(item[0]))) - A sorted dictonery of the projects and the
+        portion that was purchaed of each project
+
         >>> pA = Project("A", 1000)
         >>> pB = Project("B", 500)
         >>> budget = 1100
@@ -133,6 +151,11 @@ def fractional_equal_shares(instance, profile):
         >>> print(fractional_equal_shares(instance, profile))
         {A: 0.55, B: 1}
     """
+    if not isinstance(profile, (ApprovalProfile, CardinalProfile)):
+        raise TypeError("profile must be an instance of ApprovalProfile or CardinalProfile")
+    if any(not isinstance(voter, (ApprovalBallot, CardinalBallot)) for voter in profile):
+        raise TypeError("All items inside the profile must be ApprovalBallot or CardinalBallot instances")
+
     logger = logging.getLogger(__name__)
     logger.info("\nFractional equal shares")
 
@@ -202,41 +225,4 @@ def fractional_equal_shares(instance, profile):
         ]
         logger.info(f"Selected project parts: {project_part}\n")
 
-
     return dict(sorted(project_part.items(), key=lambda item: str(item[0])))
-
-
-if __name__ == '__main__':
-    import doctest
-
-    print(doctest.testmod())
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
-
-    pA = Project("A", 300000)
-    pB = Project("C", 400000)
-    pC = Project("B", 300000)
-    pD = Project("D", 240000)
-    pE = Project("E", 170000)
-    pF = Project("F", 100000)
-
-    budget = 1000000
-
-    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
-
-    profile = ApprovalProfile([ApprovalBallot({pA}),
-                               ApprovalBallot({pA, pB, pC, pE}),
-                               ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pC}),
-                               ApprovalBallot({pA, pB, pF}),
-                               ApprovalBallot({pD, pE}),
-                               ApprovalBallot({pD, pE}),
-                               ApprovalBallot({pD, pE, pF}),
-                               ApprovalBallot({pC, pD, pF})])
-
-    fractional_equal_shares(instance, profile)
-
-    pB = Project("B", 400000)
-    pC = Project("C", 300000)
-    instance = Instance([pA, pB, pC, pD, pE, pF], budget)
-    bos_equal_shares(instance, profile)
