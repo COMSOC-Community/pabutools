@@ -1,11 +1,5 @@
 # Section A – Performance Comparison
 
-## Experiment Description
-
-This experiment compares the performance of the algorithms from the paper
-**"Streamlining Equal Shares"** (Kraiczy, Robinson, Elkind, 2024)
-against other Participatory Budgeting rules from the `pabutools` library.
-
 ### Algorithms Tested
 
 | Algorithm | Description | Source |
@@ -31,11 +25,6 @@ All 4 algorithms run on **exactly the same inputs**:
 - **Number of voters**: 50
 - **Repetitions**: 3 runs (seeds: 1, 2, 3) – averages shown in plots
 - **Input generation**: random costs between 0 and 100, budget = 40%–80% of total cost, approval probability = 0.4
-
-### Tools
-
-- `experiments-csv` library for experiment definition and CSV output
-- `matplotlib` for plotting
 
 ---
 
@@ -110,27 +99,3 @@ All 4 algorithms run on **exactly the same inputs**:
 2. **EES** alone is fast but does not exhaust the budget – suitable as an intermediate step
 3. **MES** is a good compromise: fast, fair, and produces reasonable results
 4. **Greedy** is the fastest and best at budget utilization, but does not guarantee fair allocation
-
----
-
-## How to Run
-
-```bash
-# Run experiment and generate plots
-py experiments/experiment_comparison.py
-
-# Generate plots only (from existing CSV data)
-py experiments/experiment_comparison.py plot
-```
-
-### Files
-
-| File | Description |
-|------|-------------|
-| `experiment_comparison.py` | Main experiment script |
-| `comparison.csv` | Raw experiment data |
-| `runtime_voters_50.png` | Runtime plot |
-| `remaining_budget_voters_50.png` | Remaining budget plot |
-| `total_cost_voters_50.png` | Total cost plot |
-| `social_welfare_voters_50.png` | Social welfare plot |
-| `num_selected_voters_50.png` | Number of selected projects plot |
