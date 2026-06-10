@@ -17,7 +17,6 @@ Uses the experiments-csv library.
 """
 
 import logging
-import signal
 import sys
 import time
 
@@ -61,23 +60,30 @@ def run_single(num_projects: int, num_voters: int, algorithm: str, seed: int):
 
     _random.seed(seed)
 
-    # Generate random instance and profile
-    instance = get_random_instance(num_projects, min_cost=1, max_cost=100)
-    profile = get_random_approval_profile(instance, num_voters)
+    # Generate random instance (same style as test_ees_addopt random tests)
+    approval_prob = 0.4
+    budget_factor_low, budget_factor_high = 0.4, 0.8
+
+    projects = []
+    for i in range(num_projects):
+        projects.append(Project(str(i), _random.randint(0, 100)))
+    total_project_cost = sum(p.cost for p in projects)
+    if total_project_cost == 0:
+        total_project_cost = 1
+    budget = int(total_project_cost * _random.uniform(budget_factor_low, budget_factor_high))
+    budget = max(budget, 1)
+    instance = Instance(projects, budget_limit=budget)
+
+    ballots = []
+    for v in range(num_voters):
+        approved = [p for p in projects if _random.random() < approval_prob]
+        ballots.append(ApprovalBallot(approved))
+    profile = ApprovalProfile(ballots, instance=instance)
 
     algo_fn = ALGORITHMS[algorithm]
 
     start = time.perf_counter()
-    try:
-        result = algo_fn(instance, profile)
-    except TimeoutError:
-        return {
-            "runtime": TIME_LIMIT,
-            "total_cost": -1,
-            "num_selected": -1,
-            "social_welfare": -1,
-            "budget_limit": int(instance.budget_limit),
-        }
+    result = algo_fn(instance, profile)
     elapsed = time.perf_counter() - start
 
     total_cost = sum(p.cost for p in result)
@@ -110,10 +116,10 @@ def run_experiments():
     ex.logger.setLevel(logging.INFO)
 
     input_ranges = {
-        "num_projects": [5, 10, 15, 20, 30, 40, 50, 70, 100],
-        "num_voters": [20, 50],
+        "num_projects": [10, 30, 60, 100],
+        "num_voters":   [50],
         "algorithm": list(ALGORITHMS.keys()),
-        "seed": list(range(1, 4)),  # 3 repetitions per combination
+        "seed": [1, 2, 3],
     }
 
     ex.run(run_single, input_ranges)
@@ -132,7 +138,7 @@ def plot_results():
     if "remaining_budget" not in df.columns:
         df["remaining_budget"] = df["budget_limit"] - df["total_cost"]
 
-    VOTER_COUNTS = [20, 50]
+    VOTER_COUNTS = [50]
     metrics = [
         ("runtime", "Runtime (seconds)"),
         ("total_cost", "Total Cost"),
