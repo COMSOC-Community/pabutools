@@ -94,6 +94,7 @@ def run_single(num_projects: int, num_voters: int, algorithm: str, seed: int):
         "num_selected": num_selected,
         "social_welfare": social_welfare,
         "budget_limit": int(instance.budget_limit),
+        "remaining_budget": int(instance.budget_limit) - int(total_cost),
     }
 
 
@@ -127,10 +128,15 @@ def plot_results():
     csv_path = f"{RESULTS_DIR}/{CSV_FILE}"
     df = pd.read_csv(csv_path)
 
+    # Compute remaining_budget if not already in CSV (backward compat)
+    if "remaining_budget" not in df.columns:
+        df["remaining_budget"] = df["budget_limit"] - df["total_cost"]
+
     VOTER_COUNTS = [20, 50]
     metrics = [
         ("runtime", "Runtime (seconds)"),
         ("total_cost", "Total Cost"),
+        ("remaining_budget", "Remaining Budget (unused)"),
         ("social_welfare", "Social Welfare (total approvals)"),
         ("num_selected", "Number of Selected Projects"),
     ]
