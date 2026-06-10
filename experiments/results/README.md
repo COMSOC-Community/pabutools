@@ -43,7 +43,7 @@
 
 ### זמן ריצה
 
-![Runtime](results/runtime_voters_50.png)
+![Runtime](runtime_voters_50.png)
 
 | אלגוריתם | 10 פרויקטים | 30 פרויקטים | 60 פרויקטים | 100 פרויקטים |
 |-----------|------------|------------|------------|-------------|
@@ -59,7 +59,7 @@
 
 ### תקציב שנותר (Remaining Budget)
 
-![Remaining Budget](results/remaining_budget_voters_50.png)
+![Remaining Budget](remaining_budget_voters_50.png)
 
 | אלגוריתם | 10 פרויקטים | 30 פרויקטים | 60 פרויקטים | 100 פרויקטים |
 |-----------|------------|------------|------------|-------------|
@@ -76,7 +76,7 @@
 
 ### רווחה חברתית (Social Welfare)
 
-![Social Welfare](results/social_welfare_voters_50.png)
+![Social Welfare](social_welfare_voters_50.png)
 
 | אלגוריתם | 10 פרויקטים | 30 פרויקטים | 60 פרויקטים | 100 פרויקטים |
 |-----------|------------|------------|------------|-------------|
@@ -92,8 +92,8 @@
 
 ### עלות כוללת ומספר פרויקטים
 
-![Total Cost](results/total_cost_voters_50.png)
-![Num Selected](results/num_selected_voters_50.png)
+![Total Cost](total_cost_voters_50.png)
+![Num Selected](num_selected_voters_50.png)
 
 ---
 
@@ -128,9 +128,9 @@ py experiments/experiment_comparison.py plot
 | קובץ | תיאור |
 |------|--------|
 | `experiment_comparison.py` | סקריפט הניסוי הראשי |
-| `results/comparison.csv` | נתוני הניסוי הגולמיים |
-| `results/runtime_voters_50.png` | גרף זמן ריצה |
-| `results/remaining_budget_voters_50.png` | גרף תקציב שנותר |
-| `results/total_cost_voters_50.png` | גרף עלות כוללת |
-| `results/social_welfare_voters_50.png` | גרף רווחה חברתית |
-| `results/num_selected_voters_50.png` | גרף מספר פרויקטים שנבחרו |
+| `comparison.csv` | נתוני הניסוי הגולמיים |
+| `runtime_voters_50.png` | גרף זמן ריצה |
+| `remaining_budget_voters_50.png` | גרף תקציב שנותר |
+| `total_cost_voters_50.png` | גרף עלות כוללת |
+| `social_welfare_voters_50.png` | גרף רווחה חברתית |
+| `num_selected_voters_50.png` | גרף מספר פרויקטים שנבחרו |
