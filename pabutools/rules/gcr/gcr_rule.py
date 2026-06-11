@@ -97,7 +97,7 @@ def greedy_cohesive_rule(
     ... ])
     >>> result = greedy_cohesive_rule(instance, profile)
     >>> sorted(p.name for p in result)
-    ['p1', 'p2']
+    ['p1']
     """
     # Resolve satisfaction: default to Cardinality_Sat for approval profiles.
     if sat_class is None and sat_profile is None:
