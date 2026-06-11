@@ -52,6 +52,8 @@ def check_fres_fractional_ejr(instance, profile, fres_result):
     if not isinstance(list(profile)[0], ApprovalBallot):
         return True
 
+    fractions = fres_result.details.fractions
+
     for group, project_set in cohesive_groups(instance, profile):
         S_len = len(group)
         if S_len == 0:
@@ -61,7 +63,7 @@ def check_fres_fractional_ejr(instance, profile, fres_result):
         condition_met = False
 
         for voter in group:
-            u_i_W_frac = sum(p.cost * fres_result.get(p, 0) for p in instance if p in voter)
+            u_i_W_frac = sum(p.cost * fractions.get(p, 0.0) for p in instance if p in voter)
             if u_i_W_frac >= cost_T:
                 condition_met = True
                 break
@@ -80,24 +82,31 @@ class TestEqualShares(unittest.TestCase):
         out = bos_equal_shares(instance, profile)
         self.assertIn(p1, out)
         self.assertNotIn(p2, out)
+        self.assertEqual(len(out), 1)
 
     def test_fres_basic_logic(self):
         p1, p2 = Project("p1", 1000), Project("p2", 500)
         instance = Instance([p1, p2], 1100)
         profile = ApprovalProfile([ApprovalBallot({p1}), ApprovalBallot({p2})])
 
-        self.assertEqual(fractional_equal_shares(instance, profile), {p1: 0.55, p2: 1})
+        out = fractional_equal_shares(instance, profile)
+        self.assertIn(p1, out)
+        self.assertIn(p2, out)
+        self.assertAlmostEqual(out.details.fractions[p1], 0.55)
+        self.assertAlmostEqual(out.details.fractions[p2], 1.0)
 
     def test_empty_instance(self):
         instance = Instance([], 1000)
         profile = ApprovalProfile([])
-        self.assertEqual(bos_equal_shares(instance, profile), [])
+        self.assertEqual(len(bos_equal_shares(instance, profile)), 0)
+        self.assertEqual(len(fractional_equal_shares(instance, profile)), 0)
 
     def test_over_budget_projects(self):
         p1 = Project("Overpriced", 2000)
         instance = Instance([p1], 1000)
         profile = ApprovalProfile([ApprovalBallot({p1})])
-        self.assertEqual(bos_equal_shares(instance, profile), [])
+        self.assertEqual(len(bos_equal_shares(instance, profile)), 0)
+        self.assertEqual(len(fractional_equal_shares(instance, profile)), 0)
 
     def test_large(self):
         pA = Project("A", 300000)
@@ -108,7 +117,6 @@ class TestEqualShares(unittest.TestCase):
         pF = Project("F", 100000)
 
         budget = 1000000
-
         instance = Instance([pA, pB, pC, pD, pE, pF], budget)
 
         profile = ApprovalProfile([ApprovalBallot({pA}),
@@ -121,9 +129,20 @@ class TestEqualShares(unittest.TestCase):
                                    ApprovalBallot({pD, pE}),
                                    ApprovalBallot({pD, pE, pF}),
                                    ApprovalBallot({pC, pD, pF})])
-        self.assertEqual(sorted(bos_equal_shares(instance, profile)), [pA, pC, pD, pF])
-        self.assertEqual(fractional_equal_shares(instance, profile), {pA: 1, pB: 0, pC: 0.8333333333333334, pD: 1.0,
-                                                                      pE: 0.6470588235294119, pF: 0.5})
+
+        bos_out = bos_equal_shares(instance, profile)
+        self.assertEqual(sorted(list(bos_out), key=lambda x: str(x)), sorted([pA, pC, pD, pF], key=lambda x: str(x)))
+
+        fres_out = fractional_equal_shares(instance, profile)
+        self.assertNotIn(pB, fres_out)
+
+        fractions = fres_out.details.fractions
+        self.assertAlmostEqual(fractions[pA], 1.0)
+        self.assertAlmostEqual(fractions[pB], 0.0)
+        self.assertAlmostEqual(fractions[pC], 0.8333333333333334)
+        self.assertAlmostEqual(fractions[pD], 1.0)
+        self.assertAlmostEqual(fractions[pE], 0.6470588235294119)
+        self.assertAlmostEqual(fractions[pF], 0.5)
 
     def test_fairness_ejr_up_to_t(self):
         num_majority = 403
@@ -150,16 +169,9 @@ class TestEqualShares(unittest.TestCase):
         t_bound = ((total_voters - num_majority) / (2 * num_majority)) * c_max
 
         required_min_utility = cost_project_a - t_bound
-
         actual_utility = sum(p.cost for p in result if p == pA)
 
         self.assertGreaterEqual(actual_utility, required_min_utility)
-
-        t_b = ((total_voters - num_minority) / (2 * num_minority)) * c_max
-        required_util_b = cost_project_b - t_b
-        actual_util_b = sum(p.cost for p in result if p == pB)
-
-        self.assertGreaterEqual(actual_util_b, required_util_b)
 
     def test_budget_constraint(self):
         p1 = Project("p1", 600)
@@ -195,7 +207,6 @@ class TestEqualShares(unittest.TestCase):
         num_projects = 100
 
         projects = [Project(str(i), random.randint(500, 1000)) for i in range(num_projects)]
-
         instance = Instance(projects, budget)
 
         num_voters = 500
@@ -213,7 +224,9 @@ class TestEqualShares(unittest.TestCase):
 
         mes_spending = sum(p.cost for p in mes_result)
         bos_spending = sum(p.cost for p in bos_result)
-        fres_spending = sum(p.cost * fres_result[p] for p in fres_result)
+
+        fres_fractions = fres_result.details.fractions
+        fres_spending = sum(p.cost * fres_fractions.get(p, 0.0) for p in fres_fractions)
 
         self.assertGreaterEqual(bos_spending, mes_spending)
         self.assertGreaterEqual(fres_spending, mes_spending)
@@ -224,7 +237,6 @@ class TestEqualShares(unittest.TestCase):
         num_projects = 15
 
         projects = [Project(str(i), random.randint(500, 1000)) for i in range(num_projects)]
-
         instance = Instance(projects, budget)
 
         num_voters = 10

@@ -6,42 +6,49 @@ https://www.ac.tuwien.ac.at/comsoc2025/comsoc2025-papers/50.pdf
 Programmer: Ivan Gorbachev
 Date: 17/04/2026
 """
+from __future__ import annotations
 import logging
 import math
 
 from scipy.optimize import root_scalar
 
-from pabutools.election import Project, Instance, ApprovalBallot, ApprovalProfile, CardinalBallot, CardinalProfile
+from pabutools.election import Project, Instance, AbstractProfile
+from pabutools.rules.budgetallocation import BudgetAllocation, AllocationDetails
+
+
+class FractionalAllocationDetails(AllocationDetails):
+    """
+    Metadata container for tracking the funded fractions of projects
+    resulting from fractional_equal_shares.
+    """
+    def __init__(self, fractions: dict[Project, float]):
+        super().__init__()
+        self.fractions = fractions
 
 
 def get_utility(voter, project):
-    if type(voter) == CardinalBallot:
+    if hasattr(voter, "utility"):
         return voter.utility(project)
     return 1 if project in voter else 0
 
 
-def bos_equal_shares(instance, profile):
+def bos_equal_shares(instance: Instance, profile: AbstractProfile) -> BudgetAllocation:
     """
     Algorithm "BOS Equal Shares" - The algorithm selects a subset of projects such that the resulting subset is both
-    affordable under the budget while also exhausting it and guaranteeing fairness
-    Parameters:
-        instance - a public budgeting instance
-        profile - a profile (ApprovalProfile/CardinalProfile) of voters (ApprovalBallot/CardinalBallot)
-    Returns:
-        selected_projects - a list of all selected projects
+    affordable under the budget while also exhausting it and guaranteeing fairness.
 
-    Example:
-        >>> p1, p2 = Project("p1", 1000), Project("p2", 100)
-        >>> instance = Instance([p1, p2], 1000)
-        >>> profile = ApprovalProfile([ApprovalBallot({p1}), ApprovalBallot({p2}), ApprovalBallot({p1})])
-        >>> print(bos_equal_shares(instance, profile))
-        [p1]
+    Parameters
+    ----------
+        instance : :py:class:`~pabutools.election.instance.Instance`
+            The instance.
+        profile : :py:class:`~pabutools.election.profile.profile.AbstractProfile`
+            The profile.
+
+    Returns
+    -------
+        :py:class:`~pabutools.rules.budgetallocation.BudgetAllocation`
+            The selected projects packaged into a BudgetAllocation object.
     """
-    if not isinstance(profile, (ApprovalProfile, CardinalProfile)):
-        raise TypeError("profile must be an instance of ApprovalProfile or CardinalProfile")
-    if any(not isinstance(voter, (ApprovalBallot, CardinalBallot)) for voter in profile):
-        raise TypeError("All items inside the profile must be ApprovalBallot or CardinalBallot instances")
-
     logger = logging.getLogger(__name__)
     logger.info("\nBOS equal shares")
 
@@ -52,8 +59,10 @@ def bos_equal_shares(instance, profile):
     budget = instance.budget_limit
     num_voters = profile.num_ballots()
 
-    virtual_budgets = [budget / num_voters for _ in voters]
+    if num_voters == 0:
+        return BudgetAllocation([])
 
+    virtual_budgets = [budget / num_voters for _ in voters]
     all_projects = list(instance)
 
     logger.info(f"Budget: {budget}")
@@ -127,35 +136,28 @@ def bos_equal_shares(instance, profile):
                               cost_selected_projects + project.cost <= budget and budget_for_project[
                                   project] > 0 and project not in selected_projects]
         logger.info(f"Selected projects: {selected_projects}\n")
-    return selected_projects
+
+    return BudgetAllocation(selected_projects)
 
 
-def fractional_equal_shares(instance, profile):
+def fractional_equal_shares(instance: Instance, profile: AbstractProfile) -> BudgetAllocation:
     """
     Algorithm "fractional equal shares" - The algorithm works much like equal shares with the exception that it
-    allows players to purchase fractional shares in the projects they support for fractional cost. This Algorithm is
-    used as a part of the BOS algorithm in order to select the projects before making the players paying the full
-    price, thus leading to the overspending feature of BOS.
-    Parameters:
-        instance - a public budgeting instance
-        profile - a profile (ApprovalProfile/CardinalProfile) of voters (ApprovalBallot/CardinalBallot)
-    Returns:
-        dict(sorted(project_part.items(), key=lambda item: str(item[0]))) - A sorted dictonery of the projects and the
-        portion that was purchaed of each project
+    allows players to purchase fractional shares in the projects they support for fractional cost.
 
-        >>> pA = Project("A", 1000)
-        >>> pB = Project("B", 500)
-        >>> budget = 1100
-        >>> instance = Instance([pA, pB], budget)
-        >>> profile = ApprovalProfile([ApprovalBallot({pA}), ApprovalBallot({pB})])
-        >>> print(fractional_equal_shares(instance, profile))
-        {A: 0.55, B: 1}
+    Parameters
+    ----------
+        instance : :py:class:`~pabutools.election.instance.Instance`
+            The instance.
+        profile : :py:class:`~pabutools.election.profile.profile.AbstractProfile`
+            The profile.
+
+    Returns
+    -------
+        :py:class:`~pabutools.rules.budgetallocation.BudgetAllocation`
+            The funded projects packaged into a BudgetAllocation object, with an attached details map
+            tracking exact fractions.
     """
-    if not isinstance(profile, (ApprovalProfile, CardinalProfile)):
-        raise TypeError("profile must be an instance of ApprovalProfile or CardinalProfile")
-    if any(not isinstance(voter, (ApprovalBallot, CardinalBallot)) for voter in profile):
-        raise TypeError("All items inside the profile must be ApprovalBallot or CardinalBallot instances")
-
     logger = logging.getLogger(__name__)
     logger.info("\nFractional equal shares")
 
@@ -163,6 +165,10 @@ def fractional_equal_shares(instance, profile):
     cost_selected_projects = 0
     budget = instance.budget_limit
     num_voters = profile.num_ballots()
+
+    if num_voters == 0:
+        return BudgetAllocation([], details=FractionalAllocationDetails({}))
+
     virtual_budgets = [budget / num_voters for _ in voters]
     all_projects = sorted(list(instance), key=lambda p: str(p))
     logger.info(f"Budget: {budget}")
@@ -173,7 +179,7 @@ def fractional_equal_shares(instance, profile):
         for project in all_projects
     }
 
-    project_part = {project: 0 for project in all_projects}
+    project_part = {project: 0.0 for project in all_projects}
 
     available_projects = [
         project for project in all_projects
@@ -183,7 +189,6 @@ def fractional_equal_shares(instance, profile):
     ]
 
     while available_projects and cost_selected_projects < budget:
-
         logger.info(f"Remaining budget: {budget - cost_selected_projects}")
         project_utilities = {c: sum(get_utility(voter, c) * c.cost for voter in voters) for c in available_projects}
         valid_projects = [c for c in available_projects if project_utilities[c] > 0]
@@ -225,4 +230,6 @@ def fractional_equal_shares(instance, profile):
         ]
         logger.info(f"Selected project parts: {project_part}\n")
 
-    return dict(sorted(project_part.items(), key=lambda item: str(item[0])))
+    funded_projects = [proj for proj, frac_val in project_part.items() if frac_val > 0]
+    details = FractionalAllocationDetails(project_part)
+    return BudgetAllocation(funded_projects, details=details)
