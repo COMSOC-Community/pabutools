@@ -46,6 +46,7 @@ from pabutools.election.profile.cardinalprofile import (
     AbstractCardinalProfile,
     CardinalProfile,
     CardinalMultiProfile,
+    cardinal_profile_from_matrix,
 )
 from pabutools.election.profile.cumulativeprofile import (
     AbstractCumulativeProfile,
@@ -71,6 +72,7 @@ __all__ = [
     "AbstractCardinalProfile",
     "CardinalProfile",
     "CardinalMultiProfile",
+    "cardinal_profile_from_matrix",
     "AbstractCumulativeProfile",
     "CumulativeProfile",
     "CumulativeMultiProfile",

@@ -363,7 +363,12 @@ def approval_profile_from_matrix(
     instance: Instance,
 ) -> ApprovalProfile:
     """
-    Create an :class:`ApprovalProfile` from a utility matrix.
+    Create an :class:`ApprovalProfile` from a binary ``{0, 1}`` matrix.
+
+    Thin wrapper around
+    :func:`~pabutools.election.profile.cardinalprofile.cardinal_profile_from_matrix`
+    with ``to_approval=True`` and ``threshold=0``. See that function for the
+    more general case of arbitrary numeric weights.
 
     Parameters
     ----------
@@ -381,15 +386,11 @@ def approval_profile_from_matrix(
     -------
     ApprovalProfile
     """
-    project_by_name = {p.name: p for p in instance}
-    ballots = []
-    for voter in voters:
-        voter_approvals = approvals[voter]
-        ballot = ApprovalBallot(
-            p for name, p in project_by_name.items() if voter_approvals.get(name, 0) == 1
-        )
-        ballots.append(ballot)
-    return ApprovalProfile(ballots, instance=instance)
+    from pabutools.election.profile.cardinalprofile import cardinal_profile_from_matrix
+
+    return cardinal_profile_from_matrix(
+        voters, approvals, instance, to_approval=True, threshold=0
+    )
 
 
 class ApprovalMultiProfile(MultiProfile, AbstractApprovalProfile):
