@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Quadratic formula</h1>
+<div class="content-section">
+    <h2>Input</h2>
+    <div>a = {{ a }}</div>
+    <div>b = {{ b }}</div>
+    <div>c = {{ c }}</div>
+    <h2>Output</h2>
+    <div>roots = {{ roots }}</div>
+    <h2>Logs</h2>
+    <textarea rows="10" cols="50">{{ logs }}</textarea>
+</div>
+{% endblock content %}

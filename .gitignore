@@ -171,9 +171,3 @@ analysis/Pabulib
 .vscode/
 .python-version
 .DS_Store
-
-# Course files — not part of the library
-code/
-homework.pdf
-Fair_Lotteries_for_Participatory_Budgeting.py
-flask_app/

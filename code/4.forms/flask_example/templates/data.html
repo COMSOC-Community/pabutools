@@ -1,0 +1,66 @@
+<!-- First step: define <div class="form-group"> for each field, with two lines: .label and the field itself. -->
+<!-- Second step: add error-check to each field. -->
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <legend class="border-bottom mb-4">Enter your data!</legend>
+
+        <div class="form-group">
+            {{ form.email.label(class="form-control-label") }}
+            {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.age.label(class="form-control-label") }}
+            {% if form.age.errors %}
+                {{ form.age(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.age.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.age(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.homepage.label(class="form-control-label") }}
+            {% if form.homepage.errors %}
+                {{ form.homepage(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.homepage.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.homepage(class="form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label(class="form-control-label") }}
+            {{ form.description(cols="80", rows="10", class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.language.label(class="form-control-label") }}
+            {{ form.language(class="form-control form-control-lg") }}
+        </div>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+    </form>
+</div>
+{% endblock content %}

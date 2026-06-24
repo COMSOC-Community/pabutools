@@ -1,0 +1,14 @@
+<!-- First step: define <div class="form-group"> for each field, with two lines: .label and the field itself. -->
+<!-- Second step: add error-check to each field. -->
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action=""> 
+        {{ form.hidden_tag() }}
+        <p>{{ form.a.label }} {{ form.a() }}</p>
+        <p>{{ form.b.label }} {{ form.b() }}</p>
+        <p>{{ form.c.label }} {{ form.c() }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+    <p>Hello, {{ username }}!</p>
+    <p>Homepage: {{ homepage }}!</p>
+    {% if picture: %}
+    <p>Picture: <img style='width:90px; height:90px' src='{{ url_for("static", filename="profile_pics/"+picture) }}'/> </p>
+    {% endif %}
+{% endblock %} 

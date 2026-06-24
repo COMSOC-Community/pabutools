@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home Page</title>
+</head>
+
+<body>
+    <h1>dynamic page</h1>
+    {% for user in users: %}
+    <h3>{{user.name}}</h3>
+    <h3>{{user.email}}</h3>
+    <h3>{{user.phone}}</h3>
+    <br><br>
+    {% endfor %}
+</body>
+
+</html>
