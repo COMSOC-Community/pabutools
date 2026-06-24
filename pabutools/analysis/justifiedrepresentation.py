@@ -523,119 +523,248 @@ def is_PJR_one_cardinal(
     )
 
 
-def check_FJR(self, N: list, cost: dict, C: list, B: float, ui: dict, s_vec: list) -> bool:
-        """
-        Randomly test whether an allocation satisfies Full Justified Representation (FJR).
+def utility_of_voter(i, chosen_projects: Iterable[Project], ui: dict) -> int:
+    """
+    Count how many of a voter's approved projects appear in a chosen allocation.
 
-        For a number of random project subsets T and thresholds beta, builds the group S
-        of voters who approve at least beta projects in T. If S's fair share of the budget
-        can afford T, FJR requires at least one voter in S to have utility >= beta in the
-        outcome. Returns False as soon as a violation is found.
+    Parameters
+    ----------
+    i : Any
+        Voter identifier.
+    chosen_projects : Iterable[Project]
+        The selected projects (the allocation being tested).
+    ui : dict
+        Mapping from voter identifier to a dict of {project_name: 0/1} approvals.
 
-        Parameters
-        ----------
-        N : list
-            Voter identifiers.
-        cost : dict
-            Mapping from project identifier to its cost.
-        C : list
-            Project identifiers.
-        B : float
-            Total budget.
-        ui : dict
-            Mapping from voter identifier to a dict of {project: 0/1} approvals.
-        s_vec : list
-            The selected projects (the allocation being tested).
-
-        Returns
-        -------
-        bool
-            True if no FJR violation was found among the sampled (T, beta) pairs.
-        """
-        for _ in range(60):
-            k = random.randint(1, min(5, len(C)))
-            T = random.sample(C, k)
-
-            # Test for multiple beta values instead of only beta = len(T)
-            for beta in range(1, len(T) + 1):
-                # Form group S where each voter approves AT LEAST beta projects in T
-                S = [i for i in N if sum(1 for c in T if ui[i][c] == 1) >= beta]
-
-                if len(S) == 0:
-                    continue
-
-                B_S = (len(S) / len(N)) * B
-
-                if not self.can_afford_T(T, cost, B_S):
-                    continue
-
-                exists_satisfied = any(
-                    self.utility_of_voter(i, s_vec, ui) >= beta
-                    for i in S
-                )
-                if(not exists_satisfied):
-                    return False
-        return True
+    Returns
+    -------
+    int
+        Number of chosen projects approved by voter i.
+    """
+    return sum(1 for proj in chosen_projects if ui[i].get(proj.name, 0) == 1)
 
 
-def check_EJR(self, N: list, cost: dict, C: list, B: float, ui: dict, s_vec: list) -> bool:
-        """
-        Randomly test whether an allocation satisfies Extended Justified Representation (EJR).
+def can_afford_T(T, cost: dict, B_S: float) -> bool:
+    """
+    Test whether a group's fair share of the budget can afford a project set.
 
-        For a number of random project subsets T, builds the group S of voters who
-        unanimously approve every project in T. If S's fair share of the budget can
-        afford T, EJR requires at least one voter in S to have utility >= |T| in the
-        outcome. Returns False as soon as a violation is found.
+    Parameters
+    ----------
+    T : Iterable
+        Project identifiers.
+    cost : dict
+        Mapping from project identifier to its cost.
+    B_S : float
+        The group's fair share of the budget.
 
-        Parameters
-        ----------
-        N : list
-            Voter identifiers.
-        cost : dict
-            Mapping from project identifier to its cost.
-        C : list
-            Project identifiers.
-        B : float
-            Total budget.
-        ui : dict
-            Mapping from voter identifier to a dict of {project: 0/1} approvals.
-        s_vec : list
-            The selected projects (the allocation being tested).
+    Returns
+    -------
+    bool
+        True if the total cost of T is at most B_S.
+    """
+    return sum(cost[c] for c in T) <= B_S
 
-        Returns
-        -------
-        bool
-            True if no EJR violation was found among the sampled subsets T.
-        """
-        for _ in range(50):
-            k = random.randint(1, min(5, len(C)))
-            T = random.sample(C, k)
-            S = [i for i in N if all(ui[i][c] == 1 for c in T)]
+
+def is_unanimous(S: list, ui: dict, C: list) -> bool:
+    """
+    Test whether every voter in S has identical approvals over all projects in C.
+
+    Parameters
+    ----------
+    S : list
+        Voter identifiers.
+    ui : dict
+        Mapping from voter identifier to a dict of {project: 0/1} approvals.
+    C : list
+        Project identifiers.
+
+    Returns
+    -------
+    bool
+        True if all voters in S agree on every project's approval.
+    """
+    for c in C:
+        vals = [ui[i][c] for i in S]
+        if len(set(vals)) > 1:
+            return False
+    return True
+
+
+def fractional_utility(i, p_list: list, ui: dict, C: list) -> float:
+    """
+    Compute a voter's expected utility under a fractional outcome.
+
+    Parameters
+    ----------
+    i : Any
+        Voter identifier.
+    p_list : list
+        Fractional probabilities/shares assigned to each project, in the same
+        order as C.
+    ui : dict
+        Mapping from voter identifier to a dict of {project: 0/1} approvals.
+    C : list
+        Project identifiers.
+
+    Returns
+    -------
+    float
+        Sum of p_list[idx] over projects voter i approves.
+    """
+    return sum(p_list[idx] * ui[i][C[idx]] for idx in range(len(C)))
+
+
+def optimal_fractional_utility_for_group(S: list, C: list, cost: dict, B_S: float, ui: dict) -> float:
+    """
+    Compute the best fractional utility achievable for a unanimous group's fair
+    share of the budget, by greedily funding the cheapest approved projects first.
+
+    Parameters
+    ----------
+    S : list
+        Voter identifiers forming a unanimous group.
+    C : list
+        Project identifiers.
+    cost : dict
+        Mapping from project identifier to its cost.
+    B_S : float
+        The group's fair share of the budget.
+    ui : dict
+        Mapping from voter identifier to a dict of {project: 0/1} approvals.
+
+    Returns
+    -------
+    float
+        The optimal fractional utility achievable for any member of S.
+    """
+    i = S[0]
+    liked_projects = [c for c in C if ui[i][c] == 1]
+    liked_projects.sort(key=lambda c: cost[c])
+    util = 0.0
+    remaining_B = B_S
+    for c in liked_projects:
+        if cost[c] <= remaining_B:
+            util += 1.0
+            remaining_B -= cost[c]
+        else:
+            util += remaining_B / cost[c]
+            break
+    return util
+
+
+def check_FJR(N: list, cost: dict, C: list, B: float, ui: dict, s_vec: list) -> bool:
+    """
+    Randomly test whether an allocation satisfies Full Justified Representation (FJR).
+
+    For a number of random project subsets T and thresholds beta, builds the group S
+    of voters who approve at least beta projects in T. If S's fair share of the budget
+    can afford T, FJR requires at least one voter in S to have utility >= beta in the
+    outcome. Returns False as soon as a violation is found.
+
+    Parameters
+    ----------
+    N : list
+        Voter identifiers.
+    cost : dict
+        Mapping from project identifier to its cost.
+    C : list
+        Project identifiers.
+    B : float
+        Total budget.
+    ui : dict
+        Mapping from voter identifier to a dict of {project: 0/1} approvals.
+    s_vec : list
+        The selected projects (the allocation being tested).
+
+    Returns
+    -------
+    bool
+        True if no FJR violation was found among the sampled (T, beta) pairs.
+    """
+    for _ in range(60):
+        k = random.randint(1, min(5, len(C)))
+        T = random.sample(C, k)
+
+        # Test for multiple beta values instead of only beta = len(T)
+        for beta in range(1, len(T) + 1):
+            # Form group S where each voter approves AT LEAST beta projects in T
+            S = [i for i in N if sum(1 for c in T if ui[i][c] == 1) >= beta]
 
             if len(S) == 0:
                 continue
+
             B_S = (len(S) / len(N)) * B
 
-            if not self.can_afford_T(T, cost, B_S):
+            if not can_afford_T(T, cost, B_S):
                 continue
 
             exists_satisfied = any(
-                self.utility_of_voter(i, s_vec, ui) >= len(T)
+                utility_of_voter(i, s_vec, ui) >= beta
                 for i in S
             )
-            if(not exists_satisfied):
+            if not exists_satisfied:
                 return False
-        return True
+    return True
 
 
-def check_strong_UFS(self, N: list, C: list, cost: dict, B: float, ui: dict, p_vec: list) -> bool:
+def check_EJR(N: list, cost: dict, C: list, B: float, ui: dict, s_vec: list) -> bool:
+    """
+    Randomly test whether an allocation satisfies Extended Justified Representation (EJR).
+
+    For a number of random project subsets T, builds the group S of voters who
+    unanimously approve every project in T. If S's fair share of the budget can
+    afford T, EJR requires at least one voter in S to have utility >= |T| in the
+    outcome. Returns False as soon as a violation is found.
+
+    Parameters
+    ----------
+    N : list
+        Voter identifiers.
+    cost : dict
+        Mapping from project identifier to its cost.
+    C : list
+        Project identifiers.
+    B : float
+        Total budget.
+    ui : dict
+        Mapping from voter identifier to a dict of {project: 0/1} approvals.
+    s_vec : list
+        The selected projects (the allocation being tested).
+
+    Returns
+    -------
+    bool
+        True if no EJR violation was found among the sampled subsets T.
+    """
+    for _ in range(50):
+        k = random.randint(1, min(5, len(C)))
+        T = random.sample(C, k)
+        S = [i for i in N if all(ui[i][c] == 1 for c in T)]
+
+        if len(S) == 0:
+            continue
+        B_S = (len(S) / len(N)) * B
+
+        if not can_afford_T(T, cost, B_S):
+            continue
+
+        exists_satisfied = any(
+            utility_of_voter(i, s_vec, ui) >= len(T)
+            for i in S
+        )
+        if not exists_satisfied:
+            return False
+    return True
+
+
+def check_strong_UFS(N: list, C: list, cost: dict, B: float, ui: dict, p_vec: list) -> bool:
     """
     Randomly test whether a fractional outcome satisfies strong Unanimous Fair Share (UFS).
 
-    Samples a random unanimous group S (all voters in S agree on every project's
+    Samples random unanimous groups S (all voters in S agree on every project's
     approval) and compares the algorithm's fractional utility for a member of S
     against the optimal fractional utility achievable with S's fair share of the
-    budget.
+    budget. Returns False as soon as a violation is found.
 
     Parameters
     ----------
@@ -655,16 +784,16 @@ def check_strong_UFS(self, N: list, C: list, cost: dict, B: float, ui: dict, p_v
     Returns
     -------
     bool
-        True if the algorithm's utility for the sampled group meets or exceeds the
-        optimal fractional utility (within a small tolerance).
+        True if no strong UFS violation was found among the sampled groups.
     """
     for _ in range(50):
         S = random.sample(N, random.randint(1, len(N)))
-        if not self.is_unanimous(S, ui, C):
+        if not is_unanimous(S, ui, C):
             continue
-        print(f"Testing  for unanimous group S={S}")
         B_S = (len(S) / len(N)) * B
 
-        util_alg = self.fractional_utility(S[0], p_vec, ui, C)
-        util_opt = self.optimal_fractional_utility_for_group(S, C, cost, B_S, ui)
-        return util_alg+ 1e-7>= util_opt
+        util_alg = fractional_utility(S[0], p_vec, ui, C)
+        util_opt = optimal_fractional_utility_for_group(S, C, cost, B_S, ui)
+        if not util_alg + 1e-7 >= util_opt:
+            return False
+    return True

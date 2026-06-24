@@ -20,6 +20,11 @@ from pabutools.rules.lottery import (
     build_instance,
     build_profile,
 )
+from pabutools.analysis.justifiedrepresentation import (
+    check_FJR,
+    check_EJR,
+    check_strong_UFS,
+)
 
 
 class TestAlgorithms(unittest.TestCase):
@@ -122,44 +127,6 @@ class TestAlgorithms(unittest.TestCase):
                 msg=f"GCR exceeded budget: total_cost={total_cost_s1}, budget={B}"
             )
 
-    def fractional_utility(self, i, p_list, ui, C):
-        return sum(p_list[idx] * ui[i][C[idx]] for idx in range(len(C)))
-
-    def optimal_fractional_utility_for_group(self, S, C, cost, B_S, ui):
-        i = S[0]
-        liked_projects = [c for c in C if ui[i][c] == 1]
-        liked_projects.sort(key=lambda c: cost[c])
-        util = 0.0
-        remaining_B = B_S
-        for c in liked_projects:
-            if cost[c] <= remaining_B:
-                util += 1.0
-                remaining_B -= cost[c]
-            else:
-                util += remaining_B / cost[c]
-                break
-        return util
-
-    def is_unanimous(self, S, ui, C):
-        for c in C:
-            vals = [ui[i][c] for i in S]
-            if len(set(vals)) > 1:
-                return False
-        return True
-
-    def check_strong_UFS(self, N, C, cost, B, ui, p_vec):
-        for _ in range(50):
-            S = random.sample(N, random.randint(1, len(N)))
-            if not self.is_unanimous(S, ui, C):
-                continue
-            print(f"Testing for unanimous group S={S}")
-            B_S = (len(S) / len(N)) * B
-            util_alg = self.fractional_utility(S[0], p_vec, ui, C)
-            util_opt = self.optimal_fractional_utility_for_group(S, C, cost, B_S, ui)
-            if not util_alg + 1e-7 >= util_opt:
-                return False
-        return True
-
     def test_Many_Projects_Many_Citizens(self):
         N = list(np.arange(1, random.randint(10, 100)))
         C = list(np.arange(1, random.randint(10, 100)))
@@ -173,33 +140,9 @@ class TestAlgorithms(unittest.TestCase):
 
         for name, p_vec in [("MES", p2)]:
             self.assertTrue(
-                self.check_strong_UFS(N, C, cost, B, ui, p_vec),
+                check_strong_UFS(N, C, cost, B, ui, p_vec),
                 msg=f"{name} failed for group s"
             )
-
-    def utility_of_voter(self, i, chosen_projects, ui):
-        return sum(1 for proj in chosen_projects if ui[i].get(proj.name, 0) == 1)
-
-    def can_afford_T(self, T, cost, B_S):
-        return sum(cost[c] for c in T) <= B_S
-
-    def check_EJR(self, N, cost, C, B, ui, s_vec):
-        for _ in range(50):
-            k = random.randint(1, min(5, len(C)))
-            T = random.sample(C, k)
-            S = [i for i in N if all(ui[i][c] == 1 for c in T)]
-            if len(S) == 0:
-                continue
-            B_S = (len(S) / len(N)) * B
-            if not self.can_afford_T(T, cost, B_S):
-                continue
-            exists_satisfied = any(
-                self.utility_of_voter(i, s_vec, ui) >= len(T)
-                for i in S
-            )
-            if not exists_satisfied:
-                return False
-        return True
 
     def test_EJR_MES(self):
         N = list(np.arange(1, random.randint(10, 40)))
@@ -213,28 +156,9 @@ class TestAlgorithms(unittest.TestCase):
         p, s = BW_MES_PB_wrapped(instance, profile)
 
         self.assertTrue(
-            self.check_EJR(N, cost, C, B, ui, s),
+            check_EJR(N, cost, C, B, ui, s),
             msg="EJR failed"
         )
-
-    def check_FJR(self, N, cost, C, B, ui, s_vec):
-        for _ in range(60):
-            k = random.randint(1, min(5, len(C)))
-            T = random.sample(C, k)
-            for beta in range(1, len(T) + 1):
-                S = [i for i in N if sum(1 for c in T if ui[i][c] == 1) >= beta]
-                if len(S) == 0:
-                    continue
-                B_S = (len(S) / len(N)) * B
-                if not self.can_afford_T(T, cost, B_S):
-                    continue
-                exists_satisfied = any(
-                    self.utility_of_voter(i, s_vec, ui) >= beta
-                    for i in S
-                )
-                if not exists_satisfied:
-                    return False
-        return True
 
     def test_FJR_GCR(self):
         N = list(np.arange(1, random.randint(3, 5)))
@@ -248,7 +172,7 @@ class TestAlgorithms(unittest.TestCase):
         p, s = BW_GCR_PB_wrapped(instance, profile)
 
         self.assertTrue(
-            self.check_FJR(N, cost, C, B, ui, s),
+            check_FJR(N, cost, C, B, ui, s),
             msg="FJR failed"
         )
 
