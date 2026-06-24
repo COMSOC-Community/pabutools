@@ -51,6 +51,12 @@ from pabutools.rules.lottery import (
     BW_MES_PB_wrapped,
     build_instance,
     build_profile,
+from pabutools.rules.ordered_relax import ordered_relax
+from pabutools.rules.ees_addopt import (
+    exact_equal_shares,
+    greedy_project_change,
+    add_opt,
+    EESAllocationDetails,
 )
 
 __all__ = [
@@ -82,4 +88,8 @@ __all__ = [
     "BW_MES_PB_wrapped",
     "build_instance",
     "build_profile",
+    "exact_equal_shares",
+    "greedy_project_change",
+    "add_opt",
+    "EESAllocationDetails",
 ]
