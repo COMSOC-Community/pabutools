@@ -51,6 +51,7 @@ from pabutools.rules.lottery import (
     BW_MES_PB_wrapped,
     build_instance,
     build_profile,
+)
 from pabutools.rules.ordered_relax import ordered_relax
 from pabutools.rules.ees_addopt import (
     exact_equal_shares,
