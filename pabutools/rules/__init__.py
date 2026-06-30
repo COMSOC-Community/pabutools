@@ -40,6 +40,18 @@ from pabutools.rules.budgetallocation import (
 )
 from pabutools.rules.cstv import cstv, CSTV_Combination
 from pabutools.rules.maximin_support import maximin_support
+from pabutools.rules.gcr import greedy_cohesive_rule, GCRAllocationDetails, GCRIteration
+from pabutools.rules.lottery import (
+    dependent_rounding_bb1,
+    BW_GCR_PB,
+    BW_GCR_PB_from_lists,
+    BW_GCR_PB_wrapped,
+    BW_MES_PB,
+    BW_MES_PB_from_lists,
+    BW_MES_PB_wrapped,
+    build_instance,
+    build_profile,
+)
 from pabutools.rules.ordered_relax import ordered_relax
 from pabutools.rules.ees_addopt import (
     exact_equal_shares,
@@ -65,6 +77,18 @@ __all__ = [
     "cstv",
     "CSTV_Combination",
     "maximin_support",
+    "greedy_cohesive_rule",
+    "GCRAllocationDetails",
+    "GCRIteration",
+    "dependent_rounding_bb1",
+    "BW_GCR_PB",
+    "BW_GCR_PB_from_lists",
+    "BW_GCR_PB_wrapped",
+    "BW_MES_PB",
+    "BW_MES_PB_from_lists",
+    "BW_MES_PB_wrapped",
+    "build_instance",
+    "build_profile",
     "exact_equal_shares",
     "greedy_project_change",
     "add_opt",

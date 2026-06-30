@@ -263,6 +263,69 @@ CardinalProfile._wrap_methods(
 )
 
 
+def cardinal_profile_from_matrix(
+    voters: list,
+    weights: dict,
+    instance: Instance,
+    to_approval: bool = False,
+    threshold: Numeric = 0,
+):
+    """
+    Create a :class:`CardinalProfile` from a weight matrix, or an
+    :class:`~pabutools.election.profile.approvalprofile.ApprovalProfile`
+    thresholded from those weights.
+
+    Parameters
+    ----------
+    voters : list
+        Ordered list of voter identifiers.
+    weights : dict
+        Maps each voter identifier to a ``{project_name: numeric_weight}``
+        dict. Projects not mentioned for a voter default to weight 0.
+    instance : Instance
+        The pabutools :class:`~pabutools.election.instance.Instance` whose
+        :class:`~pabutools.election.instance.Project` objects will be
+        referenced in the ballots.
+    to_approval : bool, optional
+        If `True`, return an `ApprovalProfile` where a project is approved iff
+        its weight is strictly greater than `threshold`. If `False`
+        (default), return a `CardinalProfile` carrying the raw weights.
+    threshold : Numeric, optional
+        Cutoff used only when `to_approval` is `True`. Defaults to 0.
+
+    Returns
+    -------
+    CardinalProfile or ApprovalProfile
+    """
+    project_by_name = {p.name: p for p in instance}
+
+    if to_approval:
+        from pabutools.election.profile.approvalprofile import (
+            ApprovalProfile,
+            ApprovalBallot,
+        )
+
+        ballots = []
+        for voter in voters:
+            voter_weights = weights[voter]
+            ballot = ApprovalBallot(
+                p
+                for name, p in project_by_name.items()
+                if voter_weights.get(name, 0) > threshold
+            )
+            ballots.append(ballot)
+        return ApprovalProfile(ballots, instance=instance)
+
+    ballots = []
+    for voter in voters:
+        voter_weights = weights[voter]
+        ballot = CardinalBallot(
+            {p: voter_weights.get(name, 0) for name, p in project_by_name.items()}
+        )
+        ballots.append(ballot)
+    return CardinalProfile(ballots, instance=instance)
+
+
 class CardinalMultiProfile(MultiProfile, AbstractCardinalProfile):
     """
     A multiprofile of cardinal ballots, that is, a multiset of cardinal ballots together with their multiplicity.

@@ -43,21 +43,39 @@ def frac(*arg: Numeric) -> Numeric:
         Numeric
             The fraction.
     """
+    # Normalize numpy scalars (and similar) to plain Python ints/floats so that
+    # gmpy2.mpq and arithmetic operators accept them without errors. Done
+    # inline per-argument (no list/tuple allocation) since this function is
+    # called everywhere and needs to stay cheap.
     if len(arg) == 1:
+        a0 = arg[0]
+        try:
+            a0 = a0.item()
+        except AttributeError:
+            pass
         if FRACTION == GMPY_FRAC:
-            return mpq(arg[0])
+            return mpq(a0)
         elif FRACTION == FLOAT_FRAC:
-            return arg[0]
+            return a0
         else:
             raise ValueError(
                 f"The current value of pabutools.fractions.FRACTION '{FRACTION}' is invalid, it needs to be in "
                 "[gmpy2, float]."
             )
     elif len(arg) == 2:
+        a0, a1 = arg
+        try:
+            a0 = a0.item()
+        except AttributeError:
+            pass
+        try:
+            a1 = a1.item()
+        except AttributeError:
+            pass
         if FRACTION == GMPY_FRAC:
-            return mpq(arg[0], arg[1])
+            return mpq(a0, a1)
         elif FRACTION == FLOAT_FRAC:
-            return arg[0] / arg[1]
+            return a0 / a1
         else:
             raise ValueError(
                 f"The current value of pabutools.fractions.FRACTION '{FRACTION}' is invalid, it needs to be in "

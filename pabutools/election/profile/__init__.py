@@ -40,11 +40,13 @@ from pabutools.election.profile.approvalprofile import (
     ApprovalMultiProfile,
     get_random_approval_profile,
     get_all_approval_profiles,
+    approval_profile_from_matrix,
 )
 from pabutools.election.profile.cardinalprofile import (
     AbstractCardinalProfile,
     CardinalProfile,
     CardinalMultiProfile,
+    cardinal_profile_from_matrix,
 )
 from pabutools.election.profile.cumulativeprofile import (
     AbstractCumulativeProfile,
@@ -66,9 +68,11 @@ __all__ = [
     "ApprovalMultiProfile",
     "get_random_approval_profile",
     "get_all_approval_profiles",
+    "approval_profile_from_matrix",
     "AbstractCardinalProfile",
     "CardinalProfile",
     "CardinalMultiProfile",
+    "cardinal_profile_from_matrix",
     "AbstractCumulativeProfile",
     "CumulativeProfile",
     "CumulativeMultiProfile",

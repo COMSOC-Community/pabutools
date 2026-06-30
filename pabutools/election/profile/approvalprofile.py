@@ -357,6 +357,42 @@ def get_all_approval_profiles(
         yield ApprovalProfile([ApprovalBallot(b) for b in p], instance=instance)
 
 
+def approval_profile_from_matrix(
+    voters: list,
+    approvals: dict,
+    instance: Instance,
+) -> ApprovalProfile:
+    """
+    Create an :class:`ApprovalProfile` from a binary ``{0, 1}`` matrix.
+
+    Thin wrapper around
+    :func:`~pabutools.election.profile.cardinalprofile.cardinal_profile_from_matrix`
+    with ``to_approval=True`` and ``threshold=0``. See that function for the
+    more general case of arbitrary numeric weights.
+
+    Parameters
+    ----------
+    voters : list
+        Ordered list of voter identifiers.
+    approvals : dict
+        Maps each voter identifier to a ``{project_name: 0_or_1}`` dict where
+        1 means the voter approves that project and 0 means they do not.
+    instance : Instance
+        The pabutools :class:`~pabutools.election.instance.Instance` whose
+        :class:`~pabutools.election.instance.Project` objects will be referenced
+        in the ballots.
+
+    Returns
+    -------
+    ApprovalProfile
+    """
+    from pabutools.election.profile.cardinalprofile import cardinal_profile_from_matrix
+
+    return cardinal_profile_from_matrix(
+        voters, approvals, instance, to_approval=True, threshold=0
+    )
+
+
 class ApprovalMultiProfile(MultiProfile, AbstractApprovalProfile):
     """
     A multiprofile of approval ballots, that is, a multiset of approval ballots together with their multiplicity.
