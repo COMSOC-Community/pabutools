@@ -21,10 +21,11 @@ from pabutools.rules.lottery import (
     build_profile,
 )
 from pabutools.analysis.justifiedrepresentation import (
-    check_FJR,
-    check_EJR,
-    check_strong_UFS,
+    is_FJR_approval,
+    is_EJR_approval,
+    is_strong_UFS_approval,
 )
+from pabutools.election.satisfaction import Cardinality_Sat
 
 
 class TestAlgorithms(unittest.TestCase):
@@ -138,11 +139,16 @@ class TestAlgorithms(unittest.TestCase):
         profile = build_profile(N, ui, instance)
         p2, s2 = BW_MES_PB_wrapped(instance, profile)
 
-        for name, p_vec in [("MES", p2)]:
-            self.assertTrue(
-                check_strong_UFS(N, C, cost, B, ui, p_vec),
-                msg=f"{name} failed for group s"
-            )
+        # p2 is aligned with projects sorted by name (see BW_MES_PB_wrapped)
+        sorted_projects = sorted(instance, key=lambda p: p.name)
+        fractional_allocation = dict(zip(sorted_projects, p2))
+
+        self.assertTrue(
+            is_strong_UFS_approval(
+                instance, profile, Cardinality_Sat, fractional_allocation, sample_size=50
+            ),
+            msg="MES failed strong UFS"
+        )
 
     def test_EJR_MES(self):
         N = list(np.arange(1, random.randint(10, 40)))
@@ -156,7 +162,7 @@ class TestAlgorithms(unittest.TestCase):
         p, s = BW_MES_PB_wrapped(instance, profile)
 
         self.assertTrue(
-            check_EJR(N, cost, C, B, ui, s),
+            is_EJR_approval(instance, profile, Cardinality_Sat, s, sample_size=50),
             msg="EJR failed"
         )
 
@@ -172,7 +178,7 @@ class TestAlgorithms(unittest.TestCase):
         p, s = BW_GCR_PB_wrapped(instance, profile)
 
         self.assertTrue(
-            check_FJR(N, cost, C, B, ui, s),
+            is_FJR_approval(instance, profile, Cardinality_Sat, s),
             msg="FJR failed"
         )
 
